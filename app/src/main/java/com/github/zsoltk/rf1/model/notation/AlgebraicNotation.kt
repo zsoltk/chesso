@@ -1,5 +1,8 @@
 package com.github.zsoltk.rf1.model.notation
 
+import com.github.zsoltk.rf1.model.board.idx
+import com.github.zsoltk.rf1.model.board.validate
+
 enum class AlgebraicNotation {
     a1, a2, a3, a4, a5, a6, a7, a8,
     b1, b2, b3, b4, b5, b6, b7, b8,
@@ -8,5 +11,16 @@ enum class AlgebraicNotation {
     e1, e2, e3, e4, e5, e6, e7, e8,
     f1, f2, f3, f4, f5, f6, f7, f8,
     g1, g2, g3, g4, g5, g6, g7, g8,
-    h1, h2, h3, h4, h5, h6, h7, h8
+    h1, h2, h3, h4, h5, h6, h7, h8;
+
+    companion object {
+
+        fun from(file: Int, rank: Int): AlgebraicNotation {
+            validate(file, rank)
+
+            val idx = idx(file, rank)
+
+            return values()[idx]
+        }
+    }
 }

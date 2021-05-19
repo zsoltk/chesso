@@ -1,6 +1,8 @@
 package com.github.zsoltk.rf1.model.board
 
+import androidx.compose.runtime.mutableStateOf
 import com.github.zsoltk.rf1.model.notation.AlgebraicNotation
+import com.github.zsoltk.rf1.model.piece.Piece
 
 sealed class UnboundSquare
 
@@ -34,13 +36,28 @@ data class Square(
         rank = algebraicNotation.ordinal % 8 + 1
     )
 
-    val position: AlgebraicNotation
-        get() = AlgebraicNotation.values()[(file - 1) * 8 + (rank - 1)]
+    private val idx = idx(file, rank)
+
+    val position: AlgebraicNotation =
+        AlgebraicNotation.values()[idx]
+
+    val isDark: Boolean =
+        (idx + file % 2) % 2 == 1
 
     operator fun plus(delta: Delta): UnboundSquare {
-        if (file + delta.x < 1 || file + delta.x > 8 || rank + delta.y < 1 || rank + delta.y > 8) return Invalid
-        else return Square(file + delta.x, rank + delta.y)
+        try {
+            validate(file + delta.x, rank + delta.y)
+        } catch (e: IllegalArgumentException) {
+            return Invalid
+        }
+
+        return Square(file + delta.x, rank + delta.y)
     }
+
+    private var _piece = mutableStateOf<Piece?>(null)
+    var piece: Piece?
+        get() = _piece.value
+        set(value) { _piece.value = value }
 
     override fun toString(): String =
         File.values()[file - 1].toString() + rank.toString()
