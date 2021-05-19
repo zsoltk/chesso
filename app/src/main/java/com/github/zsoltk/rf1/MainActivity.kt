@@ -8,6 +8,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.zsoltk.rf1.model.notation.AlgebraicNotation
+import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +35,10 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     Rf1Theme {
-        Greeting("Android")
+        Greeting(
+            Square(
+                AlgebraicNotation.d4
+            ).toString()
+        )
     }
 }
