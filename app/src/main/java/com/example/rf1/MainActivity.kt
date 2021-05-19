@@ -1,13 +1,13 @@
 package com.example.rf1
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.Composable
-import androidx.ui.core.setContent
-import androidx.ui.foundation.Text
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Surface
-import androidx.ui.tooling.preview.Preview
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.rf1.ui.Rf1Theme
 
 class MainActivity : AppCompatActivity() {
