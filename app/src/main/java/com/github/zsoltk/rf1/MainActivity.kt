@@ -5,12 +5,12 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation
-import com.github.zsoltk.rf1.model.board.Square
+import com.github.zsoltk.rf1.model.board.Board
+import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import com.github.zsoltk.rf1.ui.composable.Board
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
             Rf1Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                    Board(game = Game(), board = Board())
                 }
             }
         }
@@ -27,18 +27,9 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
 @Preview(showBackground = true)
-@Composable
 fun DefaultPreview() {
     Rf1Theme {
-        Greeting(
-            Square(
-                AlgebraicNotation.d4
-            ).toString()
-        )
+        Board(game = Game(), board = Board())
     }
 }

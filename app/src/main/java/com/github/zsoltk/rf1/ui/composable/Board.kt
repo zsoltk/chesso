@@ -1,13 +1,14 @@
 package com.github.zsoltk.rf1.ui.composable
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,42 +19,93 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.File
+import com.github.zsoltk.rf1.model.board.Square
+import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Board(board: Board) {
-    Column {
-        for (rank in 8 downTo 1) {
-            Row {
-                for (file in 1..8) {
-                    val square = board[file, rank]
-
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .width(36.dp)
-                            .height(36.dp)
-                            // TODO from theme
-                            .background(if (square.isDark) Color.LightGray else Color.White)
-                    ) {
-                        if (file == 1) {
-                            PositionLabel(rank.toString(), Alignment.TopStart)
-                        }
-                        if (rank == 1) {
-                            PositionLabel(File.values()[file - 1].toString(), Alignment.BottomEnd)
-                        }
-
-                        square.piece?.let {
-                            Text(
-                                text = it.symbol,
-                                fontSize = 28.sp
-                            )
-                        }
+fun Board(game: Game, board: Board) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(1f)
+    ) {
+        Column {
+            for (rank in 8 downTo 1) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    for (file in 1..8) {
+                        Square(
+                            file = file,
+                            rank = rank,
+                            game = game,
+                            square = board[file, rank],
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize()
+                        )
                     }
                 }
-            }
 
+            }
         }
+    }
+}
+
+@Composable
+fun Square(
+    file: Int,
+    rank: Int,
+    game: Game,
+    square: Square,
+    modifier: Modifier
+) {
+    val canBeSelected = game.player == square.piece?.set
+    val isSelected = game.selectedPosition.value == square.position
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            // TODO from theme
+            .background(if (square.isDark) Color.LightGray else Color.White)
+            .clickable(
+                enabled = canBeSelected,
+                onClick = {
+                    if (isSelected) {
+                        game.selectedPosition.value = null
+                    } else {
+                        game.selectedPosition.value = square.position
+                    }
+                }
+            )
+    ) {
+        if (isSelected) {
+            HighlightSquare()
+        }
+        if (file == 1) {
+            PositionLabel(rank.toString(), Alignment.TopStart)
+        }
+        if (rank == 1) {
+            PositionLabel(
+                File.values()[file - 1].toString(),
+                Alignment.BottomEnd
+            )
+        }
+
+        Piece(square)
+    }
+}
+
+@Composable
+private fun HighlightSquare() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        drawRect(
+            color = Color.Yellow,
+            size = size,
+            alpha = 0.15f
+        )
     }
 }
 
@@ -65,7 +117,7 @@ fun PositionLabel(
     Box(
         contentAlignment = alignment,
         modifier = Modifier
-            .fillMaxSize(1f)
+            .fillMaxSize()
             .padding(end = 2.dp)
     ) {
         // TODO text colour = inverse of square colour
@@ -76,10 +128,20 @@ fun PositionLabel(
     }
 }
 
+@Composable
+private fun Piece(square: Square) {
+    square.piece?.let {
+        Text(
+            text = it.symbol,
+            fontSize = 28.sp
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     Rf1Theme {
-        Board(Board())
+        Board(Game(), Board())
     }
 }
