@@ -1,4 +1,4 @@
-package com.example.rf1
+package com.github.zsoltk.rf1
 
 import org.junit.Test
 

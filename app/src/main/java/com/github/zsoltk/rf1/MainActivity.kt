@@ -1,4 +1,4 @@
-package com.example.rf1
+package com.github.zsoltk.rf1
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -8,7 +8,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.rf1.ui.Rf1Theme
+import com.github.zsoltk.rf1.ui.Rf1Theme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

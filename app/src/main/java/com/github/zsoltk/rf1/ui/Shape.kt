@@ -1,4 +1,4 @@
-package com.example.rf1.ui
+package com.github.zsoltk.rf1.ui
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
