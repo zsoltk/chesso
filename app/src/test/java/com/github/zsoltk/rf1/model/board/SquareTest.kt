@@ -1,7 +1,8 @@
 package com.github.zsoltk.rf1.model.board
 
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.f8
+import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.*
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SquareTest {
@@ -40,5 +41,55 @@ class SquareTest {
     fun algebraicNotation_rank_parsed_correctly() {
         val square = Square(f8)
         assertEquals(8, square.rank)
+    }
+
+    @Test
+    fun position_is_correct() {
+        val square = Square(3, 3)
+        assertEquals(c3, square.position)
+    }
+
+    @Test
+    fun delta_valid_case_1() {
+        val square = Square(d4)
+        val result: UnboundSquare = square + Delta(1, 1)
+        assertTrue(result is Square)
+        assertEquals(e5, (result as Square).position)
+    }
+
+    @Test
+    fun delta_valid_case_2() {
+        val square = Square(d4)
+        val result: UnboundSquare = square + Delta(-1, -1)
+        assertTrue(result is Square)
+        assertEquals(c3, (result as Square).position)
+    }
+
+    @Test
+    fun delta_invalid_case_1() {
+        val square = Square(h8)
+        val result = square + Delta(0, 1)
+        assertTrue(result is Invalid)
+    }
+
+    @Test
+    fun delta_invalid_case_2() {
+        val square = Square(h8)
+        val result = square + Delta(1, 0)
+        assertTrue(result is Invalid)
+    }
+
+    @Test
+    fun delta_invalid_case_3() {
+        val square = Square(a1)
+        val result = square + Delta(-1, 0)
+        assertTrue(result is Invalid)
+    }
+
+    @Test
+    fun delta_invalid_case_4() {
+        val square = Square(a1)
+        val result = square + Delta(0, -1)
+        assertTrue(result is Invalid)
     }
 }
