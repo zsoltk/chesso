@@ -7,9 +7,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.ui.Rf1Theme
-import com.github.zsoltk.rf1.ui.composable.Board
+import com.github.zsoltk.rf1.ui.composable.Game
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +17,7 @@ class MainActivity : AppCompatActivity() {
             Rf1Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Board(game = Game())
+                    Game()
                 }
             }
         }
@@ -29,6 +28,6 @@ class MainActivity : AppCompatActivity() {
 @Preview(showBackground = true)
 fun DefaultPreview() {
     Rf1Theme {
-        Board(game = Game())
+        Game()
     }
 }

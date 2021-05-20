@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,11 +21,20 @@ import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.Game
+import com.github.zsoltk.rf1.model.game.GameState
+import com.github.zsoltk.rf1.model.game.UiState
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Board(game: Game) {
+fun Game() {
+    val game = remember { Game() }
+
+    Board(game.states.last(), UiState())
+}
+
+@Composable
+fun Board(gameState: GameState, uiState: UiState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,13 +47,14 @@ fun Board(game: Game) {
                         .weight(1f)
                 ) {
                     for (file in 1..8) {
-                        val square = game.state.board[file, rank]
+                        val square = gameState.board[file, rank]
                         requireNotNull(square)
 
                         Square(
                             file = file,
                             rank = rank,
-                            game = game,
+                            gameState = gameState,
+                            uiState = uiState,
                             square = square,
                             modifier = Modifier
                                 .weight(1f)
@@ -51,7 +62,6 @@ fun Board(game: Game) {
                         )
                     }
                 }
-
             }
         }
     }
@@ -61,12 +71,13 @@ fun Board(game: Game) {
 fun Square(
     file: Int,
     rank: Int,
-    game: Game,
+    gameState: GameState,
+    uiState: UiState,
     square: Square,
     modifier: Modifier
 ) {
-    val canBeSelected = game.player == square.piece?.set
-    val isSelected = game.selectedPosition.value == square.position
+    val canBeSelected = gameState.nextMove == square.piece?.set
+    val isSelected = uiState.selectedPosition.value == square.position
 
     Box(
         contentAlignment = Alignment.Center,
@@ -77,9 +88,9 @@ fun Square(
                 enabled = canBeSelected,
                 onClick = {
                     if (isSelected) {
-                        game.selectedPosition.value = null
+                        uiState.selectedPosition.value = null
                     } else {
-                        game.selectedPosition.value = square.position
+                        uiState.selectedPosition.value = square.position
                     }
                 }
             )
@@ -98,7 +109,7 @@ fun Square(
         }
 
         Piece(square)
-        PossibleMoves(square, game)
+        PossibleMoves(square, gameState, uiState)
     }
 }
 
@@ -145,15 +156,16 @@ private fun Piece(square: Square) {
 @Composable
 private fun PossibleMoves(
     square: Square,
-    game: Game
+    gameState: GameState,
+    uiState: UiState
 ) {
     var possibleMoves = emptyList<Position>()
 
-    game.selectedPosition.value?.let { position ->
-        val selectedSquare = game.state.board[position]
+    uiState.selectedPosition.value?.let { position ->
+        val selectedSquare = gameState.board[position]
         requireNotNull(selectedSquare)
         selectedSquare.piece?.let {
-            possibleMoves = it.moves(game.state)
+            possibleMoves = it.moves(gameState)
         }
     }
 
@@ -173,7 +185,8 @@ private fun PossibleMoves(
 fun DefaultPreview() {
     Rf1Theme {
         Board(
-            Game().apply {
+            GameState(),
+            UiState().apply {
                 selectedPosition.value = Position.e2
             }
         )
