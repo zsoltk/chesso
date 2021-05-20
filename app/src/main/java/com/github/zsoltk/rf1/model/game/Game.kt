@@ -13,7 +13,8 @@ class Game {
         val piece = board[from]?.piece
 
         val newState = currentState.copy(
-            nextMove = currentState.nextMove.opposite(),
+            toMove = currentState.toMove.opposite(),
+            lastMove = from to to,
             board = board.copy(
                 pieces = board.pieces
                     .minus(from)

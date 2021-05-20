@@ -69,8 +69,10 @@ private fun Square(
     modifier: Modifier,
     onMove: (from: Position, to: Position) -> Unit
 ) {
-    val canBeSelected = gameState.nextMove == square.piece?.set
+    val canBeSelected = gameState.toMove == square.piece?.set
     val isSelected = uiState.selectedPosition.value == square.position
+    val isLastMove = square.position == gameState.lastMove?.first || square.position == gameState.lastMove?.second
+    val isHighlighted = isSelected || isLastMove
 
     Box(
         contentAlignment = Alignment.Center,
@@ -88,7 +90,7 @@ private fun Square(
                 }
             )
     ) {
-        if (isSelected) {
+        if (isHighlighted) {
             HighlightSquare()
         }
         if (file == 1) {
