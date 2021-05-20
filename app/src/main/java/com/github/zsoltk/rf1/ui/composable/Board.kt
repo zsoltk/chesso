@@ -165,7 +165,6 @@ private fun PossibleMoves(
 
     selectedPosition?.let { position ->
         val selectedSquare = gameState.board[position]
-        requireNotNull(selectedSquare)
         selectedSquare.piece?.let {
             possibleMoves = it.moves(gameState)
         }

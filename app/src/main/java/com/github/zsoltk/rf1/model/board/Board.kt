@@ -54,8 +54,8 @@ data class Board(
         position to Square(position, pieces[position])
     }.toMap()
 
-    operator fun get(position: Position): Square? =
-        squares[position]
+    operator fun get(position: Position): Square =
+        squares[position]!!
 
     operator fun get(file: Int, rank: Int): Square? =
         squares[Position.from(file, rank)]

@@ -10,7 +10,7 @@ class Game {
     fun applyMove(from: Position, to: Position) {
         val currentState = states.last()
         val board = currentState.board
-        val piece = board[from]?.piece
+        val piece = board[from].piece
 
         val newState = currentState.copy(
             toMove = currentState.toMove.opposite(),
