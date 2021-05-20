@@ -42,6 +42,7 @@ import com.github.zsoltk.rf1.model.piece.Queen
 import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import java.lang.IllegalArgumentException
 
 data class Board(
     val pieces: Map<Position, Piece?>
@@ -57,8 +58,14 @@ data class Board(
     operator fun get(position: Position): Square =
         squares[position]!!
 
-    operator fun get(file: Int, rank: Int): Square? =
-        squares[Position.from(file, rank)]
+    operator fun get(file: Int, rank: Int): Square? {
+        return try {
+            val position = Position.from(file, rank)
+            squares[position]
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
 
     fun find(piece: Piece): Square? =
         squares.values.firstOrNull { it.piece == piece }
