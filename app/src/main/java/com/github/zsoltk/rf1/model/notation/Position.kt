@@ -13,6 +13,10 @@ enum class Position {
     g1, g2, g3, g4, g5, g6, g7, g8,
     h1, h2, h3, h4, h5, h6, h7, h8;
 
+    val file: Int = ordinal / 8 + 1
+
+    val rank: Int = ordinal % 8 + 1
+
     companion object {
 
         fun from(file: Int, rank: Int): Position {

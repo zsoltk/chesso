@@ -1,6 +1,5 @@
 package com.github.zsoltk.rf1.model.board
 
-import androidx.compose.runtime.mutableStateMapOf
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.model.notation.Position.a1
 import com.github.zsoltk.rf1.model.notation.Position.a2
@@ -44,57 +43,16 @@ import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
-class Board {
-
-    private val squares = mutableStateMapOf<Position, Square>()
-
-    private val initialPieces = mapOf(
-        a8 to Rook(BLACK),
-        b8 to Knight(BLACK),
-        c8 to Bishop(BLACK),
-        d8 to Queen(BLACK),
-        e8 to King(BLACK),
-        f8 to Bishop(BLACK),
-        g8 to Knight(BLACK),
-        h8 to Rook(BLACK),
-
-        a7 to Pawn(BLACK),
-        b7 to Pawn(BLACK),
-        c7 to Pawn(BLACK),
-        d7 to Pawn(BLACK),
-        e7 to Pawn(BLACK),
-        f7 to Pawn(BLACK),
-        g7 to Pawn(BLACK),
-        h7 to Pawn(BLACK),
-
-        a2 to Pawn(WHITE),
-        b2 to Pawn(WHITE),
-        c2 to Pawn(WHITE),
-        d2 to Pawn(WHITE),
-        e2 to Pawn(WHITE),
-        f2 to Pawn(WHITE),
-        g2 to Pawn(WHITE),
-        h2 to Pawn(WHITE),
-
-        a1 to Rook(WHITE),
-        b1 to Knight(WHITE),
-        c1 to Bishop(WHITE),
-        d1 to Queen(WHITE),
-        e1 to King(WHITE),
-        f1 to Bishop(WHITE),
-        g1 to Knight(WHITE),
-        h1 to Rook(WHITE),
+data class Board(
+    val pieces: Map<Position, Piece?>
+) {
+    constructor() : this(
+        pieces = initialPieces
     )
 
-    init {
-        Position.values().forEach { position ->
-            squares[position] = Square(position)
-        }
-
-        initialPieces.forEach { (position, piece) ->
-            squares[position]!!.piece = piece
-        }
-    }
+    private val squares = Position.values().map { position ->
+        position to Square(position, pieces[position])
+    }.toMap()
 
     operator fun get(position: Position): Square? =
         squares[position]
@@ -105,3 +63,41 @@ class Board {
     fun find(piece: Piece): Square? =
         squares.values.firstOrNull { it.piece == piece }
 }
+
+private val initialPieces = mapOf(
+    a8 to Rook(BLACK),
+    b8 to Knight(BLACK),
+    c8 to Bishop(BLACK),
+    d8 to Queen(BLACK),
+    e8 to King(BLACK),
+    f8 to Bishop(BLACK),
+    g8 to Knight(BLACK),
+    h8 to Rook(BLACK),
+
+    a7 to Pawn(BLACK),
+    b7 to Pawn(BLACK),
+    c7 to Pawn(BLACK),
+    d7 to Pawn(BLACK),
+    e7 to Pawn(BLACK),
+    f7 to Pawn(BLACK),
+    g7 to Pawn(BLACK),
+    h7 to Pawn(BLACK),
+
+    a2 to Pawn(WHITE),
+    b2 to Pawn(WHITE),
+    c2 to Pawn(WHITE),
+    d2 to Pawn(WHITE),
+    e2 to Pawn(WHITE),
+    f2 to Pawn(WHITE),
+    g2 to Pawn(WHITE),
+    h2 to Pawn(WHITE),
+
+    a1 to Rook(WHITE),
+    b1 to Knight(WHITE),
+    c1 to Bishop(WHITE),
+    d1 to Queen(WHITE),
+    e1 to King(WHITE),
+    f1 to Bishop(WHITE),
+    g1 to Knight(WHITE),
+    h1 to Rook(WHITE),
+)

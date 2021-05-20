@@ -25,7 +25,7 @@ import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Board(gameState: GameState, uiState: UiState) {
+fun Board(gameState: GameState, uiState: UiState, onMove: (from: Position, to: Position) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +49,8 @@ fun Board(gameState: GameState, uiState: UiState) {
                             square = square,
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxSize()
+                                .fillMaxSize(),
+                            onMove = onMove
                         )
                     }
                 }
@@ -65,7 +66,8 @@ private fun Square(
     gameState: GameState,
     uiState: UiState,
     square: Square,
-    modifier: Modifier
+    modifier: Modifier,
+    onMove: (from: Position, to: Position) -> Unit
 ) {
     val canBeSelected = gameState.nextMove == square.piece?.set
     val isSelected = uiState.selectedPosition.value == square.position
@@ -100,7 +102,12 @@ private fun Square(
         }
 
         Piece(square)
-        PossibleMoves(square, gameState, uiState)
+        PossibleMoves(
+            square = square,
+            gameState = gameState,
+            uiState = uiState,
+            onMove = onMove
+        )
     }
 }
 
@@ -148,11 +155,13 @@ private fun Piece(square: Square) {
 private fun PossibleMoves(
     square: Square,
     gameState: GameState,
-    uiState: UiState
+    uiState: UiState,
+    onMove: (from: Position, to: Position) -> Unit
 ) {
     var possibleMoves = emptyList<Position>()
+    val selectedPosition = uiState.selectedPosition.value
 
-    uiState.selectedPosition.value?.let { position ->
+    selectedPosition?.let { position ->
         val selectedSquare = gameState.board[position]
         requireNotNull(selectedSquare)
         selectedSquare.piece?.let {
@@ -161,7 +170,15 @@ private fun PossibleMoves(
     }
 
     if (square.position in possibleMoves) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        requireNotNull(selectedPosition)
+
+        Canvas(modifier = Modifier
+            .fillMaxSize()
+            .clickable { onMove.invoke(
+                selectedPosition,
+                square.position
+            ) }
+        ) {
             drawCircle(
                 color = Color.DarkGray,
                 radius = size.minDimension / 6f,
@@ -176,10 +193,11 @@ private fun PossibleMoves(
 fun DefaultPreview() {
     Rf1Theme {
         Board(
-            GameState(),
-            UiState().apply {
+            gameState = GameState(),
+            uiState = UiState().apply {
                 selectedPosition.value = Position.e2
-            }
+            },
+            onMove = { _, _ -> }
         )
     }
 }

@@ -9,5 +9,11 @@ import com.github.zsoltk.rf1.model.game.UiState
 fun Game() {
     val game = remember { Game() }
 
-    Board(game.states.last(), UiState())
+    Board(
+        gameState = game.states.last(),
+        uiState = UiState(),
+        onMove = { from, to ->
+            game.applyMove(from, to)
+        }
+    )
 }
