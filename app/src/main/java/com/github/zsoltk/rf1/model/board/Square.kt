@@ -2,6 +2,7 @@ package com.github.zsoltk.rf1.model.board
 
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.model.piece.Piece
+import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
@@ -24,6 +25,9 @@ data class Square(
 
     val isNotEmpty: Boolean
         get() = !isEmpty
+
+    fun hasPiece(set: Set): Boolean =
+        piece?.set == set
 
     val hasWhitePiece: Boolean
         get() = piece?.set == WHITE

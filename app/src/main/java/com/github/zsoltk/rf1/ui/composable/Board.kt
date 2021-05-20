@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -175,15 +177,21 @@ private fun PossibleMoves(
 
         Canvas(modifier = Modifier
             .fillMaxSize()
-            .clickable { onMove.invoke(
-                selectedPosition,
-                square.position
-            ) }
+            .clickable {
+                onMove.invoke(
+                    selectedPosition,
+                    square.position
+                )
+            }
         ) {
+            val baseRadius = size.minDimension / 6f
+            val radius = if (square.isEmpty) baseRadius else baseRadius * 2f
+            val style = if (square.isEmpty) Fill else Stroke(width = baseRadius / 2)
             drawCircle(
                 color = Color.DarkGray,
-                radius = size.minDimension / 6f,
-                alpha = 0.25f
+                radius = radius,
+                alpha = 0.25f,
+                style = style
             )
         }
     }
@@ -191,7 +199,7 @@ private fun PossibleMoves(
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun BoardPreview() {
     Rf1Theme {
         Board(
             gameState = GameState(),
