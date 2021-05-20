@@ -1,39 +1,39 @@
 package com.github.zsoltk.rf1.model.board
 
 import androidx.compose.runtime.mutableStateMapOf
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.a1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.a2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.a7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.a8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.b1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.b2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.b7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.b8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.c1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.c2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.c7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.c8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.d1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.d2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.d7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.d8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.e1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.e2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.e7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.e8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.f1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.f2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.f7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.f8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.g1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.g2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.g7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.g8
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.h1
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.h2
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.h7
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation.h8
+import com.github.zsoltk.rf1.model.notation.Position
+import com.github.zsoltk.rf1.model.notation.Position.a1
+import com.github.zsoltk.rf1.model.notation.Position.a2
+import com.github.zsoltk.rf1.model.notation.Position.a7
+import com.github.zsoltk.rf1.model.notation.Position.a8
+import com.github.zsoltk.rf1.model.notation.Position.b1
+import com.github.zsoltk.rf1.model.notation.Position.b2
+import com.github.zsoltk.rf1.model.notation.Position.b7
+import com.github.zsoltk.rf1.model.notation.Position.b8
+import com.github.zsoltk.rf1.model.notation.Position.c1
+import com.github.zsoltk.rf1.model.notation.Position.c2
+import com.github.zsoltk.rf1.model.notation.Position.c7
+import com.github.zsoltk.rf1.model.notation.Position.c8
+import com.github.zsoltk.rf1.model.notation.Position.d1
+import com.github.zsoltk.rf1.model.notation.Position.d2
+import com.github.zsoltk.rf1.model.notation.Position.d7
+import com.github.zsoltk.rf1.model.notation.Position.d8
+import com.github.zsoltk.rf1.model.notation.Position.e1
+import com.github.zsoltk.rf1.model.notation.Position.e2
+import com.github.zsoltk.rf1.model.notation.Position.e7
+import com.github.zsoltk.rf1.model.notation.Position.e8
+import com.github.zsoltk.rf1.model.notation.Position.f1
+import com.github.zsoltk.rf1.model.notation.Position.f2
+import com.github.zsoltk.rf1.model.notation.Position.f7
+import com.github.zsoltk.rf1.model.notation.Position.f8
+import com.github.zsoltk.rf1.model.notation.Position.g1
+import com.github.zsoltk.rf1.model.notation.Position.g2
+import com.github.zsoltk.rf1.model.notation.Position.g7
+import com.github.zsoltk.rf1.model.notation.Position.g8
+import com.github.zsoltk.rf1.model.notation.Position.h1
+import com.github.zsoltk.rf1.model.notation.Position.h2
+import com.github.zsoltk.rf1.model.notation.Position.h7
+import com.github.zsoltk.rf1.model.notation.Position.h8
 import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Knight
@@ -45,7 +45,7 @@ import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
 class Board {
 
-    private val squares = mutableStateMapOf<AlgebraicNotation, Square>()
+    private val squares = mutableStateMapOf<Position, Square>()
 
     private val initialPieces = mapOf(
         a8 to Rook(BLACK),
@@ -86,18 +86,18 @@ class Board {
     )
 
     init {
-        AlgebraicNotation.values().forEach { an ->
-            squares[an] = Square(an)
+        Position.values().forEach { position ->
+            squares[position] = Square(position)
         }
 
-        initialPieces.forEach { (an, piece) ->
-            squares[an]!!.piece = piece
+        initialPieces.forEach { (position, piece) ->
+            squares[position]!!.piece = piece
         }
     }
 
     operator fun get(file: Int, rank: Int): Square {
-        val an = AlgebraicNotation.from(file, rank)
-        return squares[an]!!
+        val position = Position.from(file, rank)
+        return squares[position]!!
     }
 
 

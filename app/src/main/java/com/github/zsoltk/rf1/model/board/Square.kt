@@ -1,7 +1,7 @@
 package com.github.zsoltk.rf1.model.board
 
 import androidx.compose.runtime.mutableStateOf
-import com.github.zsoltk.rf1.model.notation.AlgebraicNotation
+import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.model.piece.Piece
 
 sealed class UnboundSquare
@@ -30,16 +30,16 @@ data class Square(
     )
 
     constructor(
-        algebraicNotation: AlgebraicNotation
+        position: Position
     ) : this(
-        file = algebraicNotation.ordinal / 8 + 1,
-        rank = algebraicNotation.ordinal % 8 + 1
+        file = position.ordinal / 8 + 1,
+        rank = position.ordinal % 8 + 1
     )
 
     private val idx = idx(file, rank)
 
-    val position: AlgebraicNotation =
-        AlgebraicNotation.values()[idx]
+    val position: Position =
+        Position.values()[idx]
 
     val isDark: Boolean =
         (idx + file % 2) % 2 == 1
