@@ -17,14 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.Game
+import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Board(game: Game, board: Board) {
+fun Board(game: Game) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,11 +37,14 @@ fun Board(game: Game, board: Board) {
                         .weight(1f)
                 ) {
                     for (file in 1..8) {
+                        val square = game.state.board[file, rank]
+                        requireNotNull(square)
+
                         Square(
                             file = file,
                             rank = rank,
                             game = game,
-                            square = board[file, rank],
+                            square = square,
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize()
@@ -95,6 +98,7 @@ fun Square(
         }
 
         Piece(square)
+        PossibleMoves(square, game)
     }
 }
 
@@ -138,10 +142,40 @@ private fun Piece(square: Square) {
     }
 }
 
+@Composable
+private fun PossibleMoves(
+    square: Square,
+    game: Game
+) {
+    var possibleMoves = emptyList<Position>()
+
+    game.selectedPosition.value?.let { position ->
+        val selectedSquare = game.state.board[position]
+        requireNotNull(selectedSquare)
+        selectedSquare.piece?.let {
+            possibleMoves = it.moves(game.state)
+        }
+    }
+
+    if (square.position in possibleMoves) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                color = Color.DarkGray,
+                radius = size.minDimension / 6f,
+                alpha = 0.25f
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     Rf1Theme {
-        Board(Game(), Board())
+        Board(
+            Game().apply {
+                selectedPosition.value = Position.e2
+            }
+        )
     }
 }

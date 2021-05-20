@@ -38,6 +38,7 @@ import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Knight
 import com.github.zsoltk.rf1.model.piece.Pawn
+import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Queen
 import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
@@ -95,10 +96,12 @@ class Board {
         }
     }
 
-    operator fun get(file: Int, rank: Int): Square {
-        val position = Position.from(file, rank)
-        return squares[position]!!
-    }
+    operator fun get(position: Position): Square? =
+        squares[position]
 
+    operator fun get(file: Int, rank: Int): Square? =
+        squares[Position.from(file, rank)]
 
+    fun find(piece: Piece): Square? =
+        squares.values.firstOrNull { it.piece == piece }
 }
