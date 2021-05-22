@@ -74,7 +74,7 @@ fun TakenPiecesPreview() {
     Rf1Theme {
         CapturedPieces(
             game = Game().apply {
-                states.add(
+                states.value = listOf(
                     GameState(
                         capturedPieces = listOf(
                             Pawn(WHITE),

@@ -8,7 +8,9 @@ class GameController(
 ) {
 
     fun applyMove(from: Position, to: Position) {
-        val currentState = game.states.last()
+        var states = game.states.value.toMutableList()
+        val currentIndex = game.currentIndex.value
+        val currentState = game.currentState
         val board = currentState.board
         val piece = board[from].piece
         val capturedPiece = board[to].piece
@@ -33,12 +35,15 @@ class GameController(
             ),
             toMove = currentState.toMove.opposite(),
             lastMove = move,
+            move = null,
             capturedPieces = capturedPiece?.let { currentState.capturedPieces + it } ?: currentState.capturedPieces
         )
 
-        game.states.remove(currentState)
-        game.states.add(updatedCurrentState)
-        game.states.add(newState)
+
+        states[currentIndex] = updatedCurrentState
+        states = states.subList(0, currentIndex + 1)
+        game.currentIndex.value = states.lastIndex
+        game.states.value = states + newState
         stepForward()
     }
 

@@ -58,7 +58,7 @@ private fun ToMove(game: Game) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${game.states.last().toMove} to move",
+            text = "${game.currentState.toMove} to move",
             modifier = Modifier.padding(start = 16.dp),
             color = MaterialTheme.colors.onPrimary
         )
