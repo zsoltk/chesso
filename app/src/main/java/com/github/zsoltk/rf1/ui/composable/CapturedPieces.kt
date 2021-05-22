@@ -2,7 +2,9 @@ package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,41 +32,65 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun CapturedPieces(game: Game) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(MaterialTheme.colors.secondaryVariant),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .background(MaterialTheme.colors.secondaryVariant)
     ) {
-        val capturedPieces = game.currentState.capturedPieces
-            .sortedWith { t1, t2 ->
-                if (t1.value == t2.value) t1.symbol.hashCode() - t2.symbol.hashCode()
-                else t1.value - t2.value
-            }
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val capturedPieces = game.currentState.capturedPieces
+                .sortedWith { t1, t2 ->
+                    if (t1.value == t2.value) t1.symbol.hashCode() - t2.symbol.hashCode()
+                    else t1.value - t2.value
+                }
 
-        val score = game.currentState.score
-        CapturedPieceList(capturedPieces, WHITE, score)
-        CapturedPieceList(capturedPieces, BLACK, score)
+            val score = game.currentState.score
+            CapturedPieceList(capturedPieces, capturedBy = WHITE, score)
+            CapturedPieceList(capturedPieces, capturedBy = BLACK, score)
+        }
     }
 }
 
 @Composable
-private fun CapturedPieceList(capturedPieces: List<Piece>, set: Set, score: Int) {
+private fun CapturedPieceList(capturedPieces: List<Piece>, capturedBy: Set, score: Int) {
     val stringBuilder = StringBuilder()
-    if (set == BLACK && score < 0) stringBuilder.append("(+${score.absoluteValue}) ")
     capturedPieces
-        .filter { it.set == set }
+        .filter { it.set == capturedBy.opposite() }
         .forEach { stringBuilder.append(it.symbol) }
 
-    if (set == WHITE && score > 0) stringBuilder.append(" (+$score)")
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (capturedBy == BLACK && score < 0) {
+            Score(score)
+        }
+        Text(
+            text = stringBuilder.toString(),
+            color = MaterialTheme.colors.onSecondary,
+            fontSize = 20.sp
+        )
+        if (capturedBy == WHITE && score > 0) {
+            Score(score)
+        }
+    }
+}
 
+@Composable
+private fun Score(score: Int) {
     Text(
-        text = stringBuilder.toString(),
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+        text = "+${score.absoluteValue}",
         color = MaterialTheme.colors.onSecondary,
-        fontSize = 20.sp
+        fontSize = 12.sp,
+        modifier = Modifier.padding(
+            all = 8.dp
+        ),
     )
 }
 

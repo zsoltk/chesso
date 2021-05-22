@@ -14,6 +14,6 @@ data class GameState(
 ) {
     val score: Int =
         capturedPieces.sumBy {
-            it.value * if (it.set == WHITE) 1 else -1
+            it.value * if (it.set == WHITE) -1 else 1
         }
 }
