@@ -17,24 +17,9 @@ class Game {
     val currentState: GameState
         get() = states.value[currentIndex.value]
 
-    fun moves(): List<String> {
-        val moves = mutableListOf<String>()
-        val move = StringBuilder()
-
-        states.value.forEachIndexed { index, gameState ->
-            gameState.move?.let {
-                if (index % 2 == 0) move.append("${(index / 2 + 1)}. ")
-                move.append(it)
-                if (index % 2 == 0) move.append(" ")
-            }
-
-            if (index % 2 == 1) {
-                moves += move.toString()
-                move.clear()
-            }
-        }
-
-        return moves
-    }
+    fun moves(): List<Move> =
+        states.value
+            .map { gameState -> gameState.move }
+            .filterNotNull()
 }
 

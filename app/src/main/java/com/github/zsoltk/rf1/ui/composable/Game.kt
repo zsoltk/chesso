@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -85,12 +86,30 @@ private fun Moves(game: Game) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             val moves = game.moves()
-            items(moves.size) { index ->
-                Text(
-                    text = moves[index],
-                    color = MaterialTheme.colors.onSecondary,
-                    modifier = Modifier.padding(end = 16.dp)
-                )
+            moves.forEachIndexed { index, move ->
+                if (index % 2 == 0) {
+                    item {
+                        val stepNumber = (index / 2 + 1).toString()
+                        Text(
+                            text = "$stepNumber. ",
+                            color = MaterialTheme.colors.onSecondary,
+                        )
+                    }
+                }
+
+                item {
+                    val default = Modifier
+                        .padding(end = if (index % 2 == 1) 12.dp else 6.dp)
+                    val selected = default
+                        .background(Color.Gray, RoundedCornerShape(6.dp))
+
+                    Text(
+                        text = move.toString(),
+                        color = MaterialTheme.colors.onSecondary,
+                        modifier = if (index == game.currentIndex.value - 1) selected else default
+                    )
+                }
+
             }
 
             if (moves.isNotEmpty()) {
