@@ -1,48 +1,22 @@
 package com.github.zsoltk.rf1.model.game
 
 import androidx.compose.runtime.mutableStateListOf
-import com.github.zsoltk.rf1.model.notation.Position
+import androidx.compose.runtime.mutableStateOf
 
 class Game {
 
     val states = mutableStateListOf(GameState())
 
+    var currentIndex = mutableStateOf(0)
+
+    val hasPrevIndex: Boolean
+        get() = currentIndex.value > 0
+
+    val hasNextIndex: Boolean
+        get() = currentIndex.value < states.lastIndex
+
     val currentState: GameState
-        get() = states.last()
-
-    fun applyMove(from: Position, to: Position) {
-        val currentState = states.last()
-        val board = currentState.board
-        val piece = board[from].piece
-        val capturedPiece = board[to].piece
-        requireNotNull(piece)
-
-        val move = Move(
-            from = from,
-            to = to,
-            piece = piece,
-            isCapture = board.pieces[to] != null
-        )
-
-        val updatedCurrentState = currentState.copy(
-            move = move
-        )
-
-        val newState = currentState.copy(
-            board = board.copy(
-                pieces = board.pieces
-                    .minus(from)
-                    .plus(to to piece)
-            ),
-            toMove = currentState.toMove.opposite(),
-            lastMove = move,
-            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it } ?: currentState.capturedPieces
-        )
-
-        states.remove(currentState)
-        states.add(updatedCurrentState)
-        states.add(newState)
-    }
+        get() = states[currentIndex.value]
 
     fun moves(): List<String> {
         val moves = mutableListOf<String>()

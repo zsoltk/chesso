@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +31,7 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 fun Board(gameState: GameState, uiState: UiState, onMove: (from: Position, to: Position) -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .aspectRatio(1f)
     ) {
         Column {
