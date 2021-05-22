@@ -13,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,12 +45,13 @@ private fun ToMove(game: Game) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .background(MaterialTheme.colors.primaryVariant)
+            .height(36.dp)
+            .background(MaterialTheme.colors.primaryVariant),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "${game.states.last().toMove} to move",
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(start = 16.dp),
             color = MaterialTheme.colors.onPrimary
         )
     }
@@ -60,8 +62,9 @@ private fun Moves(game: Game) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .background(Color.LightGray)
+            .height(36.dp)
+            .background(Color.LightGray),
+        contentAlignment = Alignment.CenterStart
     ) {
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
@@ -70,8 +73,8 @@ private fun Moves(game: Game) {
         // Where did you come from ScrollableRow?
         LazyRow(
             state = listState,
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             val moves = game.moves()
             items(moves.size) { index ->

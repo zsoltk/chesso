@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,9 +33,10 @@ fun CapturedPieces(game: Game) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(48.dp)
             .background(MaterialTheme.colors.secondaryVariant),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         val capturedPieces = game.currentState.capturedPieces
             .sortedWith { t1, t2 ->
@@ -60,7 +62,7 @@ private fun CapturedPieceList(capturedPieces: List<Piece>, set: Set, score: Int)
 
     Text(
         text = stringBuilder.toString(),
-        Modifier.padding(16.dp),
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
         color = MaterialTheme.colors.onSecondary,
         fontSize = 20.sp
     )
