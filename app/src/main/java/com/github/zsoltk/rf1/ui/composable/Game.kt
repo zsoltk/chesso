@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,6 +43,7 @@ private fun ToMove(game: Game) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(56.dp)
             .background(MaterialTheme.colors.primaryVariant)
     ) {
         Text(
@@ -57,6 +59,7 @@ private fun Moves(game: Game) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .height(56.dp)
             .background(Color.LightGray)
     ) {
         val listState = rememberLazyListState()
