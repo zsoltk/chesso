@@ -7,10 +7,14 @@ class Game {
 
     val states = mutableStateListOf(GameState())
 
+    val currentState: GameState
+        get() = states.last()
+
     fun applyMove(from: Position, to: Position) {
         val currentState = states.last()
         val board = currentState.board
         val piece = board[from].piece
+        val capturedPiece = board[to].piece
         requireNotNull(piece)
 
         val move = Move(
@@ -25,13 +29,14 @@ class Game {
         )
 
         val newState = currentState.copy(
-            toMove = currentState.toMove.opposite(),
-            lastMove = move,
             board = board.copy(
                 pieces = board.pieces
                     .minus(from)
                     .plus(to to piece)
-            )
+            ),
+            toMove = currentState.toMove.opposite(),
+            lastMove = move,
+            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it } ?: currentState.capturedPieces
         )
 
         states.remove(currentState)

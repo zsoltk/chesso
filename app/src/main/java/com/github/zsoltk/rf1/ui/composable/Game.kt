@@ -28,8 +28,9 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
     Column {
         ToMove(game)
         Moves(game)
+        CapturedPieces(game)
         Board(
-            gameState = game.states.last(),
+            gameState = game.currentState,
             uiState = uiState,
             onMove = { from, to ->
                 game.applyMove(from, to)
@@ -103,6 +104,8 @@ fun GamePreview() {
                 applyMove(f1, b5)
                 applyMove(d7, d5)
                 applyMove(e4, d5)
+                applyMove(d8, d5)
+                applyMove(c3, d5)
             },
             uiState = UiState().apply {
                 selectedPosition.value = d8
