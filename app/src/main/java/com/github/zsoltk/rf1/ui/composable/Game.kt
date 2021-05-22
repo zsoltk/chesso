@@ -1,14 +1,17 @@
 package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,6 +20,7 @@ import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.UiState
 import com.github.zsoltk.rf1.model.notation.Position.*
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import kotlinx.coroutines.launch
 
 @Composable
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
@@ -50,19 +54,35 @@ private fun ToMove(game: Game) {
 
 @Composable
 private fun Moves(game: Game) {
-    // Where did you come from, where did you go?
-    // Where did you come from ScrollableRow?
-    LazyRow(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.LightGray)
     ) {
-        item {
-            Text(
-                text = game.moves(),
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colors.onSecondary
-            )
+        val listState = rememberLazyListState()
+        val coroutineScope = rememberCoroutineScope()
+
+        // Where did you come from, where did you go?
+        // Where did you come from ScrollableRow?
+        LazyRow(
+            state = listState,
+            modifier = Modifier
+                .padding(16.dp),
+        ) {
+            val moves = game.moves()
+            items(moves.size) { index ->
+                Text(
+                    text = moves[index],
+                    color = MaterialTheme.colors.onSecondary,
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+            }
+
+            if (moves.isNotEmpty()) {
+                coroutineScope.launch {
+                    listState.animateScrollToItem(moves.lastIndex)
+                }
+            }
         }
     }
 }

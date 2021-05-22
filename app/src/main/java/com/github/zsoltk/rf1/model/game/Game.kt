@@ -39,20 +39,24 @@ class Game {
         states.add(newState)
     }
 
-    fun moves(): String {
-        val moves = StringBuilder()
+    fun moves(): List<String> {
+        val moves = mutableListOf<String>()
+        val move = StringBuilder()
+
         states.forEachIndexed { index, gameState ->
             gameState.move?.let {
-                if (index % 2 == 0) {
-                    if (index > 0) moves.append("  ")
-                    moves.append("${(index / 2 + 1)}. ")
-                }
-                moves.append(it)
-                moves.append(" ")
+                if (index % 2 == 0) move.append("${(index / 2 + 1)}. ")
+                move.append(it)
+                if (index % 2 == 0) move.append(" ")
+            }
+
+            if (index % 2 == 1) {
+                moves += move.toString()
+                move.clear()
             }
         }
 
-        return moves.toString()
+        return moves
     }
 }
 
