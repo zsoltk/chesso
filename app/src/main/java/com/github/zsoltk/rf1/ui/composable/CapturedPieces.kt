@@ -18,11 +18,14 @@ import com.github.zsoltk.rf1.model.game.GameState
 import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.Knight
 import com.github.zsoltk.rf1.model.piece.Pawn
+import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Queen
 import com.github.zsoltk.rf1.model.piece.Rook
+import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import kotlin.math.absoluteValue
 
 @Composable
 fun CapturedPieces(game: Game) {
@@ -39,25 +42,24 @@ fun CapturedPieces(game: Game) {
                 else t1.value - t2.value
             }
 
-        val capturedWhitePieces = StringBuilder()
-        capturedPieces
-            .filter { it.set == WHITE }
-            .forEach { capturedWhitePieces.append(it.symbol) }
-
-        val capturedBlackPieces = StringBuilder()
-        capturedPieces
-            .filter { it.set == BLACK }
-            .forEach { capturedBlackPieces.append(it.symbol) }
-
-        CapturedPieceList(capturedWhitePieces)
-        CapturedPieceList(capturedBlackPieces)
+        val score = game.currentState.score
+        CapturedPieceList(capturedPieces, WHITE, score)
+        CapturedPieceList(capturedPieces, BLACK, score)
     }
 }
 
 @Composable
-private fun CapturedPieceList(capturedBlackPieces: StringBuilder) {
+private fun CapturedPieceList(capturedPieces: List<Piece>, set: Set, score: Int) {
+    val stringBuilder = StringBuilder()
+    if (set == BLACK && score < 0) stringBuilder.append("(+${score.absoluteValue}) ")
+    capturedPieces
+        .filter { it.set == set }
+        .forEach { stringBuilder.append(it.symbol) }
+
+    if (set == WHITE && score > 0) stringBuilder.append(" (+$score)")
+
     Text(
-        text = capturedBlackPieces.toString(),
+        text = stringBuilder.toString(),
         Modifier.padding(16.dp),
         color = MaterialTheme.colors.onSecondary,
         fontSize = 20.sp
