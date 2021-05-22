@@ -15,6 +15,9 @@ enum class Position {
 
     val file: Int = ordinal / 8 + 1
 
+    val fileAsLetter: Char =
+        toString()[0]
+
     val rank: Int = ordinal % 8 + 1
 
     companion object {

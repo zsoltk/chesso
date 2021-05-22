@@ -73,7 +73,7 @@ private fun Square(
 ) {
     val canBeSelected = gameState.toMove == square.piece?.set
     val isSelected = uiState.selectedPosition.value == square.position
-    val isLastMove = square.position == gameState.lastMove?.first || square.position == gameState.lastMove?.second
+    val isLastMove = square.position == gameState.lastMove?.from || square.position == gameState.lastMove?.to
     val isHighlighted = isSelected || isLastMove
 
     Box(
