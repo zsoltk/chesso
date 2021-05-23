@@ -19,16 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
-import com.github.zsoltk.rf1.model.game.GameState
 import com.github.zsoltk.rf1.model.game.Move
 import com.github.zsoltk.rf1.model.game.UiState
 import com.github.zsoltk.rf1.model.notation.Position
-import com.github.zsoltk.rf1.model.piece.Bishop
-import com.github.zsoltk.rf1.model.piece.Knight
-import com.github.zsoltk.rf1.model.piece.Pawn
-import com.github.zsoltk.rf1.model.piece.Queen
-import com.github.zsoltk.rf1.model.piece.Rook
-import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import kotlinx.coroutines.launch
 
@@ -94,7 +87,7 @@ private fun Move(
     Text(
         text = move.toString(),
         color = MaterialTheme.colors.onSecondary,
-        modifier = if (index == game.currentIndex.value - 1) selected else default
+        modifier = if (index == game.currentIndex - 1) selected else default
     )
 }
 

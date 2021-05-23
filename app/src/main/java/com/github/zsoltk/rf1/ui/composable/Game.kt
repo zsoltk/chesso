@@ -95,7 +95,7 @@ fun GamePreview() {
             applyMove(c3, d5)
         }
         uiState.apply {
-            selectedPosition.value = g8
+            selectedPosition = g8
         }
 
         Game(

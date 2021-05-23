@@ -8,8 +8,8 @@ class GameController(
 ) {
 
     fun applyMove(from: Position, to: Position) {
-        var states = game.states.value.toMutableList()
-        val currentIndex = game.currentIndex.value
+        var states = game.states.toMutableList()
+        val currentIndex = game.currentIndex
         val currentState = game.currentState
         val board = currentState.board
         val piece = board[from].piece
@@ -42,8 +42,8 @@ class GameController(
 
         states[currentIndex] = updatedCurrentState
         states = states.subList(0, currentIndex + 1)
-        game.currentIndex.value = states.lastIndex
-        game.states.value = states + newState
+        game.currentIndex = states.lastIndex
+        game.states = states + newState
         stepForward()
     }
 
@@ -55,15 +55,15 @@ class GameController(
 
     fun stepForward() {
         if (canStepForward()) {
-            game.currentIndex.value++
-            uiState.selectedPosition.value = null
+            game.currentIndex++
+            uiState.selectedPosition = null
         }
     }
 
     fun stepBackward() {
         if (canStepBack()) {
-            game.currentIndex.value--
-            uiState.selectedPosition.value = null
+            game.currentIndex--
+            uiState.selectedPosition = null
         }
     }
 }

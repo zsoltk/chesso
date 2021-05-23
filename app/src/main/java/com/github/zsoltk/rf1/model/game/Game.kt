@@ -1,24 +1,26 @@
 package com.github.zsoltk.rf1.model.game
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class Game {
 
-    val states = mutableStateOf(listOf(GameState()))
+    var states by mutableStateOf(listOf(GameState()))
 
-    var currentIndex = mutableStateOf(0)
+    var currentIndex by mutableStateOf(0)
 
     val hasPrevIndex: Boolean
-        get() = currentIndex.value > 0
+        get() = currentIndex > 0
 
     val hasNextIndex: Boolean
-        get() = currentIndex.value < states.value.lastIndex
+        get() = currentIndex < states.lastIndex
 
     val currentState: GameState
-        get() = states.value[currentIndex.value]
+        get() = states[currentIndex]
 
     fun moves(): List<Move> =
-        states.value
+        states
             .map { gameState -> gameState.move }
             .filterNotNull()
 }

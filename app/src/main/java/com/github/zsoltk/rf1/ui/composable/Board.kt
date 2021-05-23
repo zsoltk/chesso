@@ -73,7 +73,7 @@ private fun Square(
     onMove: (from: Position, to: Position) -> Unit
 ) {
     val canBeSelected = gameState.toMove == square.piece?.set
-    val isSelected = uiState.selectedPosition.value == square.position
+    val isSelected = uiState.selectedPosition == square.position
     val isLastMove = square.position == gameState.lastMove?.from || square.position == gameState.lastMove?.to
     val isHighlighted = isSelected || isLastMove
 
@@ -86,9 +86,9 @@ private fun Square(
                 enabled = canBeSelected,
                 onClick = {
                     if (isSelected) {
-                        uiState.selectedPosition.value = null
+                        uiState.selectedPosition = null
                     } else {
-                        uiState.selectedPosition.value = square.position
+                        uiState.selectedPosition = square.position
                     }
                 }
             )
@@ -164,7 +164,7 @@ private fun PossibleMoves(
     onMove: (from: Position, to: Position) -> Unit
 ) {
     var possibleMoves = emptyList<Position>()
-    val selectedPosition = uiState.selectedPosition.value
+    val selectedPosition = uiState.selectedPosition
 
     selectedPosition?.let { position ->
         val selectedSquare = gameState.board[position]
@@ -205,7 +205,7 @@ fun BoardPreview() {
         Board(
             gameState = GameState(),
             uiState = UiState().apply {
-                selectedPosition.value = Position.e2
+                selectedPosition = Position.e2
             },
             onMove = { _, _ -> }
         )
