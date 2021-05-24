@@ -2,7 +2,9 @@ package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.notation.Position
+import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Piece
+import com.github.zsoltk.rf1.model.piece.Set
 
 class GameController(
     private val game: Game,
@@ -83,6 +85,18 @@ class GameController(
         return list
     }
 
+    fun GameState.hasCheckFor(set: Set): Boolean {
+        val kingsPosition = board.pieces.keys.find { position ->
+            val piece = board.pieces[position]
+            piece is King && piece.set == set
+        }
+
+        return board.pieces.any { (_, piece) ->
+            val pieceCanCapture = piece?.possibleCaptures(this) ?: emptyList()
+            kingsPosition in pieceCanCapture
+        }
+    }
+
     fun applyMove(from: Position, to: Position) {
         var states = game.states.toMutableList()
         val currentIndex = game.currentIndex
@@ -92,34 +106,41 @@ class GameController(
         val capturedPiece = board[to].piece
         requireNotNull(piece)
 
+        val updatedBoard = board.copy(
+            pieces = board.pieces
+                .minus(from)
+                .plus(to to piece)
+        )
+
+        val newState = currentState.copy(
+            board = updatedBoard,
+            toMove = currentState.toMove.opposite(),
+            lastMove = null, // to be updated after evaluating check
+            move = null,
+            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it } ?: currentState.capturedPieces
+        )
+
         val move = Move(
             from = from,
             to = to,
             piece = piece,
-            isCapture = board.pieces[to] != null
+            isCapture = board.pieces[to] != null,
+            isCheck = newState.hasCheckFor(currentState.toMove.opposite())
         )
 
         val updatedCurrentState = currentState.copy(
             move = move
         )
 
-        val newState = currentState.copy(
-            board = board.copy(
-                pieces = board.pieces
-                    .minus(from)
-                    .plus(to to piece)
-            ),
-            toMove = currentState.toMove.opposite(),
+        val newStateWithMove = newState.copy(
             lastMove = move,
-            move = null,
-            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it } ?: currentState.capturedPieces
         )
 
 
         states[currentIndex] = updatedCurrentState
         states = states.subList(0, currentIndex + 1)
         game.currentIndex = states.lastIndex
-        game.states = states + newState
+        game.states = states + newStateWithMove
         stepForward()
     }
 

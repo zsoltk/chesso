@@ -8,7 +8,8 @@ data class Move(
     val from: Position,
     val to: Position,
     val piece: Piece,
-    val isCapture: Boolean
+    val isCapture: Boolean,
+    val isCheck: Boolean
 ) {
 
     override fun toString(): String {
@@ -18,6 +19,7 @@ data class Move(
             else -> ""
         }
         val capture = if (isCapture) "x" else ""
-        return "$symbol$capture$to"
+        val isCheck = if (isCheck) "+" else ""
+        return "$symbol$capture$to$isCheck"
     }
 }

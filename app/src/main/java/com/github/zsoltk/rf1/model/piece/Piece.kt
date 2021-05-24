@@ -21,6 +21,6 @@ interface Piece {
     fun possibleCaptures(gameState: GameState): List<Position> =
         attacks(gameState)
             .filter {
-                gameState.board[it].hasPiece(gameState.toMove.opposite())
+                gameState.board[it].hasPiece(set.opposite())
             }
 }
