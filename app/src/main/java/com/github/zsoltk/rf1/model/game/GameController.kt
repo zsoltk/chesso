@@ -57,10 +57,18 @@ class GameController(
     }
 
     fun possibleMovesFromSelectedPosition(): List<Position> =
-        uiState.selectedPosition.let { it.possibleMovesWithoutCaptures() }
+        uiState.selectedPosition.let { position ->
+            position
+                .possibleMovesWithoutCaptures()
+                .applyCheckConstraints()
+        }
 
     fun possibleCapturesFromSelectedPosition(): List<Position> =
-        uiState.selectedPosition.let { it.possibleCaptures() }
+        uiState.selectedPosition.let { position ->
+            position
+                .possibleCaptures()
+                .applyCheckConstraints()
+        }
 
     private fun Position?.possibleMovesWithoutCaptures(): List<Position> =
         map { piece ->
@@ -71,6 +79,15 @@ class GameController(
         map { piece ->
             piece.possibleCaptures(gameState)
         }
+
+    private fun List<Position>.applyCheckConstraints(): List<Position> {
+        val selectedPosition = uiState.selectedPosition ?: return this
+
+        return filter { targetPosition ->
+            val calculatedMove = calculateMove(selectedPosition, targetPosition)
+            !calculatedMove.newState.hasCheckFor(gameState.toMove)
+        }
+    }
 
     private fun Position?.map(mapper: (Piece) -> List<Position>): List<Position> {
         var list = emptyList<Position>()
@@ -100,6 +117,16 @@ class GameController(
     fun applyMove(from: Position, to: Position) {
         var states = game.states.toMutableList()
         val currentIndex = game.currentIndex
+        val calculatedMove = calculateMove(from, to)
+
+        states[currentIndex] = calculatedMove.updatedCurrentState
+        states = states.subList(0, currentIndex + 1)
+        game.currentIndex = states.lastIndex
+        game.states = states + calculatedMove.newState
+        stepForward()
+    }
+
+    private fun calculateMove(from: Position, to: Position): CalculatedMove {
         val currentState = game.currentState
         val board = currentState.board
         val piece = board[from].piece
@@ -115,9 +142,10 @@ class GameController(
         val newState = currentState.copy(
             board = updatedBoard,
             toMove = currentState.toMove.opposite(),
-            lastMove = null, // to be updated after evaluating check
+            lastMove = null, // is updated in next step after evaluating check
             move = null,
-            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it } ?: currentState.capturedPieces
+            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it }
+                ?: currentState.capturedPieces
         )
 
         val move = Move(
@@ -135,13 +163,11 @@ class GameController(
         val newStateWithMove = newState.copy(
             lastMove = move,
         )
-
-
-        states[currentIndex] = updatedCurrentState
-        states = states.subList(0, currentIndex + 1)
-        game.currentIndex = states.lastIndex
-        game.states = states + newStateWithMove
-        stepForward()
+        return CalculatedMove(
+            move = move,
+            updatedCurrentState = updatedCurrentState,
+            newState = newStateWithMove
+        )
     }
 
     fun canStepBack(): Boolean =
