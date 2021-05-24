@@ -1,8 +1,9 @@
 package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.game.GameState
-import com.github.zsoltk.rf1.model.notation.Position
-import com.github.zsoltk.rf1.model.piece.Set.*
+import com.github.zsoltk.rf1.model.game.Move
+import com.github.zsoltk.rf1.model.piece.Set.BLACK
+import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
 class Bishop(override val set: Set) : Piece {
 
@@ -13,7 +14,7 @@ class Bishop(override val set: Set) : Piece {
         BLACK -> "♝"
     }
 
-    override fun moves(gameState: GameState): List<Position> =
+    override fun moves(gameState: GameState): List<Move> =
         lineMoves(gameState, directions)
 
     companion object {

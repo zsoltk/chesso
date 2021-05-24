@@ -8,18 +8,18 @@ data class Move(
     val from: Position,
     val to: Position,
     val piece: Piece,
-    val isCapture: Boolean,
-    val isCheck: Boolean
+    val isCapture: Boolean? = null,
+    val isCheck: Boolean? = null
 ) {
 
     override fun toString(): String {
         val symbol = when {
             piece !is Pawn -> piece.symbol
-            isCapture -> from.fileAsLetter
+            isCapture == true -> from.fileAsLetter
             else -> ""
         }
-        val capture = if (isCapture) "x" else ""
-        val isCheck = if (isCheck) "+" else ""
+        val capture = if (isCapture == true) "x" else ""
+        val isCheck = if (isCheck == true) "+" else ""
         return "$symbol$capture$to$isCheck"
     }
 }

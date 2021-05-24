@@ -27,7 +27,9 @@ class GameController(
         uiState.selectedPosition?.let { listOf(it) } ?: emptyList()
 
     fun clickablePositions(): List<Position> =
-        ownPieces() + possibleMovesFromSelectedPosition() + possibleCapturesFromSelectedPosition()
+        ownPieces() +
+            possibleMovesFromSelectedPosition().targetPositions() +
+            possibleCapturesFromSelectedPosition().targetPositions()
 
     fun ownPieces(): List<Position> =
         gameState.board.pieces
@@ -40,8 +42,7 @@ class GameController(
     fun onClick(position: Position) {
         if (position.hasOwnPiece()) {
             selectPosition(position)
-        }
-        else if (position in possibleMovesFromSelectedPosition() || position in possibleCapturesFromSelectedPosition()) {
+        } else if (position in possibleMovesFromSelectedPosition().targetPositions() || position in possibleCapturesFromSelectedPosition().targetPositions()) {
             val selectedPosition = uiState.selectedPosition
             requireNotNull(selectedPosition)
             applyMove(selectedPosition, position)
@@ -56,41 +57,32 @@ class GameController(
         }
     }
 
-    fun possibleMovesFromSelectedPosition(): List<Position> =
+    fun possibleMovesFromSelectedPosition(): List<Move> =
         uiState.selectedPosition.let { position ->
             position
                 .possibleMovesWithoutCaptures()
                 .applyCheckConstraints()
         }
 
-    fun possibleCapturesFromSelectedPosition(): List<Position> =
+    fun possibleCapturesFromSelectedPosition(): List<Move> =
         uiState.selectedPosition.let { position ->
             position
                 .possibleCaptures()
                 .applyCheckConstraints()
         }
 
-    private fun Position?.possibleMovesWithoutCaptures(): List<Position> =
+    private fun Position?.possibleMovesWithoutCaptures(): List<Move> =
         map { piece ->
             piece.movesWithoutCaptures(gameState)
         }
 
-    private fun Position?.possibleCaptures(): List<Position> =
+    private fun Position?.possibleCaptures(): List<Move> =
         map { piece ->
             piece.possibleCaptures(gameState)
         }
 
-    private fun List<Position>.applyCheckConstraints(): List<Position> {
-        val selectedPosition = uiState.selectedPosition ?: return this
-
-        return filter { targetPosition ->
-            val calculatedMove = calculateMove(selectedPosition, targetPosition)
-            !calculatedMove.newState.hasCheckFor(gameState.toMove)
-        }
-    }
-
-    private fun Position?.map(mapper: (Piece) -> List<Position>): List<Position> {
-        var list = emptyList<Position>()
+    private fun Position?.map(mapper: (Piece) -> List<Move>): List<Move> {
+        var list = emptyList<Move>()
 
         this?.let { nonNullPosition ->
             val square = gameState.board[nonNullPosition]
@@ -102,15 +94,21 @@ class GameController(
         return list
     }
 
+    private fun List<Move>.applyCheckConstraints(): List<Move> =
+        filter { move ->
+            val calculatedMove = calculateMove(move.from, move.to)
+            !calculatedMove.newState.hasCheckFor(gameState.toMove)
+        }
+
     fun GameState.hasCheckFor(set: Set): Boolean {
-        val kingsPosition = board.pieces.keys.find { position ->
+        val kingsPosition: Position? = board.pieces.keys.find { position ->
             val piece = board.pieces[position]
             piece is King && piece.set == set
         }
 
         return board.pieces.any { (_, piece) ->
-            val pieceCanCapture = piece?.possibleCaptures(this) ?: emptyList()
-            kingsPosition in pieceCanCapture
+            val otherPieceCaptures: List<Move> = piece?.possibleCaptures(this) ?: emptyList()
+            kingsPosition in otherPieceCaptures.targetPositions()
         }
     }
 

@@ -3,13 +3,13 @@ package com.github.zsoltk.rf1.model.piece
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameState
-import com.github.zsoltk.rf1.model.notation.Position
+import com.github.zsoltk.rf1.model.game.Move
 
 fun Piece.lineMoves(
     gameState: GameState,
     directions: List<Pair<Int, Int>>,
-) : List<Position> {
-    val moves = mutableListOf<Position>()
+) : List<Move> {
+    val moves = mutableListOf<Move>()
     val board = gameState.board
     val square = board.find(this) ?: return emptyList()
 
@@ -25,21 +25,21 @@ fun lineMoves(
     square: Square,
     deltaFile: Int,
     deltaRank: Int
-): List<Position> {
+): List<Move> {
     requireNotNull(square.piece)
     val set = square.piece.set
-    val moves = mutableListOf<Position>()
+    val moves = mutableListOf<Move>()
 
     var i = 0
     while (true) {
         i++
         val target = board[square.file + deltaFile * i, square.rank + deltaRank * i] ?: break
         if (target.isEmpty) {
-            moves += target.position
+            moves += Move(from = square.position, to = target.position, piece = square.piece)
             continue
         }
         if (target.hasPiece(set.opposite())) {
-            moves += target.position
+            moves += Move(from = square.position, to = target.position, piece = square.piece)
             break
         }
         if (target.hasPiece(set)) {

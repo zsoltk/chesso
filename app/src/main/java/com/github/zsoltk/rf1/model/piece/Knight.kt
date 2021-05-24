@@ -3,8 +3,9 @@ package com.github.zsoltk.rf1.model.piece
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameState
-import com.github.zsoltk.rf1.model.notation.Position
-import com.github.zsoltk.rf1.model.piece.Set.*
+import com.github.zsoltk.rf1.model.game.Move
+import com.github.zsoltk.rf1.model.piece.Set.BLACK
+import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
 class Knight(override val set: Set) : Piece {
 
@@ -15,7 +16,7 @@ class Knight(override val set: Set) : Piece {
         BLACK -> "♞"
     }
 
-    override fun moves(gameState: GameState): List<Position> {
+    override fun moves(gameState: GameState): List<Move> {
         val board = gameState.board
         val square = board.find(this) ?: return emptyList()
 
@@ -40,8 +41,12 @@ class Knight(override val set: Set) : Piece {
         square: Square,
         deltaFile: Int,
         deltaRank: Int
-    ): Position? {
+    ): Move? {
         val target = board[square.file + deltaFile, square.rank + deltaRank]
-        return if (target?.isEmpty == true || target?.hasPiece(set.opposite()) == true) target.position else null
+        return if (target?.isEmpty == true || target?.hasPiece(set.opposite()) == true) Move(
+            from = square.position,
+            to = target.position,
+            piece = this
+        ) else null
     }
 }
