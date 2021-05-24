@@ -5,6 +5,22 @@ import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameState
 import com.github.zsoltk.rf1.model.game.Move
 
+fun Piece.singleCaptureMove(
+    gameState: GameState,
+    deltaFile: Int,
+    deltaRank: Int
+): Move? {
+    val board = gameState.board
+    val square = board.find(this) ?: return null
+    val target = board[square.file + deltaFile, square.rank + deltaRank] ?: return null
+
+    return if (target.isEmpty || target.hasPiece(set.opposite())) Move(
+        from = square.position,
+        to = target.position,
+        piece = this
+    ) else null
+}
+
 fun Piece.lineMoves(
     gameState: GameState,
     directions: List<Pair<Int, Int>>,
