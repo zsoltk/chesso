@@ -2,9 +2,11 @@ package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.game.Game
@@ -49,13 +52,21 @@ fun Moves(game: Game) {
                 if (index % 2 == 0) {
                     item {
                         StepNumber(index / 2 + 1)
+                        Spacer(modifier = Modifier.width(2.dp))
                     }
                 }
 
                 item {
-                    Move(index, move, game)
+                    if (index == game.currentIndex - 1) {
+                        Pill { Move(move) }
+                    } else {
+                        Move(move)
+                    }
                 }
 
+                if (index % 2 == 1) {
+                    item { Spacer(modifier = Modifier.width(10.dp)) }
+                }
             }
 
             if (moves.isNotEmpty()) {
@@ -70,24 +81,29 @@ fun Moves(game: Game) {
 @Composable
 private fun StepNumber(stepNumber: Int) {
     Text(
-        text = "$stepNumber. ",
+        text = "$stepNumber.",
         color = MaterialTheme.colors.onSecondary,
+        fontWeight = FontWeight.Bold
     )
 }
 
 @Composable
-private fun Move(
-    index: Int,
-    move: Move,
-    game: Game
+private fun Pill(
+    content: @Composable () -> Unit,
 ) {
-    val default = Modifier.padding(end = if (index % 2 == 1) 12.dp else 6.dp)
-    val selected = default.background(Color.Gray, RoundedCornerShape(6.dp))
+    Box(modifier = Modifier.background(Color.Gray, RoundedCornerShape(6.dp))) {
+        content()
+    }
+}
 
+@Composable
+private fun Move(
+    move: Move
+) {
     Text(
         text = move.toString(),
         color = MaterialTheme.colors.onSecondary,
-        modifier = if (index == game.currentIndex - 1) selected else default
+        modifier = Modifier.padding(start = 3.dp, end = 3.dp)
     )
 }
 
@@ -107,6 +123,8 @@ fun MovesPreview() {
             applyMove(Position.e4, Position.d5)
             applyMove(Position.d8, Position.d5)
             applyMove(Position.c3, Position.d5)
+            stepBackward()
+            stepBackward()
             stepBackward()
             stepBackward()
         }
