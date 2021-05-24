@@ -31,11 +31,12 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
         Moves(game)
         CapturedPieces(game)
         Board(
-            gameState = game.currentState,
-            uiState = uiState,
-            onMove = { from, to ->
-                gameController.applyMove(from, to)
-            }
+            fetchSquare = { gameController.square(it) },
+            highlightedPositions = gameController.highlightedPositions(),
+            clickablePositions = gameController.clickablePositions(),
+            possibleMoves = gameController.possibleMovesFromSelectedPosition(),
+            possibleCaptures = gameController.possibleCapturesFromSelectedPosition(),
+            onClick = { gameController.onClick(it) }
         )
         Spacer(modifier = Modifier.height(48.dp))
         TimeTravelButtons(gameController)

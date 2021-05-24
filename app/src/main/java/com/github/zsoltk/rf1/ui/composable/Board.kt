@@ -15,20 +15,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.GameState
+import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.UiState
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Board(gameState: GameState, uiState: UiState, onMove: (from: Position, to: Position) -> Unit) {
+fun Board(
+    fetchSquare: (Position) -> Square,
+    highlightedPositions: List<Position>,
+    clickablePositions: List<Position>,
+    possibleMoves: List<Position>,
+    possibleCaptures: List<Position>,
+    onClick: (Position) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,19 +49,20 @@ fun Board(gameState: GameState, uiState: UiState, onMove: (from: Position, to: P
                         .weight(1f)
                 ) {
                     for (file in 1..8) {
-                        val square = gameState.board[file, rank]
-                        requireNotNull(square)
+                        val position = Position.from(file, rank)
+                        val square = fetchSquare(position)
 
                         Square(
-                            file = file,
-                            rank = rank,
-                            gameState = gameState,
-                            uiState = uiState,
+                            position = position,
+                            isHighlighted = position in highlightedPositions,
+                            clickable = position in clickablePositions,
+                            isPossibleMove = position in possibleMoves,
+                            isPossibleCapture = position in possibleCaptures,
+                            onClick = { onClick(position) },
                             square = square,
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxSize(),
-                            onMove = onMove
+                                .fillMaxSize()
                         )
                     }
                 }
@@ -64,18 +73,15 @@ fun Board(gameState: GameState, uiState: UiState, onMove: (from: Position, to: P
 
 @Composable
 private fun Square(
-    file: Int,
-    rank: Int,
-    gameState: GameState,
-    uiState: UiState,
+    position: Position,
+    isHighlighted: Boolean,
+    clickable: Boolean,
+    onClick: () -> Unit,
+    isPossibleMove: Boolean,
+    isPossibleCapture: Boolean,
     square: Square,
-    modifier: Modifier,
-    onMove: (from: Position, to: Position) -> Unit
+    modifier: Modifier
 ) {
-    val canBeSelected = gameState.toMove == square.piece?.set
-    val isSelected = uiState.selectedPosition == square.position
-    val isLastMove = square.position == gameState.lastMove?.from || square.position == gameState.lastMove?.to
-    val isHighlighted = isSelected || isLastMove
 
     Box(
         contentAlignment = Alignment.Center,
@@ -83,36 +89,29 @@ private fun Square(
             // TODO from theme
             .background(if (square.isDark) Color.LightGray else Color.White)
             .clickable(
-                enabled = canBeSelected,
-                onClick = {
-                    if (isSelected) {
-                        uiState.selectedPosition = null
-                    } else {
-                        uiState.selectedPosition = square.position
-                    }
-                }
+                enabled = clickable,
+                onClick = onClick
             )
     ) {
         if (isHighlighted) {
             HighlightSquare()
         }
-        if (file == 1) {
-            PositionLabel(rank.toString(), Alignment.TopStart)
+        if (position.file == 1) {
+            PositionLabel(position.rank.toString(), Alignment.TopStart)
         }
-        if (rank == 1) {
+        if (position.rank == 1) {
             PositionLabel(
-                File.values()[file - 1].toString(),
+                position.fileAsLetter.toString(),
                 Alignment.BottomEnd
             )
         }
 
         Piece(square)
-        PossibleMoves(
-            square = square,
-            gameState = gameState,
-            uiState = uiState,
-            onMove = onMove
-        )
+        if (isPossibleMove) {
+            PossibleMove(onClick)
+        } else if (isPossibleCapture) {
+            PossibleCapture(onClick)
+        }
     }
 }
 
@@ -157,57 +156,77 @@ private fun Piece(square: Square) {
 }
 
 @Composable
-private fun PossibleMoves(
-    square: Square,
-    gameState: GameState,
-    uiState: UiState,
-    onMove: (from: Position, to: Position) -> Unit
+private fun PossibleMove(
+    onClick: () -> Unit
 ) {
-    var possibleMoves = emptyList<Position>()
-    val selectedPosition = uiState.selectedPosition
+    CircleDecoratedSquare(
+        onClick = onClick,
+        radius = { size.minDimension / 6f },
+        drawStyle = { Fill }
+    )
+}
 
-    selectedPosition?.let { position ->
-        val selectedSquare = gameState.board[position]
-        selectedSquare.piece?.let {
-            possibleMoves = it.moves(gameState)
-        }
-    }
+@Composable
+private fun PossibleCapture(
+    onClick: () -> Unit
+) {
+    CircleDecoratedSquare(
+        onClick = onClick,
+        radius = { size.minDimension / 3f },
+        drawStyle = { Stroke(width = size.minDimension / 12f) }
+    )
+}
 
-    if (square.position in possibleMoves) {
-        requireNotNull(selectedPosition)
-
-        Canvas(modifier = Modifier
+@Composable
+private fun CircleDecoratedSquare(
+    onClick: () -> Unit,
+    radius: DrawScope.() -> Float,
+    drawStyle: DrawScope.() -> DrawStyle
+) {
+    Canvas(
+        modifier = Modifier
             .fillMaxSize()
-            .clickable {
-                onMove.invoke(
-                    selectedPosition,
-                    square.position
-                )
-            }
-        ) {
-            val baseRadius = size.minDimension / 6f
-            val radius = if (square.isEmpty) baseRadius else baseRadius * 2f
-            val style = if (square.isEmpty) Fill else Stroke(width = baseRadius / 2)
-            drawCircle(
-                color = Color.DarkGray,
-                radius = radius,
-                alpha = 0.25f,
-                style = style
-            )
-        }
+            .clickable(onClick = onClick)
+    ) {
+        drawCircle(
+            color = Color.DarkGray,
+            radius = radius(this),
+            alpha = 0.25f,
+            style = drawStyle(this)
+        )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun BoardPreview() {
     Rf1Theme {
+        val game = com.github.zsoltk.rf1.model.game.Game()
+        val uiState = UiState()
+        val gameController = GameController(game, uiState).apply {
+            applyMove(Position.e2, Position.e4)
+            applyMove(Position.e7, Position.e5)
+            applyMove(Position.b1, Position.c3)
+            applyMove(Position.b8, Position.c6)
+            applyMove(Position.f1, Position.b5)
+            applyMove(Position.d7, Position.d5)
+            applyMove(Position.e4, Position.d5)
+            applyMove(Position.d8, Position.d5)
+            applyMove(Position.d1, Position.f3)
+            applyMove(Position.c8, Position.g4)
+        }
+        uiState.apply {
+            selectedPosition = Position.f3
+        }
+
         Board(
-            gameState = GameState(),
-            uiState = UiState().apply {
-                selectedPosition = Position.e2
-            },
-            onMove = { _, _ -> }
+            fetchSquare = { gameController.square(it) },
+            highlightedPositions = gameController.highlightedPositions(),
+            clickablePositions = gameController.clickablePositions(),
+            possibleMoves = gameController.possibleMovesFromSelectedPosition(),
+            possibleCaptures = gameController.possibleCapturesFromSelectedPosition(),
+            onClick = { gameController.onClick(it) }
         )
     }
 }
