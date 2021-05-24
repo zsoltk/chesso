@@ -18,13 +18,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.UiState
 import com.github.zsoltk.rf1.model.notation.Position.*
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
-    val gameController = remember { GameController(game, uiState) }
+    val gameController = remember { GameController(game, uiState).apply {
+        applyMove(e2, e4)
+        applyMove(e7, e5)
+        applyMove(d1, h5)
+        applyMove(b8, c6)
+        applyMove(f1, c4)
+        applyMove(f8, c5)
+    } }
 
     Column {
         ToMove(game)
@@ -45,6 +53,11 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
 
 @Composable
 private fun ToMove(game: Game) {
+    val text = when (game.currentState.resolution) {
+        Resolution.IN_PROGRESS -> "${game.currentState.toMove} to move"
+        Resolution.CHECKMATE -> "CHECKMATE"
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,7 +66,7 @@ private fun ToMove(game: Game) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${game.currentState.toMove} to move",
+            text = text,
             modifier = Modifier.padding(start = 16.dp),
             color = MaterialTheme.colors.onPrimary
         )

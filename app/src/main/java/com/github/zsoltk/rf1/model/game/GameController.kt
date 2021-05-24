@@ -2,9 +2,6 @@ package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.notation.Position
-import com.github.zsoltk.rf1.model.piece.King
-import com.github.zsoltk.rf1.model.piece.Piece
-import com.github.zsoltk.rf1.model.piece.Set
 
 class GameController(
     private val game: Game,
@@ -27,14 +24,20 @@ class GameController(
         uiState.selectedPosition?.let { listOf(it) } ?: emptyList()
 
     fun clickablePositions(): List<Position> =
-        ownPieces() +
-            possibleMovesFromSelectedPosition().targetPositions() +
-            possibleCapturesFromSelectedPosition().targetPositions()
+        ownPiecePositions() +
+            possibleCapturesFromSelectedPosition().targetPositions() +
+            possibleMovesFromSelectedPosition().targetPositions()
 
-    fun ownPieces(): List<Position> =
+    private fun ownPiecePositions(): List<Position> =
         gameState.board.pieces
             .filter { (position, _) -> position.hasOwnPiece() }
             .map { it.key }
+
+    fun possibleCapturesFromSelectedPosition() =
+        gameState.legalCapturesFrom(uiState.selectedPosition)
+
+    fun possibleMovesFromSelectedPosition(): List<Move> =
+        gameState.legalMovesFrom(uiState.selectedPosition)
 
     private fun Position.hasOwnPiece() =
         square(this).hasPiece(gameState.toMove)
@@ -42,7 +45,7 @@ class GameController(
     fun onClick(position: Position) {
         if (position.hasOwnPiece()) {
             selectPosition(position)
-        } else if (position in possibleMovesFromSelectedPosition().targetPositions() || position in possibleCapturesFromSelectedPosition().targetPositions()) {
+        } else if (canMoveTo(position) || canCaptureAt(position)) {
             val selectedPosition = uiState.selectedPosition
             requireNotNull(selectedPosition)
             applyMove(selectedPosition, position)
@@ -57,65 +60,55 @@ class GameController(
         }
     }
 
-    fun possibleMovesFromSelectedPosition(): List<Move> =
-        uiState.selectedPosition.let { position ->
-            position
-                .possibleMovesWithoutCaptures()
-                .applyCheckConstraints()
-        }
+    private fun canMoveTo(position: Position) =
+        position in gameState.legalMovesFrom(uiState.selectedPosition).targetPositions()
 
-    fun possibleCapturesFromSelectedPosition(): List<Move> =
-        uiState.selectedPosition.let { position ->
-            position
-                .possibleCaptures()
-                .applyCheckConstraints()
-        }
+    private fun canCaptureAt(position: Position) =
+        position in gameState.legalCapturesFrom(uiState.selectedPosition).targetPositions()
 
-    private fun Position?.possibleMovesWithoutCaptures(): List<Move> =
-        map { piece ->
-            piece.movesWithoutCaptures(gameState)
-        }
-
-    private fun Position?.possibleCaptures(): List<Move> =
-        map { piece ->
-            piece.possibleCaptures(gameState)
-        }
-
-    private fun Position?.map(mapper: (Piece) -> List<Move>): List<Move> {
-        var list = emptyList<Move>()
-
-        this?.let { nonNullPosition ->
-            val square = gameState.board[nonNullPosition]
-            square.piece?.let { piece ->
-                list = mapper(piece)
-            }
-        }
-
-        return list
-    }
-
-    private fun List<Move>.applyCheckConstraints(): List<Move> =
-        filter { move ->
-            val calculatedMove = calculateMove(move.from, move.to)
-            !calculatedMove.newState.hasCheckFor(gameState.toMove)
-        }
-
-    fun GameState.hasCheckFor(set: Set): Boolean {
-        val kingsPosition: Position? = board.pieces.keys.find { position ->
-            val piece = board.pieces[position]
-            piece is King && piece.set == set
-        }
-
-        return board.pieces.any { (_, piece) ->
-            val otherPieceCaptures: List<Move> = piece?.possibleCaptures(this) ?: emptyList()
-            kingsPosition in otherPieceCaptures.targetPositions()
-        }
-    }
+//    fun GameState.possibleMovesFrom(from: Position?): List<Move> =
+//        from.let { position ->
+//            possibleMovesWithoutCaptures(position).applyCheckConstraints(this)
+//        }
+//
+//    fun GameState.possibleCapturesFrom(from: Position?): List<Move> =
+//        from.let { position ->
+//            possibleCaptures(position).applyCheckConstraints(this)
+//        }
+//
+//    private fun GameState.possibleMovesWithoutCaptures(from: Position?): List<Move> =
+//        map(from) { piece ->
+//            piece.movesWithoutCaptures(gameState)
+//        }
+//
+//    private fun GameState.possibleCaptures(from: Position?): List<Move> =
+//        map(from) { piece ->
+//            piece.possibleCaptures(gameState)
+//        }
+//
+//    private fun GameState.map(from: Position?, mapper: (Piece) -> List<Move>): List<Move> {
+//        var list = emptyList<Move>()
+//
+//        from?.let { nonNullPosition ->
+//            val square = board[nonNullPosition]
+//            square.piece?.let { piece ->
+//                list = mapper(piece)
+//            }
+//        }
+//
+//        return list
+//    }
+//
+//    private fun List<Move>.applyCheckConstraints(gameState: GameState): List<Move> =
+//        filter { move ->
+//            val calculatedMove = calculateMovePartial(move.from, move.to)
+//            !calculatedMove.newState.hasCheckFor(gameState.toMove)
+//        }
 
     fun applyMove(from: Position, to: Position) {
         var states = game.states.toMutableList()
         val currentIndex = game.currentIndex
-        val calculatedMove = calculateMove(from, to)
+        val calculatedMove = gameState.calculateMove(from, to)
 
         states[currentIndex] = calculatedMove.updatedCurrentState
         states = states.subList(0, currentIndex + 1)
@@ -124,49 +117,86 @@ class GameController(
         stepForward()
     }
 
-    private fun calculateMove(from: Position, to: Position): CalculatedMove {
-        val currentState = game.currentState
-        val board = currentState.board
-        val piece = board[from].piece
-        val capturedPiece = board[to].piece
-        requireNotNull(piece)
+//    private fun calculateMoveFull(from: Position, to: Position): CalculatedMove {
+//        val partial = calculateMovePartial(from, to)
+//        val newState = partial.newState
+//        val nextToMove = newState.toMove
+//
+//        Log.d("Chess", "---")
+//        val thereAreValidMoves = newState.board.pieces(nextToMove).filter { (position, _) ->
+//            Log.d("Chess", "-")
+//            val possibleMovesFrom = newState.possibleMovesFrom(position)
+//            val possibleCapturesFrom = newState.possibleCapturesFrom(position)
+//            if (possibleMovesFrom.isNotEmpty() ) {
+//                Log.d("Chess", "Possible moves: $possibleMovesFrom")
+//            }
+//            if (possibleCapturesFrom.isNotEmpty() ) {
+//                Log.d("Chess", "Possible captures: $possibleCapturesFrom")
+//            }
+//            newState.possibleMovesFrom(position).isNotEmpty() || newState.possibleCapturesFrom(position).isNotEmpty()
+//        }
+//        val isCheckMate = partial.move.isCheck == true && thereAreValidMoves.isEmpty()
+//        val move = partial.move.copy(
+//            isCheckMate = isCheckMate
+//        )
+//
+//        return partial.copy(
+//            move = move,
+//            updatedCurrentState = partial.updatedCurrentState.copy(
+//                move = move
+//            ),
+//            newState = newState.copy(
+//                lastMove = move,
+//                resolution = if (isCheckMate) CHECKMATE else IN_PROGRESS
+//            )
+//        )
+//    }
 
-        val updatedBoard = board.copy(
-            pieces = board.pieces
-                .minus(from)
-                .plus(to to piece)
-        )
-
-        val newState = currentState.copy(
-            board = updatedBoard,
-            toMove = currentState.toMove.opposite(),
-            lastMove = null, // is updated in next step after evaluating check
-            move = null,
-            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it }
-                ?: currentState.capturedPieces
-        )
-
-        val move = Move(
-            from = from,
-            to = to,
-            piece = piece,
-            isCapture = board.pieces[to] != null,
-            isCheck = newState.hasCheckFor(currentState.toMove.opposite())
-        )
-
-        val updatedCurrentState = currentState.copy(
-            move = move
-        )
-
-        val newStateWithMove = newState.copy(
-            lastMove = move,
-        )
-        return CalculatedMove(
-            move = move,
-            updatedCurrentState = updatedCurrentState,
-            newState = newStateWithMove
-        )
-    }
+//    private fun calculateMovePartial(from: Position, to: Position): CalculatedMove {
+//        val currentState = game.currentState
+//        val board = currentState.board
+//        val piece = board[from].piece
+//        val capturedPiece = board[to].piece
+//        requireNotNull(piece)
+//
+//        val updatedBoard = board.copy(
+//            pieces = board.pieces
+//                .minus(from)
+//                .plus(to to piece)
+//        )
+//
+//        val nextToMove = currentState.toMove.opposite()
+//        val newState = currentState.copy(
+//            board = updatedBoard,
+//            toMove = nextToMove,
+//            lastMove = null, // is updated in next step after evaluating check
+//            move = null,
+//            capturedPieces = capturedPiece?.let { currentState.capturedPieces + it }
+//                ?: currentState.capturedPieces
+//        )
+//
+//        val move = Move(
+//            from = from,
+//            to = to,
+//            piece = piece,
+//            isCapture = board.pieces[to] != null,
+//            isCheck = currentState.hasCheckFor(nextToMove)
+//        )
+//
+//        val updatedCurrentState = currentState.copy(
+//            move = move
+//        )
+//
+//        val newStateWithMove = newState.copy(
+//            lastMove = move,
+//        )
+//
+//        return CalculatedMove(
+//            move = move,
+//            updatedCurrentState = updatedCurrentState,
+//            newState = newStateWithMove
+//        )
+//    }
 
     fun canStepBack(): Boolean =
         game.hasPrevIndex

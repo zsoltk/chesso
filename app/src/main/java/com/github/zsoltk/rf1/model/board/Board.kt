@@ -40,12 +40,13 @@ import com.github.zsoltk.rf1.model.piece.Pawn
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Queen
 import com.github.zsoltk.rf1.model.piece.Rook
+import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 import java.lang.IllegalArgumentException
 
 data class Board(
-    val pieces: Map<Position, Piece?>
+    val pieces: Map<Position, Piece>
 ) {
     constructor() : this(
         pieces = initialPieces
@@ -69,6 +70,9 @@ data class Board(
 
     fun find(piece: Piece): Square? =
         squares.values.firstOrNull { it.piece == piece }
+
+    fun pieces(set: Set): Map<Position, Piece> =
+        pieces.filter { (_, piece) -> piece.set == set }
 }
 
 private val initialPieces = mapOf(
