@@ -72,12 +72,12 @@ class GameController(
     fun applyMove(from: Position, to: Position) {
         var states = game.states.toMutableList()
         val currentIndex = game.currentIndex
-        val calculatedMove = gameState.calculateMove(from, to)
+        val appliedMove = gameState.calculateAppliedMove(from, to)
 
-        states[currentIndex] = calculatedMove.updatedCurrentState
+        states[currentIndex] = appliedMove.updatedCurrentState
         states = states.subList(0, currentIndex + 1)
         game.currentIndex = states.lastIndex
-        game.states = states + calculatedMove.newState
+        game.states = states + appliedMove.newState
         stepForward()
     }
 

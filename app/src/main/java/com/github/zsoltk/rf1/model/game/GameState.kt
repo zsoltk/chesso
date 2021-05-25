@@ -20,7 +20,7 @@ data class GameState(
             it.value * if (it.set == WHITE) -1 else 1
         }
 
-    fun calculateMove(from: Position, to: Position): CalculatedMove {
+    fun calculateAppliedMove(from: Position, to: Position): AppliedMove {
         val pieceToMove = board[from].piece
         val capturedPiece = board[to].piece
         requireNotNull(pieceToMove)
@@ -43,7 +43,7 @@ data class GameState(
             isCheckMate = isCheckMate
         )
 
-        return CalculatedMove(
+        return AppliedMove(
             move = move,
             updatedCurrentState = this.copy(
                 move = move
