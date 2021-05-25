@@ -1,7 +1,7 @@
 package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.game.BoardState
-import com.github.zsoltk.rf1.model.game.Move
+import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 

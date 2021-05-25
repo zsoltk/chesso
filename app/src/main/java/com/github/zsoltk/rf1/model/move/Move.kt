@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.model.game
+package com.github.zsoltk.rf1.model.move
 
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.model.piece.Piece

@@ -3,6 +3,7 @@ package com.github.zsoltk.rf1.model.game
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.github.zsoltk.rf1.model.move.CalculatedMove
 import com.github.zsoltk.rf1.model.piece.Set
 
 class Game {

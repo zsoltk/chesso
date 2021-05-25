@@ -1,7 +1,9 @@
 package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Board
-import com.github.zsoltk.rf1.model.notation.Position
+import com.github.zsoltk.rf1.model.move.CalculatedMove
+import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 

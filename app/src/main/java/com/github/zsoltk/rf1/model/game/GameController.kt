@@ -1,6 +1,8 @@
 package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Square
+import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.notation.Position
 
 class GameController(

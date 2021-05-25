@@ -3,7 +3,7 @@ package com.github.zsoltk.rf1.model.piece
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.BoardState
-import com.github.zsoltk.rf1.model.game.Move
+import com.github.zsoltk.rf1.model.move.Move
 
 fun Piece.singleCaptureMove(
     boardState: BoardState,
