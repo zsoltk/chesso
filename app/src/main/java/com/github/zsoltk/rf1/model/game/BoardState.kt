@@ -61,18 +61,15 @@ data class BoardState(
     private fun List<Move>.applyCheckConstraints(): List<Move> =
         filter { move ->
             // Any move made should result in no check (clear current if any, and not cause a new one)
-            val newBoardState = deriveBoardState(move.from, move.to)
+            val newBoardState = deriveBoardState(move)
             !newBoardState.hasCheckFor(toMove)
         }
 
-    fun deriveBoardState(from: Position, to: Position): BoardState {
-        val pieceToMove = board[from].piece
-        requireNotNull(pieceToMove)
-
+    fun deriveBoardState(move: Move): BoardState {
         val updatedBoard = board.copy(
             pieces = board.pieces
-                .minus(from)
-                .plus(to to pieceToMove)
+                .minus(move.from)
+                .plus(move.to to move.piece)
         )
 
         return copy(

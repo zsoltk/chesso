@@ -20,12 +20,13 @@ data class GameState(
             it.value * if (it.set == WHITE) -1 else 1
         }
 
-    fun calculateAppliedMove(from: Position, to: Position): AppliedMove {
-        val pieceToMove = board[from].piece
-        val capturedPiece = board[to].piece
+    fun calculateAppliedMove(moveIntention: MoveIntention): AppliedMove {
+        val pieceToMove = board[moveIntention.from].piece
+        val capturedPiece = board[moveIntention.to].piece
         requireNotNull(pieceToMove)
 
-        val newBoardState = boardState.deriveBoardState(from, to)
+        val move = Move(moveIntention, pieceToMove)
+        val newBoardState = boardState.deriveBoardState(move)
         val nextToMove = boardState.toMove.opposite()
 
         val validMoves = newBoardState.board.pieces(nextToMove).filter { (position, _) ->
@@ -35,7 +36,7 @@ data class GameState(
         val isCheck = newBoardState.hasCheck()
         val isCheckMate = isCheck && validMoves.isEmpty()
         val calculatedMove = CalculatedMove(
-            move = Move(from, to, pieceToMove),
+            move = move,
             isCapture = capturedPiece != null,
             isCheck = isCheck,
             isCheckMate = isCheckMate
