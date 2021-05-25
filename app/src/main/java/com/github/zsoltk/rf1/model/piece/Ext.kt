@@ -2,15 +2,15 @@ package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.GameState
+import com.github.zsoltk.rf1.model.game.BoardState
 import com.github.zsoltk.rf1.model.game.Move
 
 fun Piece.singleCaptureMove(
-    gameState: GameState,
+    boardState: BoardState,
     deltaFile: Int,
     deltaRank: Int
 ): Move? {
-    val board = gameState.board
+    val board = boardState.board
     val square = board.find(this) ?: return null
     val target = board[square.file + deltaFile, square.rank + deltaRank] ?: return null
 
@@ -22,11 +22,11 @@ fun Piece.singleCaptureMove(
 }
 
 fun Piece.lineMoves(
-    gameState: GameState,
+    boardState: BoardState,
     directions: List<Pair<Int, Int>>,
 ) : List<Move> {
     val moves = mutableListOf<Move>()
-    val board = gameState.board
+    val board = boardState.board
     val square = board.find(this) ?: return emptyList()
 
     directions.map {

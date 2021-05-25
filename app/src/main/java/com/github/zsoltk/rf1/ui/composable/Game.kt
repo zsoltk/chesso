@@ -53,8 +53,8 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
 
 @Composable
 private fun ToMove(game: Game) {
-    val text = when (game.currentState.resolution) {
-        Resolution.IN_PROGRESS -> "${game.currentState.toMove} to move"
+    val text = when (game.resolution) {
+        Resolution.IN_PROGRESS -> "${game.toMove} to move"
         Resolution.CHECKMATE -> "CHECKMATE"
     }
 

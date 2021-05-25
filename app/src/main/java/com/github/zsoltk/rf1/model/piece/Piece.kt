@@ -1,6 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
-import com.github.zsoltk.rf1.model.game.GameState
+import com.github.zsoltk.rf1.model.game.BoardState
 import com.github.zsoltk.rf1.model.game.Move
 
 interface Piece {
@@ -11,16 +11,16 @@ interface Piece {
 
     val value: Int
 
-    fun moves(gameState: GameState): List<Move> = emptyList()
+    fun moves(boardState: BoardState): List<Move> = emptyList()
 
-    fun attacks(gameState: GameState): List<Move> = moves(gameState)
+    fun attacks(boardState: BoardState): List<Move> = moves(boardState)
 
-    fun movesWithoutCaptures(gameState: GameState): List<Move> =
-        moves(gameState) - possibleCaptures(gameState)
+    fun movesWithoutCaptures(boardState: BoardState): List<Move> =
+        moves(boardState) - possibleCaptures(boardState)
 
-    fun possibleCaptures(gameState: GameState): List<Move> =
-        attacks(gameState)
+    fun possibleCaptures(boardState: BoardState): List<Move> =
+        attacks(boardState)
             .filter { move ->
-                gameState.board[move.to].hasPiece(set.opposite())
+                boardState.board[move.to].hasPiece(set.opposite())
             }
 }
