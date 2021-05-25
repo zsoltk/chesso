@@ -1,5 +1,5 @@
 package com.github.zsoltk.rf1.model.game
 
 enum class Resolution {
-    IN_PROGRESS, CHECKMATE, STALEMATE
+    IN_PROGRESS, CHECKMATE, STALEMATE, DRAW_BY_REPETITION
 }

@@ -49,7 +49,7 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
 private fun ToMove(game: Game) {
     val text = when (game.resolution) {
         Resolution.IN_PROGRESS -> "${game.toMove} to move"
-        else -> game.resolution.toString()
+        else -> game.resolution.toString().replace("_", " ")
     }
 
     Row(

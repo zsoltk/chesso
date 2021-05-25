@@ -26,7 +26,7 @@ data class CalculatedMove(
         val postFix = when (effect) {
             MoveEffect.CHECK -> "+"
             MoveEffect.CHECKMATE -> "#  ${if (move.piece.set == WHITE) "1-0" else "0-1"}"
-            MoveEffect.STALEMATE -> "  ½ - ½"
+            MoveEffect.DRAW -> "  ½ - ½"
             else -> ""
         }
         return "$symbol$capture${move.to}$postFix"

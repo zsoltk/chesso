@@ -24,7 +24,7 @@ data class GameState(
             it.value * if (it.set == WHITE) -1 else 1
         }
 
-    fun calculateAppliedMove(moveIntention: MoveIntention): AppliedMove {
+    fun calculateAppliedMove(moveIntention: MoveIntention, boardStatesSoFar: List<BoardState>): AppliedMove {
         val pieceToMove = board[moveIntention.from].piece
         val capturedPiece = board[moveIntention.to].piece
         requireNotNull(pieceToMove)
@@ -41,6 +41,7 @@ data class GameState(
         val isCheckNoMate = validMoves.isNotEmpty() && isCheck
         val isCheckMate = validMoves.isEmpty() && isCheck
         val isStaleMate = validMoves.isEmpty() && !isCheck
+        val threefoldRepetition = (boardStatesSoFar + newBoardState).hasThreefoldRepetition()
 
         val calculatedMove = CalculatedMove(
             move = move,
@@ -48,7 +49,8 @@ data class GameState(
             effect = when {
                 isCheckNoMate -> MoveEffect.CHECK
                 isCheckMate -> MoveEffect.CHECKMATE
-                isStaleMate -> MoveEffect.STALEMATE
+                isStaleMate -> MoveEffect.DRAW
+                threefoldRepetition -> MoveEffect.DRAW
                 else -> null
             },
         )
@@ -63,6 +65,7 @@ data class GameState(
                 resolution = when {
                     isCheckMate -> Resolution.CHECKMATE
                     isStaleMate -> Resolution.STALEMATE
+                    threefoldRepetition -> Resolution.DRAW_BY_REPETITION
                     else -> Resolution.IN_PROGRESS
                 },
                 move = null,

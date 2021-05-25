@@ -26,7 +26,7 @@ object CheckMateTest : Preset {
 @Composable
 fun CheckMateTestPreview() {
     Rf1Theme {
-        Preset(CheckMateTest)
+        Preset(ThreefoldRepetitionTest)
     }
 }
 

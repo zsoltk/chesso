@@ -67,6 +67,7 @@ class GameController(
         square(this).hasPiece(boardState.toMove)
 
     fun onClick(position: Position) {
+        if (gameState.resolution != Resolution.IN_PROGRESS) return
         if (position.hasOwnPiece()) {
             selectPosition(position)
         } else if (canMoveTo(position) || canCaptureAt(position)) {
@@ -94,7 +95,10 @@ class GameController(
         var states = game.states.toMutableList()
         val currentIndex = game.currentIndex
         val moveIntention = MoveIntention(from, to)
-        val appliedMove = gameState.calculateAppliedMove(moveIntention)
+        val appliedMove = gameState.calculateAppliedMove(
+            moveIntention = moveIntention,
+            boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
+        )
 
         states[currentIndex] = appliedMove.updatedCurrentState
         states = states.subList(0, currentIndex + 1)

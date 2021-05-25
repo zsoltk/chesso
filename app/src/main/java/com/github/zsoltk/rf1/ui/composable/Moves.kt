@@ -24,7 +24,7 @@ import com.github.zsoltk.rf1.model.move.CalculatedMove
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.UiState
-import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import kotlinx.coroutines.launch
 
@@ -114,15 +114,15 @@ fun MovesPreview() {
         val game = Game()
         val uiState = UiState()
         GameController(game, uiState).apply {
-            applyMove(Position.e2, Position.e4)
-            applyMove(Position.e7, Position.e5)
-            applyMove(Position.b1, Position.c3)
-            applyMove(Position.b8, Position.c6)
-            applyMove(Position.f1, Position.b5)
-            applyMove(Position.d7, Position.d5)
-            applyMove(Position.e4, Position.d5)
-            applyMove(Position.d8, Position.d5)
-            applyMove(Position.c3, Position.d5)
+            applyMove(e2, e4)
+            applyMove(e7, e5)
+            applyMove(b1, c3)
+            applyMove(b8, c6)
+            applyMove(f1, b5)
+            applyMove(d7, d5)
+            applyMove(e4, d5)
+            applyMove(d8, d5)
+            applyMove(c3, d5)
             stepBackward()
             stepBackward()
             stepBackward()
