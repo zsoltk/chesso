@@ -8,17 +8,32 @@ import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.game.preset.Preset
 
 class GameController(
     private val game: Game,
-    private val uiState: UiState
+    private val uiState: UiState,
+    preset: Preset? = null
 ) {
+    init {
+        preset?.let { applyPreset(it) }
+    }
 
     private val gameState: GameState
         get() = game.currentState
 
     private val boardState: BoardState
         get() = gameState.boardState
+
+    fun reset(gameState: GameState = GameState()) {
+        game.states = listOf(gameState)
+        uiState.selectedPosition = null
+    }
+
+    fun applyPreset(preset: Preset) {
+        reset()
+        preset.apply(this)
+    }
 
     fun square(position: Position): Square =
         boardState.board[position]
