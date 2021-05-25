@@ -4,6 +4,7 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.move.CalculatedMove
 import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.MoveEffect.*
 import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
@@ -41,8 +42,11 @@ data class GameState(
         val calculatedMove = CalculatedMove(
             move = move,
             isCapture = capturedPiece != null,
-            isCheck = isCheck,
-            isCheckMate = isCheckMate
+            effect = when {
+                isCheckMate -> CHECKMATE
+                isCheck -> CHECK
+                else -> null
+            },
         )
 
         return AppliedMove(

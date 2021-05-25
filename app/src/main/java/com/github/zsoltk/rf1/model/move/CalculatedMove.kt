@@ -7,8 +7,7 @@ import com.github.zsoltk.rf1.model.piece.Piece
 data class CalculatedMove(
     val move: Move,
     val isCapture: Boolean? = null,
-    val isCheck: Boolean? = null,
-    val isCheckMate: Boolean? = null
+    val effect: MoveEffect? = null
 ) {
     val from: Position = move.from
 
@@ -23,7 +22,11 @@ data class CalculatedMove(
             else -> ""
         }
         val capture = if (isCapture == true) "x" else ""
-        val postFix = if (isCheckMate == true) "#" else if (isCheck == true) "+" else ""
+        val postFix = when (effect) {
+            MoveEffect.CHECK -> "+"
+            MoveEffect.CHECKMATE -> "#"
+            else -> ""
+        }
         return "$symbol$capture${move.to}$postFix"
     }
 }
