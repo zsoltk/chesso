@@ -20,9 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.zsoltk.rf1.model.game.CalculatedMove
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
-import com.github.zsoltk.rf1.model.game.Move
 import com.github.zsoltk.rf1.model.game.UiState
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.ui.Rf1Theme
@@ -98,7 +98,7 @@ private fun Pill(
 
 @Composable
 private fun Move(
-    move: Move
+    move: CalculatedMove
 ) {
     Text(
         text = move.toString(),

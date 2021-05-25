@@ -8,8 +8,8 @@ import com.github.zsoltk.rf1.model.piece.Set.WHITE
 data class GameState(
     val boardState: BoardState = BoardState(),
     val resolution: Resolution = Resolution.IN_PROGRESS,
-    val move: Move? = null,
-    val lastMove: Move? = null,
+    val move: CalculatedMove? = null,
+    val lastMove: CalculatedMove? = null,
     val capturedPieces: List<Piece> = emptyList()
 ) {
     private val board: Board
@@ -34,25 +34,23 @@ data class GameState(
         }
         val isCheck = newBoardState.hasCheck()
         val isCheckMate = isCheck && validMoves.isEmpty()
-        val move = Move(
-            from = from,
-            to = to,
-            piece = pieceToMove,
+        val calculatedMove = CalculatedMove(
+            move = Move(from, to, pieceToMove),
             isCapture = capturedPiece != null,
             isCheck = isCheck,
             isCheckMate = isCheckMate
         )
 
         return AppliedMove(
-            move = move,
+            move = calculatedMove,
             updatedCurrentState = this.copy(
-                move = move
+                move = calculatedMove
             ),
             newState = copy(
                 boardState = newBoardState,
                 resolution = if (isCheckMate) Resolution.CHECKMATE else Resolution.IN_PROGRESS,
                 move = null,
-                lastMove = move,
+                lastMove = calculatedMove,
                 capturedPieces = capturedPiece?.let { capturedPieces + it } ?: capturedPieces
             )
         )

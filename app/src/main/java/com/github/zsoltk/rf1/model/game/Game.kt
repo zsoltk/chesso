@@ -26,7 +26,7 @@ class Game {
     val resolution: Resolution
         get() = currentState.resolution
 
-    fun moves(): List<Move> =
+    fun moves(): List<CalculatedMove> =
         states
             .map { gameState -> gameState.move }
             .filterNotNull()
