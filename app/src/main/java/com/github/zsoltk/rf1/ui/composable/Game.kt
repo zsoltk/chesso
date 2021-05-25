@@ -21,11 +21,12 @@ import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.game.preset.StaleMateTest
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
-    val gameController = remember { GameController(game, uiState)}
+    val gameController = remember { GameController(game, uiState, StaleMateTest)}
 
     Column {
         ToMove(game)
@@ -48,7 +49,7 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
 private fun ToMove(game: Game) {
     val text = when (game.resolution) {
         Resolution.IN_PROGRESS -> "${game.toMove} to move"
-        Resolution.CHECKMATE -> "CHECKMATE"
+        else -> game.resolution.toString()
     }
 
     Row(

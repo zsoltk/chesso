@@ -24,7 +24,7 @@ object CheckMateTest : Preset {
 
 @Preview(showBackground = true)
 @Composable
-fun CheckMateTest() {
+fun CheckMateTestPreview() {
     Rf1Theme {
         Preset(CheckMateTest)
     }

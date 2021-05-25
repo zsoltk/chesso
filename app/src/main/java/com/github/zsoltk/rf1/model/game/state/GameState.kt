@@ -4,7 +4,7 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.move.CalculatedMove
 import com.github.zsoltk.rf1.model.move.Move
-import com.github.zsoltk.rf1.model.move.MoveEffect.*
+import com.github.zsoltk.rf1.model.move.MoveEffect
 import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
@@ -38,13 +38,17 @@ data class GameState(
                 newBoardState.legalCapturesFrom(position).isNotEmpty()
         }
         val isCheck = newBoardState.hasCheck()
-        val isCheckMate = isCheck && validMoves.isEmpty()
+        val isCheckNoMate = validMoves.isNotEmpty() && isCheck
+        val isCheckMate = validMoves.isEmpty() && isCheck
+        val isStaleMate = validMoves.isEmpty() && !isCheck
+
         val calculatedMove = CalculatedMove(
             move = move,
             isCapture = capturedPiece != null,
             effect = when {
-                isCheckMate -> CHECKMATE
-                isCheck -> CHECK
+                isCheckNoMate -> MoveEffect.CHECK
+                isCheckMate -> MoveEffect.CHECKMATE
+                isStaleMate -> MoveEffect.STALEMATE
                 else -> null
             },
         )
@@ -56,7 +60,11 @@ data class GameState(
             ),
             newState = copy(
                 boardState = newBoardState,
-                resolution = if (isCheckMate) Resolution.CHECKMATE else Resolution.IN_PROGRESS,
+                resolution = when {
+                    isCheckMate -> Resolution.CHECKMATE
+                    isStaleMate -> Resolution.STALEMATE
+                    else -> Resolution.IN_PROGRESS
+                },
                 move = null,
                 lastMove = calculatedMove,
                 capturedPieces = capturedPiece?.let { capturedPieces + it } ?: capturedPieces
