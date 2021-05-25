@@ -1,7 +1,5 @@
 package com.github.zsoltk.rf1.model.board
 
-import com.github.zsoltk.rf1.model.notation.Position
-
 enum class File {
     a, b, c, d, e, f, g, h
 }

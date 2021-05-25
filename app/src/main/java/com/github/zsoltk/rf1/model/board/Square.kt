@@ -1,6 +1,5 @@
 package com.github.zsoltk.rf1.model.board
 
-import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK

@@ -26,7 +26,7 @@ import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.game.state.UiState
-import com.github.zsoltk.rf1.model.notation.Position
+import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable

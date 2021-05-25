@@ -1,6 +1,6 @@
 package com.github.zsoltk.rf1.model.board
 
-import com.github.zsoltk.rf1.model.notation.Position.*
+import com.github.zsoltk.rf1.model.board.Position.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

@@ -2,7 +2,7 @@ package com.github.zsoltk.rf1.model.board
 
 import com.github.zsoltk.rf1.model.board.File.h
 import com.github.zsoltk.rf1.model.board.Rank.r4
-import com.github.zsoltk.rf1.model.notation.Position.h4
+import com.github.zsoltk.rf1.model.board.Position.h4
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

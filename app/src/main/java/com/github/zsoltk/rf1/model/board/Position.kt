@@ -1,7 +1,4 @@
-package com.github.zsoltk.rf1.model.notation
-
-import com.github.zsoltk.rf1.model.board.idx
-import com.github.zsoltk.rf1.model.board.validate
+package com.github.zsoltk.rf1.model.board
 
 enum class Position {
     a1, a2, a3, a4, a5, a6, a7, a8,
