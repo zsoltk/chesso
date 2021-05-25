@@ -1,7 +1,11 @@
 package com.github.zsoltk.rf1.model.game.preset
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.ui.Rf1Theme
+import com.github.zsoltk.rf1.ui.composable.Preset
 
 object CheckMateTest : Preset {
 
@@ -17,3 +21,12 @@ object CheckMateTest : Preset {
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CheckMateTest() {
+    Rf1Theme {
+        Preset(CheckMateTest)
+    }
+}
+

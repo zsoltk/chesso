@@ -21,12 +21,11 @@ import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.board.Position.*
-import com.github.zsoltk.rf1.model.game.preset.CheckMateTest
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
-    val gameController = remember { GameController(game, uiState, CheckMateTest)}
+    val gameController = remember { GameController(game, uiState)}
 
     Column {
         ToMove(game)
