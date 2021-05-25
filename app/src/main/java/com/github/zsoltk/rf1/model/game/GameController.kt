@@ -1,8 +1,12 @@
 package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Square
+import com.github.zsoltk.rf1.model.game.state.BoardState
+import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.move.MoveIntention
+import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.notation.Position
 
 class GameController(

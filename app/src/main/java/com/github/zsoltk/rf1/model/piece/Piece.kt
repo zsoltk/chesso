@@ -1,6 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
-import com.github.zsoltk.rf1.model.game.BoardState
+import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.move.Move
 
 interface Piece {

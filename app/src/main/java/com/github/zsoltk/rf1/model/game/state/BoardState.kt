@@ -1,6 +1,7 @@
-package com.github.zsoltk.rf1.model.game
+package com.github.zsoltk.rf1.model.game.state
 
 import com.github.zsoltk.rf1.model.board.Board
+import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.notation.Position
 import com.github.zsoltk.rf1.model.piece.King
