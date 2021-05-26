@@ -66,7 +66,7 @@ class GameController(
 
     private fun possibleMoves(predicate: (BoardMove) -> Boolean = { true }) =
         uiState.selectedPosition?.let {
-            boardState.legalMovesFrom(it)
+            gameState.legalMovesFrom(it)
                 .filter(predicate)
         } ?: emptyList()
 

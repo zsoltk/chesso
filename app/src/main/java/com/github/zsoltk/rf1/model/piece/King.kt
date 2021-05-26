@@ -1,6 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
-import com.github.zsoltk.rf1.model.game.state.BoardState
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
@@ -14,9 +14,9 @@ class King(override val set: Set) : Piece {
         BLACK -> "♚"
     }
 
-    override fun pseudoLegalMoves(boardState: BoardState): List<BoardMove> =
+    override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
         targets
-            .map { singleCaptureMove(boardState, it.first, it.second) }
+            .map { singleCaptureMove(gameState, it.first, it.second) }
             .filterNotNull()
 
     companion object {

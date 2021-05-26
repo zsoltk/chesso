@@ -1,6 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
-import com.github.zsoltk.rf1.model.game.state.BoardState
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
@@ -14,6 +14,6 @@ class Queen(override val set: Set) : Piece {
         BLACK -> "♛"
     }
 
-    override fun pseudoLegalMoves(boardState: BoardState): List<BoardMove> =
-        lineMoves(boardState, Rook.directions + Bishop.directions)
+    override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
+        lineMoves(gameState, Rook.directions + Bishop.directions)
 }

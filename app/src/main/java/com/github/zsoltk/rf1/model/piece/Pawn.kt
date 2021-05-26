@@ -2,7 +2,7 @@ package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.state.BoardState
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Move
@@ -18,8 +18,8 @@ class Pawn(override val set: Set) : Piece {
         BLACK -> "♟︎"
     }
 
-    override fun pseudoLegalMoves(boardState: BoardState): List<BoardMove> {
-        val board = boardState.board
+    override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> {
+        val board = gameState.board
         val square = board.find(this) ?: return emptyList()
         val moves = mutableListOf<BoardMove>()
 
