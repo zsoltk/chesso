@@ -63,7 +63,7 @@ data class GameState(
         }
 
 
-    fun calculateAppliedMove(moveIntention: MoveIntention, boardStatesSoFar: List<BoardState>): AppliedMove {
+    fun calculateAppliedMove(moveIntention: MoveIntention, boardStatesSoFar: List<BoardState>): GameStateTransition {
         val pieceToMove = board[moveIntention.from].piece
         requireNotNull(pieceToMove)
 
@@ -94,7 +94,7 @@ data class GameState(
             },
         )
 
-        return AppliedMove(
+        return GameStateTransition(
             move = calculatedMove,
             updatedCurrentState = this.copy(
                 move = calculatedMove
