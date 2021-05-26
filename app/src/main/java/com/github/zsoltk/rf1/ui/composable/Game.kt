@@ -16,17 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
+import com.github.zsoltk.rf1.model.game.preset.CheckMateTest
 import com.github.zsoltk.rf1.model.game.state.UiState
-import com.github.zsoltk.rf1.model.board.Position.*
-import com.github.zsoltk.rf1.model.game.preset.StaleMateTest
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
-    val gameController = remember { GameController(game, uiState, StaleMateTest)}
+    val gameController = remember { GameController(game, uiState, CheckMateTest)}
 
     Column {
         ToMove(game)
@@ -36,8 +36,8 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
             fetchSquare = { gameController.square(it) },
             highlightedPositions = gameController.highlightedPositions(),
             clickablePositions = gameController.clickablePositions(),
-            possibleMoves = gameController.possibleMovesFromSelectedPosition(),
-            possibleCaptures = gameController.possibleCapturesFromSelectedPosition(),
+            possibleMoves = gameController.possibleMovesWithoutCaptures(),
+            possibleCaptures = gameController.possibleCaptures(),
             onClick = { gameController.onClick(it) }
         )
         Spacer(modifier = Modifier.height(48.dp))

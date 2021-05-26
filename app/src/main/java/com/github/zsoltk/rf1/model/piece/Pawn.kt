@@ -25,15 +25,6 @@ class Pawn(override val set: Set) : Piece {
 
         advanceSingle(board, square)?.let { moves += it }
         advanceTwoSquares(board, square)?.let { moves += it }
-
-        return moves + attacks(boardState)
-    }
-
-    override fun attacks(boardState: BoardState): List<BoardMove> {
-        val board = boardState.board
-        val square = board.find(this) ?: return emptyList()
-        val moves = mutableListOf<BoardMove>()
-
         captureDiagonalLeft(board, square)?.let { moves += it }
         captureDiagonalRight(board, square)?.let { moves += it }
 

@@ -28,7 +28,7 @@ data class GameState(
         val pieceToMove = board[moveIntention.from].piece
         requireNotNull(pieceToMove)
 
-        val pieceMoves = boardState.legalMovesFrom(moveIntention.from) + boardState.legalCapturesFrom(moveIntention.from)
+        val pieceMoves = boardState.legalMovesFrom(moveIntention.from)
         val boardMove = pieceMoves.find { it.to == moveIntention.to }
         requireNotNull(boardMove)
 
@@ -36,8 +36,7 @@ data class GameState(
         val nextToMove = boardState.toMove.opposite()
 
         val validMoves = newBoardState.board.pieces(nextToMove).filter { (position, _) ->
-            newBoardState.legalMovesFrom(position).isNotEmpty() ||
-                newBoardState.legalCapturesFrom(position).isNotEmpty()
+            newBoardState.legalMovesFrom(position).isNotEmpty()
         }
         val isCheck = newBoardState.hasCheck()
         val isCheckNoMate = validMoves.isNotEmpty() && isCheck

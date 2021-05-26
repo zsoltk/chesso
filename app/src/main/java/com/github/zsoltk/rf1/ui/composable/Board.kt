@@ -22,11 +22,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.UiState
-import com.github.zsoltk.rf1.model.board.Position
-import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
@@ -34,8 +33,8 @@ fun Board(
     fetchSquare: (Position) -> Square,
     highlightedPositions: List<Position>,
     clickablePositions: List<Position>,
-    possibleMoves: List<BoardMove>,
-    possibleCaptures: List<BoardMove>,
+    possibleMoves: List<Position>,
+    possibleCaptures: List<Position>,
     onClick: (Position) -> Unit
 ) {
     Box(
@@ -57,8 +56,8 @@ fun Board(
                             position = position,
                             isHighlighted = position in highlightedPositions,
                             clickable = position in clickablePositions,
-                            isPossibleMove = position in possibleMoves.map { it.to },
-                            isPossibleCapture = position in possibleCaptures.map { it.to },
+                            isPossibleMove = position in possibleMoves,
+                            isPossibleCapture = position in possibleCaptures,
                             onClick = { onClick(position) },
                             square = square,
                             modifier = Modifier
@@ -225,8 +224,8 @@ fun BoardPreview() {
             fetchSquare = { gameController.square(it) },
             highlightedPositions = gameController.highlightedPositions(),
             clickablePositions = gameController.clickablePositions(),
-            possibleMoves = gameController.possibleMovesFromSelectedPosition(),
-            possibleCaptures = gameController.possibleCapturesFromSelectedPosition(),
+            possibleMoves = gameController.possibleMovesWithoutCaptures(),
+            possibleCaptures = gameController.possibleCaptures(),
             onClick = { gameController.onClick(it) }
         )
     }

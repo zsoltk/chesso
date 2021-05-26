@@ -4,8 +4,8 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.move.BoardMove
+import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.piece.King
-import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set
 
 data class BoardState(
@@ -22,42 +22,17 @@ data class BoardState(
         }
 
         return board.pieces.any { (_, piece) ->
-            val otherPieceCaptures: List<BoardMove> = piece.possibleCaptures(this)
+            val otherPieceCaptures: List<BoardMove> = piece.moves(this)
+                    .filter { it.consequence is Capture }
+
             kingsPosition in otherPieceCaptures.targetPositions()
         }
     }
 
-    fun legalMovesFrom(from: Position?): List<BoardMove> =
-        from.let { position ->
-            possibleMovesWithoutCaptures(position).applyCheckConstraints()
-        }
-
-    fun legalCapturesFrom(from: Position?): List<BoardMove> =
-        from.let { position ->
-            possibleCaptures(position).applyCheckConstraints()
-        }
-
-    private fun possibleMovesWithoutCaptures(from: Position?): List<BoardMove> =
-        map(from) { piece ->
-            piece.movesWithoutCaptures(this)
-        }
-
-    private fun possibleCaptures(from: Position?): List<BoardMove> =
-        map(from) { piece ->
-            piece.possibleCaptures(this)
-        }
-
-    private fun map(from: Position?, mapper: (Piece) -> List<BoardMove>): List<BoardMove> {
-        var list = emptyList<BoardMove>()
-
-        from?.let { nonNullPosition ->
-            val square = board[nonNullPosition]
-            square.piece?.let { piece ->
-                list = mapper(piece)
-            }
-        }
-
-        return list
+    fun legalMovesFrom(from: Position): List<BoardMove> {
+        val square = board[from]
+        val piece = square.piece ?: return emptyList()
+        return piece.moves(this).applyCheckConstraints()
     }
 
     private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =

@@ -9,6 +9,7 @@ import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.move.BoardMove
+import com.github.zsoltk.rf1.model.move.Capture
 
 class GameController(
     private val game: Game,
@@ -49,19 +50,25 @@ class GameController(
 
     fun clickablePositions(): List<Position> =
         ownPiecePositions() +
-            possibleCapturesFromSelectedPosition().targetPositions() +
-            possibleMovesFromSelectedPosition().targetPositions()
+            possibleCaptures() +
+            possibleMovesWithoutCaptures()
 
     private fun ownPiecePositions(): List<Position> =
         boardState.board.pieces
             .filter { (position, _) -> position.hasOwnPiece() }
             .map { it.key }
 
-    fun possibleCapturesFromSelectedPosition() =
-        boardState.legalCapturesFrom(uiState.selectedPosition)
+    fun possibleCaptures(): List<Position> =
+        possibleMoves { it.consequence is Capture }.targetPositions()
 
-    fun possibleMovesFromSelectedPosition(): List<BoardMove> =
-        boardState.legalMovesFrom(uiState.selectedPosition)
+    fun possibleMovesWithoutCaptures(): List<Position> =
+        possibleMoves { it.consequence !is Capture }.targetPositions()
+
+    private fun possibleMoves(predicate: (BoardMove) -> Boolean = { true }) =
+        uiState.selectedPosition?.let {
+            boardState.legalMovesFrom(it)
+                .filter(predicate)
+        } ?: emptyList()
 
     private fun Position.hasOwnPiece() =
         square(this).hasPiece(boardState.toMove)
@@ -70,7 +77,7 @@ class GameController(
         if (gameState.resolution != Resolution.IN_PROGRESS) return
         if (position.hasOwnPiece()) {
             selectPosition(position)
-        } else if (canMoveTo(position) || canCaptureAt(position)) {
+        } else if (canMoveTo(position)) {
             val selectedPosition = uiState.selectedPosition
             requireNotNull(selectedPosition)
             applyMove(selectedPosition, position)
@@ -86,10 +93,7 @@ class GameController(
     }
 
     private fun canMoveTo(position: Position) =
-        position in boardState.legalMovesFrom(uiState.selectedPosition).targetPositions()
-
-    private fun canCaptureAt(position: Position) =
-        position in boardState.legalCapturesFrom(uiState.selectedPosition).targetPositions()
+        position in possibleMoves().targetPositions()
 
     fun applyMove(from: Position, to: Position) {
         var states = game.states.toMutableList()
