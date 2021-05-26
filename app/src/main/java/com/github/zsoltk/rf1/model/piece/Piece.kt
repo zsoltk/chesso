@@ -11,5 +11,8 @@ interface Piece {
 
     val value: Int
 
-    fun moves(boardState: BoardState): List<BoardMove> = emptyList()
+    /**
+     * List of moves that are legally possible for the piece without applying pin / check constraints
+     */
+    fun pseudoLegalMoves(boardState: BoardState): List<BoardMove> = emptyList()
 }

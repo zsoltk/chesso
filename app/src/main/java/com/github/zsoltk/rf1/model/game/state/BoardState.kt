@@ -22,7 +22,7 @@ data class BoardState(
         }
 
         return board.pieces.any { (_, piece) ->
-            val otherPieceCaptures: List<BoardMove> = piece.moves(this)
+            val otherPieceCaptures: List<BoardMove> = piece.pseudoLegalMoves(this)
                     .filter { it.consequence is Capture }
 
             kingsPosition in otherPieceCaptures.targetPositions()
@@ -32,7 +32,7 @@ data class BoardState(
     fun legalMovesFrom(from: Position): List<BoardMove> {
         val square = board[from]
         val piece = square.piece ?: return emptyList()
-        return piece.moves(this).applyCheckConstraints()
+        return piece.pseudoLegalMoves(this).applyCheckConstraints()
     }
 
     private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =

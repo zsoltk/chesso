@@ -14,7 +14,7 @@ class Knight(override val set: Set) : Piece {
         BLACK -> "♞"
     }
 
-    override fun moves(boardState: BoardState): List<BoardMove> =
+    override fun pseudoLegalMoves(boardState: BoardState): List<BoardMove> =
         targets
             .map { singleCaptureMove(boardState, it.first, it.second) }
             .filterNotNull()

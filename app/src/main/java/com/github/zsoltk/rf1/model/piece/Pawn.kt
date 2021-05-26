@@ -18,7 +18,7 @@ class Pawn(override val set: Set) : Piece {
         BLACK -> "♟︎"
     }
 
-    override fun moves(boardState: BoardState): List<BoardMove> {
+    override fun pseudoLegalMoves(boardState: BoardState): List<BoardMove> {
         val board = boardState.board
         val square = board.find(this) ?: return emptyList()
         val moves = mutableListOf<BoardMove>()
