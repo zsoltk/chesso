@@ -5,7 +5,7 @@ import com.github.zsoltk.rf1.model.piece.Pawn
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
-data class CalculatedMove(
+data class AppliedMove(
     val boardMove: BoardMove,
     val effect: MoveEffect? = null
 ) {

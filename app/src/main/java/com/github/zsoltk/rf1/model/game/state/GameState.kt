@@ -4,7 +4,7 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.move.BoardMove
-import com.github.zsoltk.rf1.model.move.CalculatedMove
+import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.MoveEffect
 import com.github.zsoltk.rf1.model.move.MoveIntention
@@ -17,8 +17,8 @@ import com.github.zsoltk.rf1.model.piece.Set.WHITE
 data class GameState(
     val boardState: BoardState = BoardState(),
     val resolution: Resolution = Resolution.IN_PROGRESS,
-    val move: CalculatedMove? = null,
-    val lastMove: CalculatedMove? = null,
+    val move: AppliedMove? = null,
+    val lastMove: AppliedMove? = null,
     val capturedPieces: List<Piece> = emptyList()
 ) {
     val board: Board
@@ -83,7 +83,7 @@ data class GameState(
         val isStaleMate = validMoves.isEmpty() && !isCheck
         val threefoldRepetition = (boardStatesSoFar + tempNewGameState.boardState).hasThreefoldRepetition()
 
-        val calculatedMove = CalculatedMove(
+        val appliedMove = AppliedMove(
             boardMove = boardMove,
             effect = when {
                 isCheckNoMate -> MoveEffect.CHECK
@@ -95,9 +95,9 @@ data class GameState(
         )
 
         return GameStateTransition(
-            move = calculatedMove,
+            move = appliedMove,
             updatedCurrentState = this.copy(
-                move = calculatedMove
+                move = appliedMove
             ),
             newState = copy(
                 boardState = tempNewGameState.boardState,
@@ -108,15 +108,16 @@ data class GameState(
                     else -> Resolution.IN_PROGRESS
                 },
                 move = null,
-                lastMove = calculatedMove,
+                lastMove = appliedMove,
                 capturedPieces = (boardMove.consequence as? Capture)?.let { capturedPieces + it.piece } ?: capturedPieces
             )
         )
     }
 
-    fun derivePseudoGameState(boardMove: BoardMove): GameState = copy(
+    private fun derivePseudoGameState(boardMove: BoardMove): GameState = copy(
         boardState = boardState.deriveBoardState(boardMove),
-        lastMove = CalculatedMove(
+        move = null,
+        lastMove = AppliedMove(
             boardMove = boardMove,
             effect = null
         )
