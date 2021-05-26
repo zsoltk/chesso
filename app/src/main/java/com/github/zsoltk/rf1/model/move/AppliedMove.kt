@@ -9,7 +9,7 @@ data class AppliedMove(
     val boardMove: BoardMove,
     val effect: MoveEffect? = null
 ) {
-    val move: Move = boardMove.move
+    val move: PrimaryPieceMove = boardMove.move
 
     val from: Position = move.from
 

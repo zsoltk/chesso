@@ -103,10 +103,9 @@ class Pawn(override val set: Set) : Piece {
         if (square.position.rank != if (set == WHITE) 5 else 4) return null
         val lastMove = gameState.lastMove ?: return null
         if (lastMove.piece !is Pawn) return null
-        val intent = lastMove.move.intent
-        val fromInitialSquare = (intent.from.rank == if (set == WHITE) 7 else 2)
-        val twoSquareMove = (intent.to.rank == square.position.rank)
-        val isOnNextFile = intent.to.file == square.file + deltaFile
+        val fromInitialSquare = (lastMove.from.rank == if (set == WHITE) 7 else 2)
+        val twoSquareMove = (lastMove.to.rank == square.position.rank)
+        val isOnNextFile = lastMove.to.file == square.file + deltaFile
 
         return if (fromInitialSquare && twoSquareMove && isOnNextFile) {
             val deltaRank = if (set == WHITE) 1 else -1

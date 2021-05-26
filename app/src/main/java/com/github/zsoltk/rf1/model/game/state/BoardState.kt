@@ -11,8 +11,8 @@ data class BoardState(
 
     fun deriveBoardState(boardMove: BoardMove): BoardState {
         val updatedBoard = board
-            .apply(boardMove.consequence)
             .apply(boardMove.move)
+            .apply(boardMove.consequence)
 
         return copy(
             board = updatedBoard,

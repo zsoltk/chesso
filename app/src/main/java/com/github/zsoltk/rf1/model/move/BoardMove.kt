@@ -4,8 +4,8 @@ import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.piece.Piece
 
 data class BoardMove(
-    val move: Move,
-    val consequence: EffectOnPiece? = null
+    val move: PrimaryPieceMove,
+    val consequence: Consequence? = null
 ) {
     val from: Position = move.from
 
