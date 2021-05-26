@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
-import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
@@ -34,8 +34,8 @@ fun Board(
     fetchSquare: (Position) -> Square,
     highlightedPositions: List<Position>,
     clickablePositions: List<Position>,
-    possibleMoves: List<Move>,
-    possibleCaptures: List<Move>,
+    possibleMoves: List<BoardMove>,
+    possibleCaptures: List<BoardMove>,
     onClick: (Position) -> Unit
 ) {
     Box(

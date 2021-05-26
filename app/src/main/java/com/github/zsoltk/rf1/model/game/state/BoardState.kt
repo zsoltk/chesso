@@ -2,8 +2,8 @@ package com.github.zsoltk.rf1.model.game.state
 
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.move.targetPositions
-import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set
@@ -22,33 +22,33 @@ data class BoardState(
         }
 
         return board.pieces.any { (_, piece) ->
-            val otherPieceCaptures: List<Move> = piece.possibleCaptures(this) ?: emptyList()
+            val otherPieceCaptures: List<BoardMove> = piece.possibleCaptures(this)
             kingsPosition in otherPieceCaptures.targetPositions()
         }
     }
 
-    fun legalMovesFrom(from: Position?): List<Move> =
+    fun legalMovesFrom(from: Position?): List<BoardMove> =
         from.let { position ->
             possibleMovesWithoutCaptures(position).applyCheckConstraints()
         }
 
-    fun legalCapturesFrom(from: Position?): List<Move> =
+    fun legalCapturesFrom(from: Position?): List<BoardMove> =
         from.let { position ->
             possibleCaptures(position).applyCheckConstraints()
         }
 
-    private fun possibleMovesWithoutCaptures(from: Position?): List<Move> =
+    private fun possibleMovesWithoutCaptures(from: Position?): List<BoardMove> =
         map(from) { piece ->
             piece.movesWithoutCaptures(this)
         }
 
-    private fun possibleCaptures(from: Position?): List<Move> =
+    private fun possibleCaptures(from: Position?): List<BoardMove> =
         map(from) { piece ->
             piece.possibleCaptures(this)
         }
 
-    private fun map(from: Position?, mapper: (Piece) -> List<Move>): List<Move> {
-        var list = emptyList<Move>()
+    private fun map(from: Position?, mapper: (Piece) -> List<BoardMove>): List<BoardMove> {
+        var list = emptyList<BoardMove>()
 
         from?.let { nonNullPosition ->
             val square = board[nonNullPosition]
@@ -60,19 +60,17 @@ data class BoardState(
         return list
     }
 
-    private fun List<Move>.applyCheckConstraints(): List<Move> =
+    private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
         filter { move ->
             // Any move made should result in no check (clear current if any, and not cause a new one)
             val newBoardState = deriveBoardState(move)
             !newBoardState.hasCheckFor(toMove)
         }
 
-    fun deriveBoardState(move: Move): BoardState {
-        val updatedBoard = board.copy(
-            pieces = board.pieces
-                .minus(move.from)
-                .plus(move.to to move.piece)
-        )
+    fun deriveBoardState(boardMove: BoardMove): BoardState {
+        val updatedBoard = board
+            .apply(boardMove.consequence)
+            .apply(boardMove.move)
 
         return copy(
             board = updatedBoard,

@@ -1,7 +1,7 @@
 package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.game.state.BoardState
-import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
@@ -14,7 +14,7 @@ class Knight(override val set: Set) : Piece {
         BLACK -> "♞"
     }
 
-    override fun moves(boardState: BoardState): List<Move> =
+    override fun moves(boardState: BoardState): List<BoardMove> =
         targets
             .map { singleCaptureMove(boardState, it.first, it.second) }
             .filterNotNull()

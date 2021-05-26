@@ -1,6 +1,9 @@
 package com.github.zsoltk.rf1.model.board
 
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.move.Capture
+import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.EffectOnPiece
 import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Knight
@@ -41,6 +44,20 @@ data class Board(
 
     fun pieces(set: Set): Map<Position, Piece> =
         pieces.filter { (_, piece) -> piece.set == set }
+
+    fun apply(effect: EffectOnPiece?): Board =
+        when (effect) {
+            is Capture -> copy(
+                pieces = pieces
+                    .minus(effect.position)
+            )
+            is Move -> copy(
+                pieces = pieces
+                    .minus(effect.from)
+                    .plus(effect.to to effect.piece)
+            )
+            null -> this
+        }
 }
 
 private val initialPieces = mapOf(

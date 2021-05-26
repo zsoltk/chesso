@@ -3,29 +3,40 @@ package com.github.zsoltk.rf1.model.piece
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
+import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.BoardMove
+import com.github.zsoltk.rf1.model.move.MoveIntention
 
 fun Piece.singleCaptureMove(
     boardState: BoardState,
     deltaFile: Int,
     deltaRank: Int
-): Move? {
+): BoardMove? {
     val board = boardState.board
     val square = board.find(this) ?: return null
     val target = board[square.file + deltaFile, square.rank + deltaRank] ?: return null
 
-    return if (target.isEmpty || target.hasPiece(set.opposite())) Move(
-        from = square.position,
-        to = target.position,
-        piece = this
-    ) else null
+    return when {
+        target.hasPiece(set) -> null
+        else -> BoardMove(
+            move = Move(
+                piece = this,
+                intent = MoveIntention(from = square.position, to = target.position)
+            ),
+            consequence = when {
+                target.isNotEmpty -> Capture(target.piece!!, target.position)
+                else -> null
+            }
+        )
+    }
 }
 
 fun Piece.lineMoves(
     boardState: BoardState,
     directions: List<Pair<Int, Int>>,
-) : List<Move> {
-    val moves = mutableListOf<Move>()
+) : List<BoardMove> {
+    val moves = mutableListOf<BoardMove>()
     val board = boardState.board
     val square = board.find(this) ?: return emptyList()
 
@@ -41,24 +52,26 @@ fun lineMoves(
     square: Square,
     deltaFile: Int,
     deltaRank: Int
-): List<Move> {
+): List<BoardMove> {
     requireNotNull(square.piece)
     val set = square.piece.set
-    val moves = mutableListOf<Move>()
+    val moves = mutableListOf<BoardMove>()
 
     var i = 0
     while (true) {
         i++
         val target = board[square.file + deltaFile * i, square.rank + deltaRank * i] ?: break
+        if (target.hasPiece(set)) {
+            break
+        }
+
+        val move = Move(piece = square.piece, from = square.position, to = target.position)
         if (target.isEmpty) {
-            moves += Move(from = square.position, to = target.position, piece = square.piece)
+            moves += BoardMove(move)
             continue
         }
         if (target.hasPiece(set.opposite())) {
-            moves += Move(from = square.position, to = target.position, piece = square.piece)
-            break
-        }
-        if (target.hasPiece(set)) {
+            moves += BoardMove(move, Capture(target.piece!!, target.position))
             break
         }
     }

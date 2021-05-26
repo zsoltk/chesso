@@ -3,7 +3,7 @@ package com.github.zsoltk.rf1.model.game.state
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.move.CalculatedMove
-import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.MoveEffect
 import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.piece.Piece
@@ -26,11 +26,13 @@ data class GameState(
 
     fun calculateAppliedMove(moveIntention: MoveIntention, boardStatesSoFar: List<BoardState>): AppliedMove {
         val pieceToMove = board[moveIntention.from].piece
-        val capturedPiece = board[moveIntention.to].piece
         requireNotNull(pieceToMove)
 
-        val move = Move(moveIntention, pieceToMove)
-        val newBoardState = boardState.deriveBoardState(move)
+        val pieceMoves = boardState.legalMovesFrom(moveIntention.from) + boardState.legalCapturesFrom(moveIntention.from)
+        val boardMove = pieceMoves.find { it.to == moveIntention.to }
+        requireNotNull(boardMove)
+
+        val newBoardState = boardState.deriveBoardState(boardMove)
         val nextToMove = boardState.toMove.opposite()
 
         val validMoves = newBoardState.board.pieces(nextToMove).filter { (position, _) ->
@@ -44,8 +46,7 @@ data class GameState(
         val threefoldRepetition = (boardStatesSoFar + newBoardState).hasThreefoldRepetition()
 
         val calculatedMove = CalculatedMove(
-            move = move,
-            isCapture = capturedPiece != null,
+            boardMove = boardMove,
             effect = when {
                 isCheckNoMate -> MoveEffect.CHECK
                 isCheckMate -> MoveEffect.CHECKMATE
@@ -70,7 +71,7 @@ data class GameState(
                 },
                 move = null,
                 lastMove = calculatedMove,
-                capturedPieces = capturedPiece?.let { capturedPieces + it } ?: capturedPieces
+                capturedPieces = (boardMove.consequence as? Capture)?.let { capturedPieces + it.piece } ?: capturedPieces
             )
         )
     }

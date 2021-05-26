@@ -4,11 +4,11 @@ import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.state.UiState
-import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.move.BoardMove
 
 class GameController(
     private val game: Game,
@@ -60,7 +60,7 @@ class GameController(
     fun possibleCapturesFromSelectedPosition() =
         boardState.legalCapturesFrom(uiState.selectedPosition)
 
-    fun possibleMovesFromSelectedPosition(): List<Move> =
+    fun possibleMovesFromSelectedPosition(): List<BoardMove> =
         boardState.legalMovesFrom(uiState.selectedPosition)
 
     private fun Position.hasOwnPiece() =

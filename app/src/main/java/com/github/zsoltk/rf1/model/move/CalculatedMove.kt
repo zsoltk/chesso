@@ -6,29 +6,29 @@ import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
 data class CalculatedMove(
-    val move: Move,
-    val isCapture: Boolean? = null,
+    val boardMove: BoardMove,
     val effect: MoveEffect? = null
 ) {
-    val from: Position = move.from
+    val from: Position = boardMove.move.from
 
-    val to: Position = move.to
+    val to: Position = boardMove.move.to
 
-    val piece: Piece = move.piece
+    val piece: Piece = boardMove.move.piece
 
     override fun toString(): String {
+        val isCapture = boardMove.consequence is Capture
         val symbol = when {
             piece !is Pawn -> piece.symbol
-            isCapture == true -> move.from.fileAsLetter
+            isCapture -> from.fileAsLetter
             else -> ""
         }
-        val capture = if (isCapture == true) "x" else ""
+        val capture = if (isCapture) "x" else ""
         val postFix = when (effect) {
             MoveEffect.CHECK -> "+"
-            MoveEffect.CHECKMATE -> "#  ${if (move.piece.set == WHITE) "1-0" else "0-1"}"
+            MoveEffect.CHECKMATE -> "#  ${if (boardMove.move.piece.set == WHITE) "1-0" else "0-1"}"
             MoveEffect.DRAW -> "  ½ - ½"
             else -> ""
         }
-        return "$symbol$capture${move.to}$postFix"
+        return "$symbol$capture$to$postFix"
     }
 }
