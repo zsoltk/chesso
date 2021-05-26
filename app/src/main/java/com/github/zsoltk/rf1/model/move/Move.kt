@@ -23,7 +23,6 @@ data class Move(
     val from: Position = intent.from
 
     val to: Position = intent.to
-
 }
 
 data class Capture(

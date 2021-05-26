@@ -27,6 +27,8 @@ class Pawn(override val set: Set) : Piece {
         advanceTwoSquares(board, square)?.let { moves += it }
         captureDiagonalLeft(board, square)?.let { moves += it }
         captureDiagonalRight(board, square)?.let { moves += it }
+        enPassantCaptureLeft(gameState, square)?.let { moves += it }
+        enPassantCaptureRight(gameState, square)?.let { moves += it }
 
         return moves
     }
@@ -81,5 +83,42 @@ class Pawn(override val set: Set) : Piece {
             move = Move(this, square.position, target.position),
             consequence = Capture(target.piece!!, target.position)
         ) else null
+    }
+
+    private fun enPassantCaptureLeft(
+        gameState: GameState,
+        square: Square
+    ): BoardMove? = enPassantDiagonal(gameState, square, -1)
+
+    private fun enPassantCaptureRight(
+        gameState: GameState,
+        square: Square
+    ): BoardMove? = enPassantDiagonal(gameState, square, 1)
+
+    private fun enPassantDiagonal(
+        gameState: GameState,
+        square: Square,
+        deltaFile: Int
+    ): BoardMove? {
+        if (square.position.rank != if (set == WHITE) 5 else 4) return null
+        val lastMove = gameState.lastMove ?: return null
+        if (lastMove.piece !is Pawn) return null
+        val intent = lastMove.move.intent
+        val fromInitialSquare = (intent.from.rank == if (set == WHITE) 7 else 2)
+        val twoSquareMove = (intent.to.rank == square.position.rank)
+        val isOnNextFile = intent.to.file == square.file + deltaFile
+
+        return if (fromInitialSquare && twoSquareMove && isOnNextFile) {
+            val deltaRank = if (set == WHITE) 1 else -1
+            val enPassantTarget = gameState.board[square.file + deltaFile, square.rank + deltaRank]
+            val capturedPieceSquare = gameState.board[square.file + deltaFile, square.rank]
+            requireNotNull(enPassantTarget)
+            requireNotNull(capturedPieceSquare)
+
+            BoardMove(
+                move = Move(this, square.position, enPassantTarget.position),
+                consequence = Capture(capturedPieceSquare.piece!!, capturedPieceSquare.position)
+            )
+        } else null
     }
 }

@@ -115,6 +115,10 @@ data class GameState(
     }
 
     fun derivePseudoGameState(boardMove: BoardMove): GameState = copy(
-        boardState = boardState.deriveBoardState(boardMove)
+        boardState = boardState.deriveBoardState(boardMove),
+        lastMove = CalculatedMove(
+            boardMove = boardMove,
+            effect = null
+        )
     )
 }

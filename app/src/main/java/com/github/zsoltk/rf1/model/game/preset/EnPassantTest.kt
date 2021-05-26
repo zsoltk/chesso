@@ -7,26 +7,24 @@ import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.composable.Preset
 
-object CheckMateTest : Preset {
+object EnPassantTest : Preset {
 
     override fun apply(gameController: GameController) {
         gameController.apply {
             applyMove(Position.e2, Position.e4)
-            applyMove(Position.e7, Position.e5)
-            applyMove(Position.d1, Position.h5)
             applyMove(Position.b8, Position.c6)
-            applyMove(Position.f1, Position.c4)
-            applyMove(Position.f8, Position.c5)
-            onClick(Position.h5)
+            applyMove(Position.e4, Position.e5)
+            applyMove(Position.d7, Position.d5)
+            onClick(Position.e5)
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CheckMateTestPreview() {
+fun EnPassantTestPreview() {
     Rf1Theme {
-        Preset(CheckMateTest)
+        Preset(EnPassantTest)
     }
 }
 

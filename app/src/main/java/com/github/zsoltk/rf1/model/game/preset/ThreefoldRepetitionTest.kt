@@ -31,13 +31,6 @@ object ThreefoldRepetitionTest : Preset {
                 toMove = Set.WHITE
             )
             reset(GameState(boardState))
-
-//            applyMove(d5, d1)
-//            applyMove(a7, b6)
-//
-//            applyMove(d1, d5)
-//            applyMove(b6, a7)
-
         }
     }
 }

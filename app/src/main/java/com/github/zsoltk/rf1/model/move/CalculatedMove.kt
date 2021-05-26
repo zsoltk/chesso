@@ -9,11 +9,13 @@ data class CalculatedMove(
     val boardMove: BoardMove,
     val effect: MoveEffect? = null
 ) {
-    val from: Position = boardMove.move.from
+    val move: Move = boardMove.move
 
-    val to: Position = boardMove.move.to
+    val from: Position = move.from
 
-    val piece: Piece = boardMove.move.piece
+    val to: Position = move.to
+
+    val piece: Piece = move.piece
 
     override fun toString(): String {
         val isCapture = boardMove.consequence is Capture
