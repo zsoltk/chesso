@@ -16,7 +16,7 @@ class Rook(override val set: Set) : Piece {
 
     override val textSymbol: String = "R"
 
-    override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
+    override fun pseudoLegalMoves(gameState: GameState, checkCheck: Boolean): List<BoardMove> =
         lineMoves(gameState, directions)
 
     companion object {

@@ -21,12 +21,15 @@ data class Board(
         pieces = initialPieces
     )
 
-    private val squares = Position.values().map { position ->
+    val squares = Position.values().map { position ->
         position to Square(position, pieces[position])
     }.toMap()
 
     operator fun get(position: Position): Square =
         squares[position]!!
+
+    operator fun get(file: File, rank: Int): Square? =
+        get(file.ordinal + 1, rank)
 
     operator fun get(file: Int, rank: Int): Square? {
         return try {
@@ -39,6 +42,13 @@ data class Board(
 
     fun find(piece: Piece): Square? =
         squares.values.firstOrNull { it.piece == piece }
+
+    inline fun <reified T : Piece> find(set: Set): List<Square> =
+        squares.values.filter {
+            it.piece != null &&
+                it.piece::class == T::class &&
+                it.piece.set == set
+        }
 
     fun pieces(set: Set): Map<Position, Piece> =
         pieces.filter { (_, piece) -> piece.set == set }

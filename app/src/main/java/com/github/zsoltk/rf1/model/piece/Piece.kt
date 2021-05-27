@@ -16,5 +16,5 @@ interface Piece {
     /**
      * List of moves that are legally possible for the piece without applying pin / check constraints
      */
-    fun pseudoLegalMoves(gameState: GameState): List<BoardMove> = emptyList()
+    fun pseudoLegalMoves(gameState: GameState, checkCheck: Boolean): List<BoardMove> = emptyList()
 }

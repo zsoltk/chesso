@@ -19,8 +19,10 @@ data class GameState(
     val resolution: Resolution = Resolution.IN_PROGRESS,
     val move: AppliedMove? = null,
     val lastMove: AppliedMove? = null,
+    val castlingInfo: CastlingInfo = CastlingInfo(),
     val capturedPieces: List<Piece> = emptyList()
 ) {
+
     val board: Board
         get() = boardState.board
 
@@ -35,24 +37,24 @@ data class GameState(
     fun hasCheck(): Boolean =
         hasCheckFor(toMove)
 
-    private fun hasCheckFor(set: Set): Boolean {
-        val kingsPosition: Position? = board.pieces.keys.find { position ->
-            val piece = board.pieces[position]
-            piece is King && piece.set == set
-        }
+    fun hasCheckFor(set: Set): Boolean {
+        val kingsPosition: Position = board.find<King>(set).firstOrNull()?.position ?: return false
 
-        return board.pieces.any { (_, piece) ->
-            val otherPieceCaptures: List<BoardMove> = piece.pseudoLegalMoves(this)
+        return hasCheckFor(kingsPosition)
+    }
+
+    fun hasCheckFor(position: Position): Boolean =
+        board.pieces.any { (_, piece) ->
+            val otherPieceCaptures: List<BoardMove> = piece.pseudoLegalMoves(this, true)
                 .filter { it.preMove is Capture }
 
-            kingsPosition in otherPieceCaptures.targetPositions()
+            position in otherPieceCaptures.targetPositions()
         }
-    }
 
     fun legalMovesFrom(from: Position): List<BoardMove> {
         val square = board[from]
         val piece = square.piece ?: return emptyList()
-        return piece.pseudoLegalMoves(this).applyCheckConstraints()
+        return piece.pseudoLegalMoves(this, false).applyCheckConstraints()
     }
 
     private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
@@ -109,12 +111,13 @@ data class GameState(
                 },
                 move = null,
                 lastMove = appliedMove,
+                castlingInfo = castlingInfo.apply(boardMove),
                 capturedPieces = (boardMove.preMove as? Capture)?.let { capturedPieces + it.piece } ?: capturedPieces
             )
         )
     }
 
-    private fun derivePseudoGameState(boardMove: BoardMove): GameState = copy(
+    fun derivePseudoGameState(boardMove: BoardMove): GameState = copy(
         boardState = boardState.deriveBoardState(boardMove),
         move = null,
         lastMove = AppliedMove(
