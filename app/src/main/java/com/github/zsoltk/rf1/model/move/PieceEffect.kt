@@ -13,7 +13,7 @@ interface PieceEffect {
 
 interface PreMove : PieceEffect
 
-interface PrimaryPieceMove : PieceEffect {
+interface PrimaryMove : PieceEffect {
 
     val from: Position
 
@@ -26,7 +26,7 @@ data class Move(
     override val piece: Piece,
     override val from: Position,
     override val to: Position
-) : PrimaryPieceMove, Consequence {
+) : PrimaryMove, Consequence {
 
     constructor(
         piece: Piece,
