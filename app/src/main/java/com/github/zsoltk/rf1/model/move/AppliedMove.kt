@@ -18,7 +18,7 @@ data class AppliedMove(
     val piece: Piece = move.piece
 
     override fun toString(): String {
-        val isCapture = boardMove.consequence is Capture
+        val isCapture = boardMove.preMove is Capture
         val symbol = when {
             piece !is Pawn -> piece.symbol
             isCapture -> from.fileAsLetter

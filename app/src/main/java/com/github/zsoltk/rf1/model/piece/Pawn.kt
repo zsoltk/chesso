@@ -40,8 +40,7 @@ class Pawn(override val set: Set) : Piece {
         val deltaRank = if (set == WHITE) 1 else -1
         val target = board[square.file, square.rank + deltaRank]
         return if (target?.isEmpty == true) BoardMove(
-            move = Move(this, square.position, target.position),
-            consequence = null
+            move = Move(this, square.position, target.position)
         ) else null
     }
 
@@ -55,8 +54,7 @@ class Pawn(override val set: Set) : Piece {
             val target1 = board[square.file, square.rank + deltaRank1]
             val target2 = board[square.file, square.rank + deltaRank2]
             return if (target1?.isEmpty == true && target2?.isEmpty == true) BoardMove(
-                move = Move(this, square.position, target2.position),
-                consequence = null
+                move = Move(this, square.position, target2.position)
             ) else null
         }
         return null
@@ -81,7 +79,7 @@ class Pawn(override val set: Set) : Piece {
         val target = board[square.file + deltaFile, square.rank + deltaRank]
         return if (target?.hasPiece(set.opposite()) == true) BoardMove(
             move = Move(this, square.position, target.position),
-            consequence = Capture(target.piece!!, target.position)
+            preMove = Capture(target.piece!!, target.position)
         ) else null
     }
 
@@ -116,7 +114,7 @@ class Pawn(override val set: Set) : Piece {
 
             BoardMove(
                 move = Move(this, square.position, enPassantTarget.position),
-                consequence = Capture(capturedPieceSquare.piece!!, capturedPieceSquare.position)
+                preMove = Capture(capturedPieceSquare.piece!!, capturedPieceSquare.position)
             )
         } else null
     }

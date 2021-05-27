@@ -11,6 +11,8 @@ interface PieceEffect {
     fun applyOn(board: Board): Board
 }
 
+interface PreMove : PieceEffect
+
 interface PrimaryPieceMove : PieceEffect {
 
     val from: Position
@@ -46,10 +48,10 @@ data class Move(
 data class Capture(
     override val piece: Piece,
     val position: Position,
-) : Consequence {
+) : PreMove {
 
     override fun applyOn(board: Board): Board =
-        if (board.pieces[position] == piece) board.copy(
+        board.copy(
             pieces = board.pieces.minus(position)
         )
         // A move might have been a applied already, let's not remove the new piece

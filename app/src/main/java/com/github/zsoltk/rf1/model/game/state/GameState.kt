@@ -43,7 +43,7 @@ data class GameState(
 
         return board.pieces.any { (_, piece) ->
             val otherPieceCaptures: List<BoardMove> = piece.pseudoLegalMoves(this)
-                .filter { it.consequence is Capture }
+                .filter { it.preMove is Capture }
 
             kingsPosition in otherPieceCaptures.targetPositions()
         }
@@ -109,7 +109,7 @@ data class GameState(
                 },
                 move = null,
                 lastMove = appliedMove,
-                capturedPieces = (boardMove.consequence as? Capture)?.let { capturedPieces + it.piece } ?: capturedPieces
+                capturedPieces = (boardMove.preMove as? Capture)?.let { capturedPieces + it.piece } ?: capturedPieces
             )
         )
     }

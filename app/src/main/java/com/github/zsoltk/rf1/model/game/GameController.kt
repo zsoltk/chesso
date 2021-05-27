@@ -59,10 +59,10 @@ class GameController(
             .map { it.key }
 
     fun possibleCaptures(): List<Position> =
-        possibleMoves { it.consequence is Capture }.targetPositions()
+        possibleMoves { it.preMove is Capture }.targetPositions()
 
     fun possibleMovesWithoutCaptures(): List<Position> =
-        possibleMoves { it.consequence !is Capture }.targetPositions()
+        possibleMoves { it.preMove !is Capture }.targetPositions()
 
     private fun possibleMoves(predicate: (BoardMove) -> Boolean = { true }) =
         uiState.selectedPosition?.let {

@@ -24,7 +24,7 @@ fun Piece.singleCaptureMove(
                 piece = this,
                 intent = MoveIntention(from = square.position, to = target.position)
             ),
-            consequence = when {
+            preMove = when {
                 target.isNotEmpty -> Capture(target.piece!!, target.position)
                 else -> null
             }
@@ -71,7 +71,10 @@ fun lineMoves(
             continue
         }
         if (target.hasPiece(set.opposite())) {
-            moves += BoardMove(move, Capture(target.piece!!, target.position))
+            moves += BoardMove(
+                move = move,
+                preMove = Capture(target.piece!!, target.position)
+            )
             break
         }
     }
