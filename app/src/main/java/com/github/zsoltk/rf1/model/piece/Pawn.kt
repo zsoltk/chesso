@@ -6,6 +6,7 @@ import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
@@ -30,7 +31,9 @@ class Pawn(override val set: Set) : Piece {
         enPassantCaptureLeft(gameState, square)?.let { moves += it }
         enPassantCaptureRight(gameState, square)?.let { moves += it }
 
-        return moves
+        return moves.map {
+            it.promoteAutoQueen()
+        }
     }
 
     private fun advanceSingle(
@@ -119,3 +122,10 @@ class Pawn(override val set: Set) : Piece {
         } else null
     }
 }
+
+private fun BoardMove.promoteAutoQueen(): BoardMove =
+    if (move.to.rank == if (piece.set == WHITE) 8 else 1) {
+        copy(
+            consequence = Promotion(move.to, Queen(piece.set))
+        )
+    } else this

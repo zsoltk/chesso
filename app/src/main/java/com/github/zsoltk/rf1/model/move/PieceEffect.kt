@@ -54,8 +54,18 @@ data class Capture(
         board.copy(
             pieces = board.pieces.minus(position)
         )
-        // A move might have been a applied already, let's not remove the new piece
-        else board
-
 }
 
+
+data class Promotion(
+    val position: Position,
+    override val piece: Piece,
+) : Consequence {
+
+    override fun applyOn(board: Board): Board =
+        board.copy(
+            pieces = board.pieces
+                .minus(position)
+                .plus(position to piece)
+        )
+}
