@@ -150,7 +150,7 @@ private fun Piece(square: Square) {
     square.piece?.let {
         Text(
             text = it.symbol,
-            fontSize = 36.sp
+            fontSize = 40.sp
         )
     }
 }
