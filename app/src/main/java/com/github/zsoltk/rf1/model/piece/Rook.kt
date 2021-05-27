@@ -14,6 +14,8 @@ class Rook(override val set: Set) : Piece {
         BLACK -> "♜"
     }
 
+    override val textSymbol: String = "R"
+
     override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
         lineMoves(gameState, directions)
 

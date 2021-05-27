@@ -9,6 +9,8 @@ interface Piece {
 
     val symbol: String
 
+    val textSymbol: String
+
     val value: Int
 
     /**

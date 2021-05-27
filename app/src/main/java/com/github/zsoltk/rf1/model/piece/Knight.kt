@@ -14,6 +14,8 @@ class Knight(override val set: Set) : Piece {
         BLACK -> "♞"
     }
 
+    override val textSymbol: String = "N"
+
     override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
         targets
             .map { singleCaptureMove(gameState, it.first, it.second) }

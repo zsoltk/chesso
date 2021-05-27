@@ -25,12 +25,13 @@ data class AppliedMove(
             else -> ""
         }
         val capture = if (isCapture) "x" else ""
+        val promotion = if (boardMove.consequence is Promotion) "=${boardMove.consequence.piece.textSymbol}" else ""
         val postFix = when (effect) {
             MoveEffect.CHECK -> "+"
             MoveEffect.CHECKMATE -> "#  ${if (boardMove.move.piece.set == WHITE) "1-0" else "0-1"}"
             MoveEffect.DRAW -> "  ½ - ½"
             else -> ""
         }
-        return "$symbol$capture$to$postFix"
+        return "$symbol$capture$to$promotion$postFix"
     }
 }

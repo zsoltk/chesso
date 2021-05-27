@@ -14,6 +14,8 @@ class Bishop(override val set: Set) : Piece {
         BLACK -> "♝"
     }
 
+    override val textSymbol: String = "B"
+
     override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
         lineMoves(gameState, directions)
 

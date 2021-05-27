@@ -19,6 +19,8 @@ class Pawn(override val set: Set) : Piece {
         BLACK -> "♟︎"
     }
 
+    override val textSymbol: String = ""
+
     override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> {
         val board = gameState.board
         val square = board.find(this) ?: return emptyList()

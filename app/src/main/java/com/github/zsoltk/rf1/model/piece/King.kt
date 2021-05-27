@@ -14,6 +14,8 @@ class King(override val set: Set) : Piece {
         BLACK -> "♚"
     }
 
+    override val textSymbol: String = "K"
+
     override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
         targets
             .map { singleCaptureMove(gameState, it.first, it.second) }

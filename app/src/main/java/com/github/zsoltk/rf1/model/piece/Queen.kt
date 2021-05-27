@@ -14,6 +14,8 @@ class Queen(override val set: Set) : Piece {
         BLACK -> "♛"
     }
 
+    override val textSymbol: String = "Q"
+
     override fun pseudoLegalMoves(gameState: GameState): List<BoardMove> =
         lineMoves(gameState, Rook.directions + Bishop.directions)
 }
