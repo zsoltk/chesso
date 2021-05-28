@@ -45,6 +45,34 @@ data class Move(
         )
 }
 
+data class KingSideCastle(
+    override val piece: Piece,
+    override val from: Position,
+    override val to: Position
+) : PrimaryMove {
+
+    override fun applyOn(board: Board): Board =
+        board.copy(
+            pieces = board.pieces
+                .minus(from)
+                .plus(to to piece)
+        )
+}
+
+data class QueenSideCastle(
+    override val piece: Piece,
+    override val from: Position,
+    override val to: Position
+) : PrimaryMove {
+
+    override fun applyOn(board: Board): Board =
+        board.copy(
+            pieces = board.pieces
+                .minus(from)
+                .plus(to to piece)
+        )
+}
+
 data class Capture(
     override val piece: Piece,
     val position: Position,
@@ -55,7 +83,6 @@ data class Capture(
             pieces = board.pieces.minus(position)
         )
 }
-
 
 data class Promotion(
     val position: Position,

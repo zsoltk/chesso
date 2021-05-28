@@ -3,7 +3,9 @@ package com.github.zsoltk.rf1.model.piece
 import com.github.zsoltk.rf1.model.board.File.*
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
+import com.github.zsoltk.rf1.model.move.KingSideCastle
 import com.github.zsoltk.rf1.model.move.Move
+import com.github.zsoltk.rf1.model.move.QueenSideCastle
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
@@ -46,7 +48,7 @@ class King(override val set: Set) : Piece {
         if (gameState.hasCheckFor(fSquare.position) || gameState.hasCheckFor(gSquare.position)) return null
 
         return BoardMove(
-            move = Move(this, eSquare.position, gSquare.position),
+            move = KingSideCastle(this, eSquare.position, gSquare.position),
             consequence = Move(Rook(set), hSquare.position, fSquare.position)
         )
     }
@@ -67,7 +69,7 @@ class King(override val set: Set) : Piece {
         if (gameState.hasCheckFor(dSquare.position) || gameState.hasCheckFor(cSquare.position)) return null
 
         return BoardMove(
-            move = Move(this, eSquare.position, cSquare.position),
+            move = QueenSideCastle(this, eSquare.position, cSquare.position),
             consequence = Move(Rook(set), aSquare.position, dSquare.position)
         )
     }
