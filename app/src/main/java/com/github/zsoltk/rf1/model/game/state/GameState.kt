@@ -7,7 +7,6 @@ import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.MoveEffect
-import com.github.zsoltk.rf1.model.move.MoveIntention
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Piece
@@ -26,7 +25,7 @@ data class GameState(
     val board: Board
         get() = boardState.board
 
-    private val toMove: Set
+    val toMove: Set
         get() = boardState.toMove
 
     val score: Int =
@@ -65,14 +64,7 @@ data class GameState(
         }
 
 
-    fun calculateAppliedMove(moveIntention: MoveIntention, boardStatesSoFar: List<BoardState>): GameStateTransition {
-        val pieceToMove = board[moveIntention.from].piece
-        requireNotNull(pieceToMove)
-
-        val pieceMoves = legalMovesFrom(moveIntention.from)
-        val boardMove = pieceMoves.find { it.to == moveIntention.to }
-        requireNotNull(boardMove)
-
+    fun calculateAppliedMove(boardMove: BoardMove, boardStatesSoFar: List<BoardState>): GameStateTransition {
         val tempNewGameState = derivePseudoGameState(boardMove)
         val nextToMove = boardState.toMove.opposite()
 

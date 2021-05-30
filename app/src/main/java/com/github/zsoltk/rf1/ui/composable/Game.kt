@@ -11,7 +11,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,13 +23,15 @@ import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
-import com.github.zsoltk.rf1.model.game.preset.CastlingTest
+import com.github.zsoltk.rf1.model.game.preset.PromotionTest
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
-    val gameController = remember { GameController(game, uiState, CastlingTest)}
+    var showPromotionDialog by remember { mutableStateOf(false) }
+    val onPromotion = { showPromotionDialog = true }
+    val gameController = remember { GameController(game, uiState, onPromotion, PromotionTest) }
 
     Column {
         ToMove(game)
@@ -42,6 +47,13 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
         )
         Spacer(modifier = Modifier.height(48.dp))
         TimeTravelButtons(gameController)
+    }
+
+    if (showPromotionDialog) {
+        PromotionDialog(gameController.toMove) {
+            gameController.onPromotionPieceSelected(it)
+            showPromotionDialog = false
+        }
     }
 }
 

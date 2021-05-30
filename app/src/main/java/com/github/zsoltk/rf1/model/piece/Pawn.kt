@@ -33,8 +33,8 @@ class Pawn(override val set: Set) : Piece {
         enPassantCaptureLeft(gameState, square)?.let { moves += it }
         enPassantCaptureRight(gameState, square)?.let { moves += it }
 
-        return moves.map {
-            it.promoteAutoQueen()
+        return moves.flatMap {
+            it.checkForPromotion()
         }
     }
 
@@ -125,9 +125,12 @@ class Pawn(override val set: Set) : Piece {
     }
 }
 
-private fun BoardMove.promoteAutoQueen(): BoardMove =
+private fun BoardMove.checkForPromotion(): List<BoardMove> =
     if (move.to.rank == if (piece.set == WHITE) 8 else 1) {
-        copy(
-            consequence = Promotion(move.to, Queen(piece.set))
+        listOf(
+            copy(consequence = Promotion(move.to, Queen(piece.set))),
+            copy(consequence = Promotion(move.to, Rook(piece.set))),
+            copy(consequence = Promotion(move.to, Bishop(piece.set))),
+            copy(consequence = Promotion(move.to, Knight(piece.set))),
         )
-    } else this
+    } else listOf(this)

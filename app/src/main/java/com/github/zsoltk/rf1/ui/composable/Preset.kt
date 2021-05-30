@@ -10,7 +10,7 @@ import com.github.zsoltk.rf1.model.game.state.UiState
 fun Preset(preset: Preset) {
     val game = Game()
     val uiState = UiState()
-    GameController(game, uiState, preset)
+    GameController(game, uiState, preset = preset)
     Game(
         game = game,
         uiState = uiState
