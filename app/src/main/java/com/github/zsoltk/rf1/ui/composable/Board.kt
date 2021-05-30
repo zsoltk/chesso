@@ -52,22 +52,52 @@ fun Board(
                         val position = Position.from(file, rank)
                         val square = fetchSquare(position)
 
-                        Square(
-                            position = position,
-                            isHighlighted = position in highlightedPositions,
-                            clickable = position in clickablePositions,
-                            isPossibleMove = position in possibleMoves,
-                            isPossibleCapture = position in possibleCaptures,
-                            onClick = { onClick(position) },
-                            square = square,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxSize()
-                        )
+                        InSquare(Modifier.weight(1f)) {
+                            Square(
+                                position = position,
+                                isHighlighted = position in highlightedPositions,
+                                clickable = position in clickablePositions,
+                                isPossibleMove = position in possibleMoves,
+                                isPossibleCapture = position in possibleCaptures,
+                                onClick = { onClick(position) },
+                                square = square,
+                                modifier = Modifier
+                            )
+                        }
                     }
                 }
             }
         }
+        Column {
+            for (rank in 8 downTo 1) {
+                Row(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    for (file in 1..8) {
+                        val position = Position.from(file, rank)
+                        val square = fetchSquare(position)
+
+                        InSquare(Modifier.weight(1f)) {
+                            Piece(square)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InSquare(
+    modifier: Modifier,
+    content: @Composable () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        content()
     }
 }
 
@@ -84,15 +114,16 @@ private fun Square(
 ) {
 
     Box(
-        contentAlignment = Alignment.Center,
         modifier = modifier
-            // TODO from theme
-            .background(if (square.isDark) Color.LightGray else Color.White)
             .clickable(
                 enabled = clickable,
                 onClick = onClick
             )
     ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRect(if (square.isDark) Color.LightGray else Color.White)
+        }
+
         if (isHighlighted) {
             HighlightSquare()
         }
@@ -106,7 +137,6 @@ private fun Square(
             )
         }
 
-        Piece(square)
         if (isPossibleMove) {
             PossibleMove(onClick)
         } else if (isPossibleCapture) {
@@ -146,10 +176,11 @@ private fun PositionLabel(
 }
 
 @Composable
-private fun Piece(square: Square) {
+private fun Piece(square: Square, modifier: Modifier = Modifier) {
     square.piece?.let {
         Text(
             text = it.symbol,
+            modifier = modifier,
             fontSize = 40.sp
         )
     }
