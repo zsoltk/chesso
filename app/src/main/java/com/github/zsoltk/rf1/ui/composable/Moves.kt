@@ -48,6 +48,7 @@ fun Moves(game: Game) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             val moves = game.moves()
+            val selectedItemIndex = game.currentIndex - 1
             moves.forEachIndexed { index, move ->
                 if (index % 2 == 0) {
                     item {
@@ -57,7 +58,7 @@ fun Moves(game: Game) {
                 }
 
                 item {
-                    if (index == game.currentIndex - 1) {
+                    if (index == selectedItemIndex) {
                         Pill { Move(move) }
                     } else {
                         Move(move)
@@ -71,7 +72,7 @@ fun Moves(game: Game) {
 
             if (moves.isNotEmpty()) {
                 coroutineScope.launch {
-                    listState.animateScrollToItem(moves.lastIndex)
+                    listState.animateScrollToItem(selectedItemIndex * 2)
                 }
             }
         }
