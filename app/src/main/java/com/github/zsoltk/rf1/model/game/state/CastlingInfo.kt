@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.game.state
 
+import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.King
@@ -48,5 +49,29 @@ data class CastlingInfo(
                 .minus(set)
                 .plus(set to updatedHolder)
         )
+    }
+
+    companion object {
+        fun from(board: Board): CastlingInfo {
+            val whitePieces = board.pieces(WHITE)
+            val whiteHolder = Holder(
+                kingHasMoved = whitePieces[e1] !is King,
+                kingSideRookHasMoved = whitePieces[h1] !is Rook,
+                queenSideRookHasMoved = whitePieces[a1] !is Rook,
+            )
+            val blackPieces = board.pieces(BLACK)
+            val blackHolder = Holder(
+                kingHasMoved = blackPieces[e8] !is King,
+                kingSideRookHasMoved = blackPieces[h8] !is Rook,
+                queenSideRookHasMoved = blackPieces[a8] !is Rook,
+            )
+
+            return CastlingInfo(
+                mapOf(
+                    WHITE to whiteHolder,
+                    BLACK to blackHolder
+                )
+            )
+        }
     }
 }

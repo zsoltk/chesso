@@ -18,7 +18,7 @@ data class GameState(
     val resolution: Resolution = Resolution.IN_PROGRESS,
     val move: AppliedMove? = null,
     val lastMove: AppliedMove? = null,
-    val castlingInfo: CastlingInfo = CastlingInfo(),
+    val castlingInfo: CastlingInfo = CastlingInfo.from(boardState.board),
     val capturedPieces: List<Piece> = emptyList()
 ) {
 
