@@ -4,11 +4,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -38,11 +40,13 @@ fun Board(
     possibleCaptures: List<Position>,
     onClick: (Position) -> Unit
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
+        val squareSize = this.maxWidth / 8
+
         EightByEight { position ->
             Square(
                 position = position,
@@ -51,14 +55,14 @@ fun Board(
                 isPossibleMove = position in possibleMoves,
                 isPossibleCapture = position in possibleCaptures,
                 onClick = { onClick(position) },
-                isDark = fetchSquare(position).isDark,
-                modifier = Modifier
+                isDark = fetchSquare(position).isDark
             )
         }
 
         EightByEight { position ->
             Piece(
-                piece = fetchSquare(position).piece
+                piece = fetchSquare(position).piece,
+                modifier = Modifier.offset()
             )
         }
     }
@@ -104,7 +108,7 @@ private fun Square(
     isPossibleMove: Boolean,
     isPossibleCapture: Boolean,
     isDark: Boolean,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
 
     Box(
@@ -170,10 +174,11 @@ private fun PositionLabel(
 }
 
 @Composable
-private fun Piece(piece: Piece?) {
+private fun Piece(piece: Piece?, modifier: Modifier = Modifier) {
     piece?.let {
         Text(
             text = it.symbol,
+            modifier = modifier,
             fontSize = 40.sp
         )
     }
