@@ -90,10 +90,10 @@ data class GameState(
 
         return GameStateTransition(
             move = appliedMove,
-            updatedCurrentState = this.copy(
+            fromState = this.copy(
                 move = appliedMove
             ),
-            newState = copy(
+            toState = copy(
                 boardState = tempNewGameState.boardState,
                 resolution = when {
                     isCheckMate -> Resolution.CHECKMATE

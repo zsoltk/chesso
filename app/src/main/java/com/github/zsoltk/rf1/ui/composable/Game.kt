@@ -23,7 +23,6 @@ import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
-import com.github.zsoltk.rf1.model.game.preset.PromotionTest
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
@@ -31,19 +30,15 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 fun Game(game: Game = Game(), uiState: UiState = UiState()) {
     var showPromotionDialog by remember { mutableStateOf(false) }
     val onPromotion = { showPromotionDialog = true }
-    val gameController = remember { GameController(game, uiState, onPromotion, PromotionTest) }
+    val gameController = remember { GameController(game, uiState, onPromotion) }
 
     Column {
         ToMove(game)
         Moves(game)
         CapturedPieces(game)
-        Board(
-            fetchSquare = { gameController.square(it) },
-            highlightedPositions = gameController.highlightedPositions(),
-            clickablePositions = gameController.clickablePositions(),
-            possibleMoves = gameController.possibleMovesWithoutCaptures(),
-            possibleCaptures = gameController.possibleCaptures(),
-            onClick = { gameController.onClick(it) }
+        AnimatedBoard(
+            gameController = gameController,
+            gameStateTransition = game.transitions.last()
         )
         Spacer(modifier = Modifier.height(48.dp))
         TimeTravelButtons(gameController)

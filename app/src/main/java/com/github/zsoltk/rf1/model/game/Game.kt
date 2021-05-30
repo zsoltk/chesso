@@ -4,12 +4,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameStateTransition
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Set
 
 class Game {
 
-    var states by mutableStateOf(listOf(GameState()))
+    var states by mutableStateOf(
+        listOf(
+            GameState()
+        )
+    )
+
+    var transitions by mutableStateOf(
+        listOf(
+            GameStateTransition(states.last())
+        )
+    )
 
     var currentIndex by mutableStateOf(0)
 

@@ -1,7 +1,6 @@
 package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,9 +26,38 @@ import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameStateTransition
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.ui.Rf1Theme
+
+@Composable
+fun AnimatedBoard(
+    gameController: GameController,
+    gameStateTransition: GameStateTransition
+) {
+    Board(
+        gameController = gameController,
+        gameState = gameStateTransition.toState
+    )
+}
+
+@Composable
+fun Board(
+    gameController: GameController,
+    gameState: GameState
+) {
+    Board(
+        fetchSquare = { position -> gameState.boardState.board[position] },
+        // TODO make these come from state rather than query, lift out gameController completely
+        highlightedPositions = gameController.highlightedPositions(),
+        clickablePositions = gameController.clickablePositions(),
+        possibleMoves = gameController.possibleMovesWithoutCaptures(),
+        possibleCaptures = gameController.possibleCaptures(),
+        onClick = { gameController.onClick(it) }
+    )
+}
 
 @Composable
 fun Board(
