@@ -26,6 +26,7 @@ import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.UiState
+import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
@@ -42,44 +43,37 @@ fun Board(
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
-        Column {
-            for (rank in 8 downTo 1) {
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    for (file in 1..8) {
-                        val position = Position.from(file, rank)
-                        val square = fetchSquare(position)
-
-                        InSquare(Modifier.weight(1f)) {
-                            Square(
-                                position = position,
-                                isHighlighted = position in highlightedPositions,
-                                clickable = position in clickablePositions,
-                                isPossibleMove = position in possibleMoves,
-                                isPossibleCapture = position in possibleCaptures,
-                                onClick = { onClick(position) },
-                                square = square,
-                                modifier = Modifier
-                            )
-                        }
-                    }
-                }
-            }
+        EightByEight { position ->
+            Square(
+                position = position,
+                isHighlighted = position in highlightedPositions,
+                clickable = position in clickablePositions,
+                isPossibleMove = position in possibleMoves,
+                isPossibleCapture = position in possibleCaptures,
+                onClick = { onClick(position) },
+                isDark = fetchSquare(position).isDark,
+                modifier = Modifier
+            )
         }
-        Column {
-            for (rank in 8 downTo 1) {
-                Row(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    for (file in 1..8) {
-                        val position = Position.from(file, rank)
-                        val square = fetchSquare(position)
 
-                        InSquare(Modifier.weight(1f)) {
-                            Piece(square)
-                        }
+        EightByEight { position ->
+            Piece(
+                piece = fetchSquare(position).piece
+            )
+        }
+    }
+}
+
+@Composable
+private fun EightByEight(
+    content: @Composable (Position) -> Unit
+) {
+    Column {
+        for (rank in 8 downTo 1) {
+            Row(Modifier.weight(1f)) {
+                for (file in 1..8) {
+                    InSquare(Modifier.weight(1f)) {
+                        content(Position.from(file, rank))
                     }
                 }
             }
@@ -109,7 +103,7 @@ private fun Square(
     onClick: () -> Unit,
     isPossibleMove: Boolean,
     isPossibleCapture: Boolean,
-    square: Square,
+    isDark: Boolean,
     modifier: Modifier
 ) {
 
@@ -121,7 +115,7 @@ private fun Square(
             )
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            drawRect(if (square.isDark) Color.LightGray else Color.White)
+            drawRect(if (isDark) Color.LightGray else Color.White)
         }
 
         if (isHighlighted) {
@@ -176,11 +170,10 @@ private fun PositionLabel(
 }
 
 @Composable
-private fun Piece(square: Square, modifier: Modifier = Modifier) {
-    square.piece?.let {
+private fun Piece(piece: Piece?) {
+    piece?.let {
         Text(
             text = it.symbol,
-            modifier = modifier,
             fontSize = 40.sp
         )
     }
