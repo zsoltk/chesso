@@ -1,22 +1,13 @@
 package com.github.zsoltk.rf1.model.game.state
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Set
 
-class GameState {
-
-    var states by mutableStateOf(
-        listOf(
-            GameSnaphotState()
-        )
-    )
-
-    var currentIndex by mutableStateOf(0)
-
+data class GameState(
+    val states: List<GameSnaphotState> = listOf(GameSnaphotState()),
+    val currentIndex: Int = 0
+) {
     val hasPrevIndex: Boolean
         get() = currentIndex > 0
 

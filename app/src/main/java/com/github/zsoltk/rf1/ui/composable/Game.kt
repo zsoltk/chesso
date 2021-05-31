@@ -24,19 +24,26 @@ import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(gameState: GameState = GameState(), preset: Preset? = null) {
+fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
+    var gamePlayState by remember { mutableStateOf(state) }
     var showPromotionDialog by remember { mutableStateOf(false) }
-    val onPromotion = { showPromotionDialog = true }
-    val gameController = remember { GameController(gameState, onPromotion, preset) }
+    val gameController = remember { GameController(
+        gamePlayState = { gamePlayState },
+        setGamePlayState = {gamePlayState = it},
+        onPromotion = { showPromotionDialog = true },
+        preset = preset
+    ) }
 
     Column {
-        ToMove(gameState)
-        Moves(gameState)
-        CapturedPieces(gameState)
+        ToMove(gamePlayState.gameState)
+        Moves(gamePlayState.gameState)
+        CapturedPieces(gamePlayState.gameState)
         AnimatedBoard(
+            gamePlayState = gamePlayState,
             gameController = gameController
         )
         Spacer(modifier = Modifier.height(48.dp))
@@ -95,8 +102,8 @@ private fun TimeTravelButtons(gameController: GameController) {
 @Composable
 fun GamePreview() {
     Rf1Theme {
-        val game = GameState()
-        GameController(game).apply {
+        var gamePlayState = GamePlayState()
+        GameController({ gamePlayState }, { gamePlayState = it}).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
@@ -109,7 +116,7 @@ fun GamePreview() {
             onClick(g8)
         }
         Game(
-            gameState = game,
+            state = gamePlayState,
         )
     }
 }

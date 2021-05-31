@@ -1,15 +1,12 @@
 package com.github.zsoltk.rf1.model.game
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
-import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Promotion
@@ -19,7 +16,8 @@ import com.github.zsoltk.rf1.model.piece.Set
 import java.lang.IllegalStateException
 
 class GameController(
-    val gameState: GameState,
+    val gamePlayState: () -> GamePlayState,
+    private val setGamePlayState: ((GamePlayState) -> Unit)? = null,
     private val onPromotion: (() -> Unit)? = null,
     preset: Preset? = null
 ) {
@@ -28,9 +26,7 @@ class GameController(
     }
 
     val gameSnaphotState: GameSnaphotState
-        get() = gameState.currentSnaphotState
-
-    var uiState by mutableStateOf(UiState(gameSnaphotState))
+        get() = gamePlayState().gameState.currentSnaphotState
 
     private val boardState: BoardState
         get() = gameSnaphotState.boardState
@@ -48,8 +44,13 @@ class GameController(
     }
 
     fun reset(gameSnaphotState: GameSnaphotState = GameSnaphotState()) {
-        gameState.states = listOf(gameSnaphotState)
-        uiState = uiState.deselect()
+        setGamePlayState?.invoke(
+            GamePlayState(
+                gameState = GameState(
+                    states = listOf(gameSnaphotState)
+                )
+            )
+        )
     }
 
     fun applyPreset(preset: Preset) {
@@ -68,18 +69,22 @@ class GameController(
         if (position.hasOwnPiece()) {
             selectPosition(position)
         } else if (canMoveTo(position)) {
-            val selectedPosition = uiState.selectedPosition
+            val selectedPosition = gamePlayState().uiState.selectedPosition
             requireNotNull(selectedPosition)
             applyMove(selectedPosition, position)
         }
     }
 
     private fun selectPosition(position: Position) {
-        uiState = uiState.select(position)
+        setGamePlayState?.invoke(
+            gamePlayState().copy(
+                uiState = gamePlayState().uiState.select(position)
+            )
+        )
     }
 
     private fun canMoveTo(position: Position) =
-        position in uiState.possibleMoves().targetPositions()
+        position in gamePlayState().uiState.possibleMoves().targetPositions()
 
     fun applyMove(from: Position, to: Position) {
         val boardMove = findBoardMove(from, to) ?: return
@@ -87,8 +92,8 @@ class GameController(
     }
 
     private fun applyMove(boardMove: BoardMove) {
-        var states = gameState.states.toMutableList()
-        val currentIndex = gameState.currentIndex
+        var states = gamePlayState().gameState.states.toMutableList()
+        val currentIndex = gamePlayState().gameState.currentIndex
         val transition = gameSnaphotState.calculateAppliedMove(
             boardMove = boardMove,
             boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
@@ -96,9 +101,16 @@ class GameController(
 
         states[currentIndex] = transition.fromSnaphotState
         states = states.subList(0, currentIndex + 1)
-        gameState.currentIndex = states.lastIndex
-        gameState.states = states + transition.toSnaphotState
-        stepForward()
+        states.add(transition.toSnaphotState)
+
+        setGamePlayState?.invoke(
+            GamePlayState(
+                gameState = gamePlayState().gameState.copy(
+                    states = states,
+                    currentIndex = states.lastIndex
+                )
+            )
+        )
     }
 
     private fun findBoardMove(from: Position, to: Position): BoardMove? {
@@ -157,22 +169,32 @@ class GameController(
     }
 
     fun canStepBack(): Boolean =
-        gameState.hasPrevIndex
+        gamePlayState().gameState.hasPrevIndex
 
     fun canStepForward(): Boolean =
-        gameState.hasNextIndex
+        gamePlayState().gameState.hasNextIndex
 
     fun stepForward() {
         if (canStepForward()) {
-            gameState.currentIndex++
-            uiState = UiState(gameSnaphotState)
+            setGamePlayState?.invoke(
+                GamePlayState(
+                    gameState = gamePlayState().gameState.copy(
+                        currentIndex = gamePlayState().gameState.currentIndex + 1
+                    )
+                )
+            )
         }
     }
 
     fun stepBackward() {
         if (canStepBack()) {
-            gameState.currentIndex--
-            uiState = UiState(gameSnaphotState)
+            setGamePlayState?.invoke(
+                GamePlayState(
+                    gameState = gamePlayState().gameState.copy(
+                        currentIndex = gamePlayState().gameState.currentIndex - 1
+                    )
+                )
+            )
         }
     }
 }

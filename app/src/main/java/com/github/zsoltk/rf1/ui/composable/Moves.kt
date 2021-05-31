@@ -24,6 +24,7 @@ import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import kotlinx.coroutines.launch
 
@@ -111,8 +112,8 @@ private fun Move(
 @Composable
 fun MovesPreview() {
     Rf1Theme {
-        val game = GameState()
-        GameController(game).apply {
+        var gamePlayState = GamePlayState()
+        GameController({ gamePlayState }, { gamePlayState = it}).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
@@ -129,7 +130,7 @@ fun MovesPreview() {
         }
 
         Moves(
-            gameState = game
+            gameState = gamePlayState.gameState
         )
     }
 }

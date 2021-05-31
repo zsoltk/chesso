@@ -1,6 +1,5 @@
 package com.github.zsoltk.rf1.ui.composable
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateOffset
@@ -21,7 +20,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -37,8 +35,8 @@ import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.AppliedMove
@@ -51,13 +49,15 @@ private enum class MoveState {
 
 @Composable
 fun AnimatedBoard(
+    gamePlayState: GamePlayState,
     gameController: GameController
 ) {
-    val currentState by remember { mutableStateOf(gameController.gameState.currentSnaphotState) }
+//    val currentState by remember { mutableStateOf(gameController.gameState.currentSnaphotState) }
 
     Board(
-        gameSnaphotState = gameController.gameState.prevSnaphotState ?: gameController.gameState.currentSnaphotState,
-        uiState = gameController.uiState,
+        gameSnaphotState = gamePlayState.gameState.prevSnaphotState ?: gamePlayState.gameState.currentSnaphotState,
+//        gameSnaphotState = gamePlayState.gameState.currentSnaphotState,
+        uiState = gamePlayState.uiState,
         onClick = { position -> gameController.onClick(position) },
         move = gameController.gameSnaphotState.lastMove
     )
@@ -95,6 +95,7 @@ fun Board(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
+            // TODO check .zIndex()
     ) {
         val squareSize = this.maxWidth / 8
 
@@ -256,7 +257,6 @@ private fun Piece(
                 }
             }
 
-            Log.d("wtf", "$animatedOffsetValue")
             animatedOffsetValue
 
         } else Offset.Zero
@@ -316,8 +316,8 @@ private fun CircleDecoratedSquare(
 @Composable
 fun BoardPreview() {
     Rf1Theme {
-        val gameState = GameState()
-        val gameController = GameController(gameState).apply {
+        var gamePlayState = GamePlayState()
+        val gameController = GameController({ gamePlayState }, { gamePlayState = it}).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
@@ -332,7 +332,8 @@ fun BoardPreview() {
         }
 
         AnimatedBoard(
-            gameController = gameController
+            gameController = gameController,
+            gamePlayState = gamePlayState
         )
     }
 }

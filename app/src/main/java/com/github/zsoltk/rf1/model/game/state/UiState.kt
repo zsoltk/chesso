@@ -8,6 +8,7 @@ import com.github.zsoltk.rf1.model.move.targetPositions
 data class UiState(
     private val gameSnaphotState: GameSnaphotState,
     val selectedPosition: Position? = null
+    // TODO move showPromotionDialog here
 ) {
     private val lastMovePositions: List<Position> =
         gameSnaphotState.lastMove?.let { listOf(it.from, it.to) } ?: emptyList()

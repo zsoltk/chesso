@@ -1,13 +1,13 @@
 package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.runtime.Composable
-import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 
 @Composable
 fun Preset(preset: Preset) {
     Game(
-        gameState = GameState(),
+        state = GamePlayState(),
         preset = preset
     )
 }

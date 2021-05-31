@@ -99,7 +99,7 @@ private fun Score(score: Int) {
 fun TakenPiecesPreview() {
     Rf1Theme {
         CapturedPieces(
-            gameState = GameState().apply {
+            gameState = GameState(
                 states = listOf(
                     GameSnaphotState(
                         capturedPieces = listOf(
@@ -121,7 +121,7 @@ fun TakenPiecesPreview() {
                         )
                     )
                 )
-            }
+            )
         )
     }
 }
