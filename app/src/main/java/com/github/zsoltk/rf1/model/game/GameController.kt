@@ -101,7 +101,8 @@ class GameController(
             GamePlayState(
                 gameState = gamePlayState.gameState.copy(
                     states = states,
-                    currentIndex = states.lastIndex
+                    currentIndex = states.lastIndex,
+                    lastActiveState = gamePlayState.gameState.currentSnapshotState
                 )
             )
         )
@@ -187,7 +188,8 @@ class GameController(
             setGamePlayState?.invoke(
                 GamePlayState(
                     gameState = gamePlayState.gameState.copy(
-                        currentIndex = gamePlayState.gameState.currentIndex + 1
+                        currentIndex = gamePlayState.gameState.currentIndex + 1,
+                        lastActiveState = gamePlayState.gameState.currentSnapshotState
                     )
                 )
             )
@@ -199,7 +201,8 @@ class GameController(
             setGamePlayState?.invoke(
                 GamePlayState(
                     gameState = gamePlayState.gameState.copy(
-                        currentIndex = gamePlayState.gameState.currentIndex - 1
+                        currentIndex = gamePlayState.gameState.currentIndex - 1,
+                        lastActiveState = gamePlayState.gameState.currentSnapshotState
                     )
                 )
             )

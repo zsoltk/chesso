@@ -24,12 +24,11 @@ import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.preset.Preset
-import com.github.zsoltk.rf1.model.game.preset.PromotionTest
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = PromotionTest) {
+fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
     var gamePlayState by remember { mutableStateOf(state) }
     val gameController = remember { GameController(
         getGamePlayState = { gamePlayState },
@@ -41,7 +40,7 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = PromotionTest
         ToMove(gamePlayState.gameState)
         Moves(gamePlayState.gameState)
         CapturedPieces(gamePlayState.gameState)
-        AnimatedBoard(
+        Board(
             gamePlayState = gamePlayState,
             gameController = gameController
         )
