@@ -8,6 +8,7 @@ import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.PromotionState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.piece.Piece
@@ -16,7 +17,7 @@ import com.github.zsoltk.rf1.model.piece.Set
 import java.lang.IllegalStateException
 
 class GameController(
-    val gamePlayState: () -> GamePlayState,
+    val getGamePlayState: () -> GamePlayState,
     private val setGamePlayState: ((GamePlayState) -> Unit)? = null,
     preset: Preset? = null
 ) {
@@ -24,23 +25,17 @@ class GameController(
         preset?.let { applyPreset(it) }
     }
 
+    val gamePlayState: GamePlayState
+        get() = getGamePlayState()
+
     val gameSnaphotState: GameSnaphotState
-        get() = gamePlayState().gameState.currentSnaphotState
+        get() = gamePlayState.gameState.currentSnaphotState
 
     private val boardState: BoardState
         get() = gameSnaphotState.boardState
 
-    private var promotionState: PromotionState =
-        PromotionState.None
-
     val toMove: Set
         get() = boardState.toMove
-
-    private sealed class PromotionState {
-        object None : PromotionState()
-        data class Await(val position: Position) : PromotionState()
-        data class ContinueWith(val piece: Piece) : PromotionState()
-    }
 
     fun reset(gameSnaphotState: GameSnaphotState = GameSnaphotState()) {
         setGamePlayState?.invoke(
@@ -68,7 +63,7 @@ class GameController(
         if (position.hasOwnPiece()) {
             selectPosition(position)
         } else if (canMoveTo(position)) {
-            val selectedPosition = gamePlayState().uiState.selectedPosition
+            val selectedPosition = gamePlayState.uiState.selectedPosition
             requireNotNull(selectedPosition)
             applyMove(selectedPosition, position)
         }
@@ -76,14 +71,14 @@ class GameController(
 
     private fun selectPosition(position: Position) {
         setGamePlayState?.invoke(
-            gamePlayState().copy(
-                uiState = gamePlayState().uiState.select(position)
+            gamePlayState.copy(
+                uiState = gamePlayState.uiState.select(position)
             )
         )
     }
 
     private fun canMoveTo(position: Position) =
-        position in gamePlayState().uiState.possibleMoves().targetPositions()
+        position in gamePlayState.uiState.possibleMoves().targetPositions()
 
     fun applyMove(from: Position, to: Position) {
         val boardMove = findBoardMove(from, to) ?: return
@@ -91,8 +86,8 @@ class GameController(
     }
 
     private fun applyMove(boardMove: BoardMove) {
-        var states = gamePlayState().gameState.states.toMutableList()
-        val currentIndex = gamePlayState().gameState.currentIndex
+        var states = gamePlayState.gameState.states.toMutableList()
+        val currentIndex = gamePlayState.gameState.currentIndex
         val transition = gameSnaphotState.calculateAppliedMove(
             boardMove = boardMove,
             boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
@@ -104,7 +99,7 @@ class GameController(
 
         setGamePlayState?.invoke(
             GamePlayState(
-                gameState = gamePlayState().gameState.copy(
+                gameState = gamePlayState.gameState.copy(
                     states = states,
                     currentIndex = states.lastIndex
                 )
@@ -134,18 +129,19 @@ class GameController(
     }
 
     private fun handlePromotion(to: Position, legalMoves: List<BoardMove>): BoardMove? {
+        var promotionState = gamePlayState.promotionState
         if (setGamePlayState == null && promotionState == PromotionState.None) {
             promotionState = PromotionState.ContinueWith(Queen(gameSnaphotState.toMove))
         }
 
         when (val promotion = promotionState) {
             is PromotionState.None -> {
-                promotionState = PromotionState.Await(to)
                 setGamePlayState?.invoke(
-                    gamePlayState().copy(
-                        uiState = gamePlayState().uiState.copy(
+                    gamePlayState.copy(
+                        uiState = gamePlayState.uiState.copy(
                             showPromotionDialog = true
-                        )
+                        ),
+                        promotionState = PromotionState.Await(to)
                     )
                 )
             }
@@ -166,32 +162,32 @@ class GameController(
     }
 
     fun onPromotionPieceSelected(piece: Piece) {
-        setGamePlayState?.invoke(
-            gamePlayState().copy(
-                uiState = gamePlayState().uiState.copy(
-                    showPromotionDialog = false
-                )
-            )
-        )
-        val state = promotionState
+        val state = gamePlayState.promotionState
         if (state !is PromotionState.Await) error("Not in expected state: $state")
         val position = state.position
-        promotionState = PromotionState.ContinueWith(piece)
+        setGamePlayState?.invoke(
+            gamePlayState.copy(
+                uiState = gamePlayState.uiState.copy(
+                    showPromotionDialog = false
+                ),
+                promotionState = PromotionState.ContinueWith(piece)
+            )
+        )
         onClick(position)
     }
 
     fun canStepBack(): Boolean =
-        gamePlayState().gameState.hasPrevIndex
+        gamePlayState.gameState.hasPrevIndex
 
     fun canStepForward(): Boolean =
-        gamePlayState().gameState.hasNextIndex
+        gamePlayState.gameState.hasNextIndex
 
     fun stepForward() {
         if (canStepForward()) {
             setGamePlayState?.invoke(
                 GamePlayState(
-                    gameState = gamePlayState().gameState.copy(
-                        currentIndex = gamePlayState().gameState.currentIndex + 1
+                    gameState = gamePlayState.gameState.copy(
+                        currentIndex = gamePlayState.gameState.currentIndex + 1
                     )
                 )
             )
@@ -202,8 +198,8 @@ class GameController(
         if (canStepBack()) {
             setGamePlayState?.invoke(
                 GamePlayState(
-                    gameState = gamePlayState().gameState.copy(
-                        currentIndex = gamePlayState().gameState.currentIndex - 1
+                    gameState = gamePlayState.gameState.copy(
+                        currentIndex = gamePlayState.gameState.currentIndex - 1
                     )
                 )
             )
