@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.Game
+import com.github.zsoltk.rf1.model.game.GameState
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.game.state.UiState
@@ -53,10 +53,10 @@ private enum class MoveState {
 fun AnimatedBoard(
     gameController: GameController
 ) {
-    val currentState by remember { mutableStateOf(gameController.game.currentSnaphotState) }
+    val currentState by remember { mutableStateOf(gameController.gameState.currentSnaphotState) }
 
     Board(
-        gameSnaphotState = gameController.game.prevSnaphotState ?: gameController.game.currentSnaphotState,
+        gameSnaphotState = gameController.gameState.prevSnaphotState ?: gameController.gameState.currentSnaphotState,
         uiState = gameController.uiState,
         onClick = { position -> gameController.onClick(position) },
         move = gameController.gameSnaphotState.lastMove
@@ -316,8 +316,8 @@ private fun CircleDecoratedSquare(
 @Composable
 fun BoardPreview() {
     Rf1Theme {
-        val game = Game()
-        val gameController = GameController(game).apply {
+        val gameState = GameState()
+        val gameController = GameController(gameState).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)

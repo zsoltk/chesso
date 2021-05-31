@@ -20,22 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.board.Position.*
-import com.github.zsoltk.rf1.model.game.Game
+import com.github.zsoltk.rf1.model.game.GameState
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(game: Game = Game(), preset: Preset? = null) {
+fun Game(gameState: GameState = GameState(), preset: Preset? = null) {
     var showPromotionDialog by remember { mutableStateOf(false) }
     val onPromotion = { showPromotionDialog = true }
-    val gameController = remember { GameController(game, onPromotion, preset) }
+    val gameController = remember { GameController(gameState, onPromotion, preset) }
 
     Column {
-        ToMove(game)
-        Moves(game)
-        CapturedPieces(game)
+        ToMove(gameState)
+        Moves(gameState)
+        CapturedPieces(gameState)
         AnimatedBoard(
             gameController = gameController
         )
@@ -52,10 +52,10 @@ fun Game(game: Game = Game(), preset: Preset? = null) {
 }
 
 @Composable
-private fun ToMove(game: Game) {
-    val text = when (game.resolution) {
-        Resolution.IN_PROGRESS -> "${game.toMove} to move"
-        else -> game.resolution.toString().replace("_", " ")
+private fun ToMove(gameState: GameState) {
+    val text = when (gameState.resolution) {
+        Resolution.IN_PROGRESS -> "${gameState.toMove} to move"
+        else -> gameState.resolution.toString().replace("_", " ")
     }
 
     Row(
@@ -95,7 +95,7 @@ private fun TimeTravelButtons(gameController: GameController) {
 @Composable
 fun GamePreview() {
     Rf1Theme {
-        val game = Game()
+        val game = GameState()
         GameController(game).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
@@ -109,7 +109,7 @@ fun GamePreview() {
             onClick(g8)
         }
         Game(
-            game = game,
+            gameState = game,
         )
     }
 }

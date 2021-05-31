@@ -7,7 +7,7 @@ import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Set
 
-class Game {
+class GameState {
 
     var states by mutableStateOf(
         listOf(

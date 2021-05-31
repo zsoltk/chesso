@@ -18,7 +18,7 @@ import com.github.zsoltk.rf1.model.piece.Set
 import java.lang.IllegalStateException
 
 class GameController(
-    val game: Game,
+    val gameState: GameState,
     private val onPromotion: (() -> Unit)? = null,
     preset: Preset? = null
 ) {
@@ -27,7 +27,7 @@ class GameController(
     }
 
     val gameSnaphotState: GameSnaphotState
-        get() = game.currentSnaphotState
+        get() = gameState.currentSnaphotState
 
     var uiState by mutableStateOf(UiState(gameSnaphotState))
 
@@ -47,7 +47,7 @@ class GameController(
     }
 
     fun reset(gameSnaphotState: GameSnaphotState = GameSnaphotState()) {
-        game.states = listOf(gameSnaphotState)
+        gameState.states = listOf(gameSnaphotState)
         uiState = uiState.deselect()
     }
 
@@ -86,8 +86,8 @@ class GameController(
     }
 
     private fun applyMove(boardMove: BoardMove) {
-        var states = game.states.toMutableList()
-        val currentIndex = game.currentIndex
+        var states = gameState.states.toMutableList()
+        val currentIndex = gameState.currentIndex
         val transition = gameSnaphotState.calculateAppliedMove(
             boardMove = boardMove,
             boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
@@ -95,8 +95,8 @@ class GameController(
 
         states[currentIndex] = transition.fromSnaphotState
         states = states.subList(0, currentIndex + 1)
-        game.currentIndex = states.lastIndex
-        game.states = states + transition.toSnaphotState
+        gameState.currentIndex = states.lastIndex
+        gameState.states = states + transition.toSnaphotState
         stepForward()
     }
 
@@ -156,21 +156,21 @@ class GameController(
     }
 
     fun canStepBack(): Boolean =
-        game.hasPrevIndex
+        gameState.hasPrevIndex
 
     fun canStepForward(): Boolean =
-        game.hasNextIndex
+        gameState.hasNextIndex
 
     fun stepForward() {
         if (canStepForward()) {
-            game.currentIndex++
+            gameState.currentIndex++
             uiState = UiState(gameSnaphotState)
         }
     }
 
     fun stepBackward() {
         if (canStepBack()) {
-            game.currentIndex--
+            gameState.currentIndex--
             uiState = UiState(gameSnaphotState)
         }
     }
