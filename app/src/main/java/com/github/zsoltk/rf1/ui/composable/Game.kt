@@ -23,13 +23,14 @@ import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
+import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(game: Game = Game()) {
+fun Game(game: Game = Game(), preset: Preset? = null) {
     var showPromotionDialog by remember { mutableStateOf(false) }
     val onPromotion = { showPromotionDialog = true }
-    val gameController = remember { GameController(game, onPromotion) }
+    val gameController = remember { GameController(game, onPromotion, preset) }
 
     Column {
         ToMove(game)
