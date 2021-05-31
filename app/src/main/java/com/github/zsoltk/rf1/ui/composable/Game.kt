@@ -30,11 +30,9 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 @Composable
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
     var gamePlayState by remember { mutableStateOf(state) }
-    var showPromotionDialog by remember { mutableStateOf(false) }
     val gameController = remember { GameController(
         gamePlayState = { gamePlayState },
-        setGamePlayState = {gamePlayState = it},
-        onPromotion = { showPromotionDialog = true },
+        setGamePlayState = { gamePlayState = it},
         preset = preset
     ) }
 
@@ -50,10 +48,9 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
         TimeTravelButtons(gameController)
     }
 
-    if (showPromotionDialog) {
+    if (gamePlayState.uiState.showPromotionDialog) {
         PromotionDialog(gameController.toMove) {
             gameController.onPromotionPieceSelected(it)
-            showPromotionDialog = false
         }
     }
 }

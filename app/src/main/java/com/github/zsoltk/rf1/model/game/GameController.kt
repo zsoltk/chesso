@@ -18,7 +18,6 @@ import java.lang.IllegalStateException
 class GameController(
     val gamePlayState: () -> GamePlayState,
     private val setGamePlayState: ((GamePlayState) -> Unit)? = null,
-    private val onPromotion: (() -> Unit)? = null,
     preset: Preset? = null
 ) {
     init {
@@ -135,14 +134,20 @@ class GameController(
     }
 
     private fun handlePromotion(to: Position, legalMoves: List<BoardMove>): BoardMove? {
-        if (onPromotion == null && promotionState == PromotionState.None) {
+        if (setGamePlayState == null && promotionState == PromotionState.None) {
             promotionState = PromotionState.ContinueWith(Queen(gameSnaphotState.toMove))
         }
 
         when (val promotion = promotionState) {
             is PromotionState.None -> {
                 promotionState = PromotionState.Await(to)
-                onPromotion!!.invoke()
+                setGamePlayState?.invoke(
+                    gamePlayState().copy(
+                        uiState = gamePlayState().uiState.copy(
+                            showPromotionDialog = true
+                        )
+                    )
+                )
             }
             is PromotionState.Await -> {
                 throw IllegalStateException()
@@ -161,6 +166,13 @@ class GameController(
     }
 
     fun onPromotionPieceSelected(piece: Piece) {
+        setGamePlayState?.invoke(
+            gamePlayState().copy(
+                uiState = gamePlayState().uiState.copy(
+                    showPromotionDialog = false
+                )
+            )
+        )
         val state = promotionState
         if (state !is PromotionState.Await) error("Not in expected state: $state")
         val position = state.position
