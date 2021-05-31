@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -37,8 +38,6 @@ import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.GameState
-import com.github.zsoltk.rf1.model.game.state.GameStateTransition
-import com.github.zsoltk.rf1.model.game.state.InitialState
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Piece
@@ -52,22 +51,13 @@ private enum class MoveState {
 fun AnimatedBoard(
     gameController: GameController
 ) {
-    when (val transitionState = gameController.transitionState) {
-        is InitialState -> {
-            Board(
-                gameController = gameController,
-                gameState = transitionState.initialState,
-                move = null
-            )
-        }
-        is GameStateTransition -> {
-            Board(
-                gameController = gameController,
-                gameState = transitionState.fromState,
-                move = transitionState.move,
-            )
-        }
-    }
+    val currentState by remember { mutableStateOf(gameController.game.currentState) }
+
+    Board(
+        gameController = gameController,
+        gameState = gameController.game.prevState ?: gameController.game.currentState,
+        move = gameController.gameState.lastMove
+    )
 }
 
 @Composable

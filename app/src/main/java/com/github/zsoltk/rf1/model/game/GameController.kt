@@ -7,8 +7,6 @@ import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
-import com.github.zsoltk.rf1.model.game.state.GameStateDescriptor
-import com.github.zsoltk.rf1.model.game.state.InitialState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Promotion
@@ -18,7 +16,7 @@ import com.github.zsoltk.rf1.model.piece.Set
 import java.lang.IllegalStateException
 
 class GameController(
-    private val game: Game,
+    val game: Game,
     private val uiState: UiState,
     private val onPromotion: (() -> Unit)? = null,
     preset: Preset? = null
@@ -27,14 +25,11 @@ class GameController(
         preset?.let { applyPreset(it) }
     }
 
-    private val gameState: GameState
+    val gameState: GameState
         get() = game.currentState
 
     private val boardState: BoardState
         get() = gameState.boardState
-
-    val transitionState: GameStateDescriptor
-        get() = game.currentTransition
 
     private var promotionState: PromotionState =
         PromotionState.None
@@ -50,7 +45,6 @@ class GameController(
 
     fun reset(gameState: GameState = GameState()) {
         game.states = listOf(gameState)
-        game.transitions = listOf(InitialState(gameState))
         uiState.selectedPosition = null
     }
 
@@ -125,8 +119,6 @@ class GameController(
 
     private fun applyMove(boardMove: BoardMove) {
         var states = game.states.toMutableList()
-        var transitions = game.transitions.toMutableList()
-
         val currentIndex = game.currentIndex
         val transition = gameState.calculateAppliedMove(
             boardMove = boardMove,
@@ -135,12 +127,8 @@ class GameController(
 
         states[currentIndex] = transition.fromState
         states = states.subList(0, currentIndex + 1)
-        transitions[currentIndex] = transition
-        transitions = transitions.subList(0, currentIndex + 1)
-
         game.currentIndex = states.lastIndex
         game.states = states + transition.toState
-        game.transitions = transitions + transition
         stepForward()
     }
 
