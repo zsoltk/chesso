@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -55,8 +57,8 @@ fun AnimatedBoard(
 //    val currentState by remember { mutableStateOf(gameController.gameState.currentSnaphotState) }
 
     Board(
-        gameSnapshotState = gamePlayState.gameState.prevSnapshotState ?: gamePlayState.gameState.currentSnapshotState,
-//        gameSnaphotState = gamePlayState.gameState.currentSnaphotState,
+        fromState = gamePlayState.gameState.prevSnapshotState,
+        toState = gamePlayState.gameState.currentSnapshotState,
         uiState = gamePlayState.uiState,
         onClick = { position -> gameController.onClick(position) },
         move = gameController.gameSnapshotState.lastMove
@@ -65,29 +67,9 @@ fun AnimatedBoard(
 
 @Composable
 fun Board(
-    gameSnapshotState: GameSnapshotState,
+    fromState: GameSnapshotState? = null,
+    toState: GameSnapshotState,
     uiState: UiState,
-    onClick: (Position) -> Unit,
-    move: AppliedMove? = null,
-) {
-    Board(
-        fetchSquare = { position -> gameSnapshotState.boardState.board[position] },
-        highlightedPositions = uiState.highlightedPositions,
-        clickablePositions = uiState.clickablePositions,
-        possibleMoves = uiState.possibleMovesWithoutCaptures,
-        possibleCaptures = uiState.possibleCaptures,
-        onClick = onClick,
-        move = move,
-    )
-}
-
-@Composable
-fun Board(
-    fetchSquare: (Position) -> Square,
-    highlightedPositions: List<Position>,
-    clickablePositions: List<Position>,
-    possibleMoves: List<Position>,
-    possibleCaptures: List<Position>,
     onClick: (Position) -> Unit,
     move: AppliedMove? = null,
 ) {
@@ -95,39 +77,61 @@ fun Board(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            // TODO check .zIndex()
     ) {
         val squareSize = this.maxWidth / 8
+        val fetchSquare = { position: Position -> (fromState ?: toState).boardState.board[position] }
 
         EightByEight { position ->
             Square(
                 position = position,
-                isHighlighted = position in highlightedPositions,
-                clickable = position in clickablePositions,
-                isPossibleMove = position in possibleMoves,
-                isPossibleCapture = position in possibleCaptures,
+                isHighlighted = position in uiState.highlightedPositions,
+                clickable = position in uiState.clickablePositions,
+                isPossibleMove = position in uiState.possibleMovesWithoutCaptures,
+                isPossibleCapture = position in uiState.possibleCaptures,
                 onClick = { onClick(position) },
                 isDark = fetchSquare(position).isDark
             )
         }
 
-        EightByEight { position ->
-            Piece(
-                piece = fetchSquare(position).piece,
-                offset = pieceOffset(position, move).times(squareSize.value)
-            )
+        fromState?.let {
+            // TODO
+        }
+
+        toState.let {
+            it.board.pieces.forEach { (position, piece) ->
+                val offset = Offset(
+                    x = (position.file - 1) * 1f,
+                    y = (8 - position.rank) * 1f,
+                )
+
+                key(piece) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(squareSize, squareSize)
+                    ) {
+                        Piece(
+                            piece = piece,
+                            offset = offset.times(squareSize.value)
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
-@Composable
-private fun pieceOffset(position: Position, move: AppliedMove?): Offset =
-    if (position == move?.from) {
-        Offset(
-            x = (move.to.file - move.from.file) * 1f,
-            y = (move.to.rank - move.from.rank) * -1f,
-        )
-    } else Offset.Zero
+//@Composable
+//private fun pieceOffset(
+//    fromState: GameSnapshotState? = null,
+//    toState: GameSnapshotState,
+//    move: AppliedMove?
+//): Offset =
+//    if (position == move?.from) {
+//        Offset(
+//            x = (move.to.file - move.from.file) * 1f,
+//            y = (move.to.rank - move.from.rank) * -1f,
+//        )
+//    } else Offset.Zero
 
 @Composable
 private fun EightByEight(
@@ -148,13 +152,12 @@ private fun EightByEight(
 
 @Composable
 private fun InSquare(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         content()
     }
@@ -236,37 +239,36 @@ private fun PositionLabel(
 
 @Composable
 private fun Piece(
-    piece: Piece?,
+    piece: Piece,
     modifier: Modifier = Modifier,
-    offset: Offset? = null
+    offset: Offset
 ) {
-    piece?.let {
-        val appliedOffset = if (offset != null) {
-            var currentState = remember { MutableTransitionState(MoveState.From) }
-            currentState.targetState = MoveState.To
-            val transition = updateTransition(currentState, label = "Move progress")
-            val animatedOffsetValue by transition.animateOffset(
-                transitionSpec = {
-                    tween(durationMillis = 100, easing = LinearEasing)
-                },
-                label = "Move progress"
-            ) { state: MoveState ->
-                when (state) {
-                    MoveState.From -> Offset.Zero
-                    MoveState.To -> offset
-                }
-            }
+//        val appliedOffset = if (offset != null) {
+//            var currentState = remember { MutableTransitionState(MoveState.From) }
+//            currentState.targetState = MoveState.To
+//            val transition = updateTransition(currentState, label = "Move progress")
+//            val animatedOffsetValue by transition.animateOffset(
+//                transitionSpec = {
+//                    tween(durationMillis = 100, easing = LinearEasing)
+//                },
+//                label = "Move progress"
+//            ) { state: MoveState ->
+//                when (state) {
+//                    MoveState.From -> Offset.Zero
+//                    MoveState.To -> offset
+//                }
+//            }
+//
+//            animatedOffsetValue
+//
+//        } else Offset.Zero
 
-            animatedOffsetValue
-
-        } else Offset.Zero
-
-        Text(
-            text = it.symbol,
-            modifier = modifier.offset(Dp(appliedOffset.x), Dp(appliedOffset.y)),
-            fontSize = 40.sp
-        )
-    }
+    Text(
+        text = piece.symbol,
+//            modifier = modifier.offset(Dp(appliedOffset.x), Dp(appliedOffset.y)),
+        modifier = modifier.offset(Dp(offset.x), Dp(offset.y)),
+        fontSize = 40.sp
+    )
 }
 
 @Composable
