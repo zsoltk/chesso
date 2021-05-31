@@ -1,5 +1,8 @@
 package com.github.zsoltk.rf1.model.game
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.game.state.GameState
@@ -8,7 +11,6 @@ import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.move.BoardMove
-import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Queen
@@ -17,7 +19,6 @@ import java.lang.IllegalStateException
 
 class GameController(
     val game: Game,
-    private val uiState: UiState,
     private val onPromotion: (() -> Unit)? = null,
     preset: Preset? = null
 ) {
@@ -27,6 +28,8 @@ class GameController(
 
     val gameState: GameState
         get() = game.currentState
+
+    var uiState by mutableStateOf(UiState(gameState))
 
     private val boardState: BoardState
         get() = gameState.boardState
@@ -45,7 +48,7 @@ class GameController(
 
     fun reset(gameState: GameState = GameState()) {
         game.states = listOf(gameState)
-        uiState.selectedPosition = null
+        uiState = uiState.deselect()
     }
 
     fun applyPreset(preset: Preset) {
@@ -55,37 +58,6 @@ class GameController(
 
     fun square(position: Position): Square =
         boardState.board[position]
-
-    fun highlightedPositions(): List<Position> =
-        lastMovePositions() + uiSelectedPositions()
-
-    private fun lastMovePositions(): List<Position> =
-        gameState.lastMove?.let { listOf(it.from, it.to) } ?: emptyList()
-
-    private fun uiSelectedPositions(): List<Position> =
-        uiState.selectedPosition?.let { listOf(it) } ?: emptyList()
-
-    fun clickablePositions(): List<Position> =
-        ownPiecePositions() +
-            possibleCaptures() +
-            possibleMovesWithoutCaptures()
-
-    private fun ownPiecePositions(): List<Position> =
-        boardState.board.pieces
-            .filter { (position, _) -> position.hasOwnPiece() }
-            .map { it.key }
-
-    fun possibleCaptures(): List<Position> =
-        possibleMoves { it.preMove is Capture }.targetPositions()
-
-    fun possibleMovesWithoutCaptures(): List<Position> =
-        possibleMoves { it.preMove !is Capture }.targetPositions()
-
-    private fun possibleMoves(predicate: (BoardMove) -> Boolean = { true }) =
-        uiState.selectedPosition?.let {
-            gameState.legalMovesFrom(it)
-                .filter(predicate)
-        } ?: emptyList()
 
     private fun Position.hasOwnPiece() =
         square(this).hasPiece(boardState.toMove)
@@ -102,15 +74,11 @@ class GameController(
     }
 
     private fun selectPosition(position: Position) {
-        if (uiState.selectedPosition == position) {
-            uiState.selectedPosition = null
-        } else {
-            uiState.selectedPosition = position
-        }
+        uiState = uiState.select(position)
     }
 
     private fun canMoveTo(position: Position) =
-        position in possibleMoves().targetPositions()
+        position in uiState.possibleMoves().targetPositions()
 
     fun applyMove(from: Position, to: Position) {
         val boardMove = findBoardMove(from, to) ?: return
@@ -196,14 +164,14 @@ class GameController(
     fun stepForward() {
         if (canStepForward()) {
             game.currentIndex++
-            uiState.selectedPosition = null
+            uiState = UiState(gameState)
         }
     }
 
     fun stepBackward() {
         if (canStepBack()) {
             game.currentIndex--
-            uiState.selectedPosition = null
+            uiState = UiState(gameState)
         }
     }
 }

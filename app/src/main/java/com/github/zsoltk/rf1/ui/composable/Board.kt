@@ -35,7 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.board.Square
+import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.state.UiState
@@ -54,26 +56,27 @@ fun AnimatedBoard(
     val currentState by remember { mutableStateOf(gameController.game.currentState) }
 
     Board(
-        gameController = gameController,
         gameState = gameController.game.prevState ?: gameController.game.currentState,
+        uiState = gameController.uiState,
+        onClick = { position -> gameController.onClick(position) },
         move = gameController.gameState.lastMove
     )
 }
 
 @Composable
 fun Board(
-    gameController: GameController,
     gameState: GameState,
+    uiState: UiState,
+    onClick: (Position) -> Unit,
     move: AppliedMove? = null,
 ) {
     Board(
         fetchSquare = { position -> gameState.boardState.board[position] },
-        // TODO make these come from state rather than query, lift out gameController completely
-        highlightedPositions = gameController.highlightedPositions(),
-        clickablePositions = gameController.clickablePositions(),
-        possibleMoves = gameController.possibleMovesWithoutCaptures(),
-        possibleCaptures = gameController.possibleCaptures(),
-        onClick = { gameController.onClick(it) },
+        highlightedPositions = uiState.highlightedPositions,
+        clickablePositions = uiState.clickablePositions,
+        possibleMoves = uiState.possibleMovesWithoutCaptures,
+        possibleCaptures = uiState.possibleCaptures,
+        onClick = onClick,
         move = move,
     )
 }
@@ -313,22 +316,19 @@ private fun CircleDecoratedSquare(
 @Composable
 fun BoardPreview() {
     Rf1Theme {
-        val game = com.github.zsoltk.rf1.model.game.Game()
-        val uiState = UiState()
-        val gameController = GameController(game, uiState).apply {
-            applyMove(Position.e2, Position.e4)
-            applyMove(Position.e7, Position.e5)
-            applyMove(Position.b1, Position.c3)
-            applyMove(Position.b8, Position.c6)
-            applyMove(Position.f1, Position.b5)
-            applyMove(Position.d7, Position.d5)
-            applyMove(Position.e4, Position.d5)
-            applyMove(Position.d8, Position.d5)
-            applyMove(Position.d1, Position.f3)
-            applyMove(Position.c8, Position.g4)
-        }
-        uiState.apply {
-            selectedPosition = Position.f3
+        val game = Game()
+        val gameController = GameController(game).apply {
+            applyMove(e2, e4)
+            applyMove(e7, e5)
+            applyMove(b1, c3)
+            applyMove(b8, c6)
+            applyMove(f1, b5)
+            applyMove(d7, d5)
+            applyMove(e4, d5)
+            applyMove(d8, d5)
+            applyMove(d1, f3)
+            applyMove(c8, g4)
+            onClick(f3)
         }
 
         AnimatedBoard(

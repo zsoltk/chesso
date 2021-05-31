@@ -113,8 +113,7 @@ private fun Move(
 fun MovesPreview() {
     Rf1Theme {
         val game = Game()
-        val uiState = UiState()
-        GameController(game, uiState).apply {
+        GameController(game).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)

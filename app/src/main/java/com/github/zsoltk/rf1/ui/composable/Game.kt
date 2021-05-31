@@ -23,14 +23,13 @@ import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
-import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(game: Game = Game(), uiState: UiState = UiState()) {
+fun Game(game: Game = Game()) {
     var showPromotionDialog by remember { mutableStateOf(false) }
     val onPromotion = { showPromotionDialog = true }
-    val gameController = remember { GameController(game, uiState, onPromotion) }
+    val gameController = remember { GameController(game, onPromotion) }
 
     Column {
         ToMove(game)
@@ -96,8 +95,7 @@ private fun TimeTravelButtons(gameController: GameController) {
 fun GamePreview() {
     Rf1Theme {
         val game = Game()
-        val uiState = UiState()
-        GameController(game, uiState).apply {
+        GameController(game).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
@@ -107,14 +105,10 @@ fun GamePreview() {
             applyMove(e4, d5)
             applyMove(d8, d5)
             applyMove(c3, d5)
+            onClick(g8)
         }
-        uiState.apply {
-            selectedPosition = g8
-        }
-
         Game(
             game = game,
-            uiState = uiState
         )
     }
 }
