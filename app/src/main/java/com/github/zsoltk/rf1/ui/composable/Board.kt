@@ -1,8 +1,5 @@
 package com.github.zsoltk.rf1.ui.composable
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,33 +9,41 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
-import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.board.Position.b1
+import com.github.zsoltk.rf1.model.board.Position.b5
+import com.github.zsoltk.rf1.model.board.Position.b8
+import com.github.zsoltk.rf1.model.board.Position.c3
+import com.github.zsoltk.rf1.model.board.Position.c6
+import com.github.zsoltk.rf1.model.board.Position.c8
+import com.github.zsoltk.rf1.model.board.Position.d1
+import com.github.zsoltk.rf1.model.board.Position.d5
+import com.github.zsoltk.rf1.model.board.Position.d7
+import com.github.zsoltk.rf1.model.board.Position.d8
+import com.github.zsoltk.rf1.model.board.Position.e2
+import com.github.zsoltk.rf1.model.board.Position.e4
+import com.github.zsoltk.rf1.model.board.Position.e5
+import com.github.zsoltk.rf1.model.board.Position.e7
+import com.github.zsoltk.rf1.model.board.Position.f1
+import com.github.zsoltk.rf1.model.board.Position.f3
+import com.github.zsoltk.rf1.model.board.Position.g4
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.UiState
-import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
@@ -84,74 +89,6 @@ fun Board(
         }
 
         Pieces(fromState, toState, squareSize)
-    }
-}
-
-@Composable
-private fun Pieces(
-    fromState: GameSnapshotState,
-    toState: GameSnapshotState,
-    squareSize: Dp
-) {
-    val progress = remember(toState) { Animatable(0f) }
-    LaunchedEffect(toState) {
-        progress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(80, easing = LinearEasing),
-        )
-    }
-
-    toState.board.pieces.forEach { (toPosition, piece) ->
-        val offset1 = Offset(
-            x = (toPosition.file - 1) * 1f,
-            y = (8 - toPosition.rank) * 1f,
-        )
-
-        val fromPosition = fromState.board.find(piece)?.position
-        if (fromPosition == null) {
-            Piece(
-                piece = piece,
-                squareSize = squareSize,
-                squareOffset = offset1
-            )
-
-        } else {
-            val offset0 = Offset(
-                x = (fromPosition.file - 1) * 1f,
-                y = (8 - fromPosition.rank) * 1f,
-            )
-
-            val currentOffset = offset0 + (offset1 - offset0).times(progress.value)
-            Piece(
-                piece = piece,
-                squareSize = squareSize,
-                squareOffset = currentOffset
-            )
-
-        }
-    }
-}
-
-
-@Composable
-private fun Piece(
-    piece: Piece,
-    squareSize: Dp,
-    squareOffset: Offset
-) {
-    val dpOffset = squareOffset.times(squareSize.value)
-
-    key(piece) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.size(squareSize, squareSize)
-        ) {
-            Text(
-                text = piece.symbol,
-                modifier = Modifier.offset(Dp(dpOffset.x), Dp(dpOffset.y)),
-                fontSize = 40.sp
-            )
-        }
     }
 }
 
