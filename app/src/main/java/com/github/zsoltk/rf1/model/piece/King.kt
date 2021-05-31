@@ -1,7 +1,7 @@
 package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.board.File.*
-import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.KingSideCastle
 import com.github.zsoltk.rf1.model.move.Move
@@ -20,32 +20,32 @@ class King(override val set: Set) : Piece {
 
     override val textSymbol: String = "K"
 
-    override fun pseudoLegalMoves(gameSnaphotState: GameSnaphotState, checkCheck: Boolean): List<BoardMove> {
+    override fun pseudoLegalMoves(gameSnapshotState: GameSnapshotState, checkCheck: Boolean): List<BoardMove> {
         val moves = targets
-            .mapNotNull { singleCaptureMove(gameSnaphotState, it.first, it.second) }
+            .mapNotNull { singleCaptureMove(gameSnapshotState, it.first, it.second) }
             .toMutableList()
 
         if (!checkCheck) {
-            castleKingSide(gameSnaphotState)?.let { moves += it }
-            castleQueenSide(gameSnaphotState)?.let { moves += it }
+            castleKingSide(gameSnapshotState)?.let { moves += it }
+            castleQueenSide(gameSnapshotState)?.let { moves += it }
         }
 
         return moves
     }
 
     private fun castleKingSide(
-        gameSnaphotState: GameSnaphotState
+        gameSnapshotState: GameSnapshotState
     ): BoardMove? {
-        if (gameSnaphotState.hasCheck()) return null
-        if (!gameSnaphotState.castlingInfo[set].canCastleKingSide) return null
+        if (gameSnapshotState.hasCheck()) return null
+        if (!gameSnapshotState.castlingInfo[set].canCastleKingSide) return null
 
         val rank = if (set == WHITE) 1 else 8
-        val eSquare = gameSnaphotState.board[e, rank]!!
-        val fSquare = gameSnaphotState.board[f, rank]!!
-        val gSquare = gameSnaphotState.board[g, rank]!!
-        val hSquare = gameSnaphotState.board[h, rank]!!
+        val eSquare = gameSnapshotState.board[e, rank]!!
+        val fSquare = gameSnapshotState.board[f, rank]!!
+        val gSquare = gameSnapshotState.board[g, rank]!!
+        val hSquare = gameSnapshotState.board[h, rank]!!
         if (fSquare.isNotEmpty || gSquare.isNotEmpty) return null
-        if (gameSnaphotState.hasCheckFor(fSquare.position) || gameSnaphotState.hasCheckFor(gSquare.position)) return null
+        if (gameSnapshotState.hasCheckFor(fSquare.position) || gameSnapshotState.hasCheckFor(gSquare.position)) return null
 
         return BoardMove(
             move = KingSideCastle(this, eSquare.position, gSquare.position),
@@ -54,19 +54,19 @@ class King(override val set: Set) : Piece {
     }
 
     private fun castleQueenSide(
-        gameSnaphotState: GameSnaphotState
+        gameSnapshotState: GameSnapshotState
     ): BoardMove? {
-        if (gameSnaphotState.hasCheck()) return null
-        if (!gameSnaphotState.castlingInfo[set].canCastleQueenSide) return null
+        if (gameSnapshotState.hasCheck()) return null
+        if (!gameSnapshotState.castlingInfo[set].canCastleQueenSide) return null
 
         val rank = if (set == WHITE) 1 else 8
-        val eSquare = gameSnaphotState.board[e, rank]!!
-        val dSquare = gameSnaphotState.board[d, rank]!!
-        val cSquare = gameSnaphotState.board[c, rank]!!
-        val bSquare = gameSnaphotState.board[b, rank]!!
-        val aSquare = gameSnaphotState.board[a, rank]!!
+        val eSquare = gameSnapshotState.board[e, rank]!!
+        val dSquare = gameSnapshotState.board[d, rank]!!
+        val cSquare = gameSnapshotState.board[c, rank]!!
+        val bSquare = gameSnapshotState.board[b, rank]!!
+        val aSquare = gameSnapshotState.board[a, rank]!!
         if (dSquare.isNotEmpty || cSquare.isNotEmpty || bSquare.isNotEmpty) return null
-        if (gameSnaphotState.hasCheckFor(dSquare.position) || gameSnaphotState.hasCheckFor(cSquare.position)) return null
+        if (gameSnapshotState.hasCheckFor(dSquare.position) || gameSnapshotState.hasCheckFor(cSquare.position)) return null
 
         return BoardMove(
             move = QueenSideCastle(this, eSquare.position, cSquare.position),

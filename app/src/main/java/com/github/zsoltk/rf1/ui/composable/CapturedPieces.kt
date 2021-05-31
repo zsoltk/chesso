@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.game.state.GameState
-import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.Knight
 import com.github.zsoltk.rf1.model.piece.Pawn
@@ -45,13 +45,13 @@ fun CapturedPieces(gameState: GameState) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val capturedPieces = gameState.currentSnaphotState.capturedPieces
+            val capturedPieces = gameState.currentSnapshotState.capturedPieces
                 .sortedWith { t1, t2 ->
                     if (t1.value == t2.value) t1.symbol.hashCode() - t2.symbol.hashCode()
                     else t1.value - t2.value
                 }
 
-            val score = gameState.currentSnaphotState.score
+            val score = gameState.currentSnapshotState.score
             CapturedPieceList(capturedPieces, capturedBy = WHITE, score)
             CapturedPieceList(capturedPieces, capturedBy = BLACK, score)
         }
@@ -101,7 +101,7 @@ fun TakenPiecesPreview() {
         CapturedPieces(
             gameState = GameState(
                 states = listOf(
-                    GameSnaphotState(
+                    GameSnapshotState(
                         capturedPieces = listOf(
                             Pawn(WHITE),
                             Pawn(WHITE),

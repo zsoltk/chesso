@@ -6,12 +6,12 @@ import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.targetPositions
 
 data class UiState(
-    private val gameSnaphotState: GameSnaphotState,
+    private val gameSnapshotState: GameSnapshotState,
     val selectedPosition: Position? = null,
     val showPromotionDialog: Boolean = false
 ) {
     private val lastMovePositions: List<Position> =
-        gameSnaphotState.lastMove?.let { listOf(it.from, it.to) } ?: emptyList()
+        gameSnapshotState.lastMove?.let { listOf(it.from, it.to) } ?: emptyList()
 
     private val uiSelectedPositions: List<Position> =
         selectedPosition?.let { listOf(it) } ?: emptyList()
@@ -20,8 +20,8 @@ data class UiState(
         lastMovePositions + uiSelectedPositions
 
     private val ownPiecePositions: List<Position> =
-        gameSnaphotState.board.pieces
-            .filter { (_, piece) -> piece.set == gameSnaphotState.boardState.toMove }
+        gameSnapshotState.board.pieces
+            .filter { (_, piece) -> piece.set == gameSnapshotState.boardState.toMove }
             .map { it.key }
 
     val possibleCaptures: List<Position> =
@@ -32,7 +32,7 @@ data class UiState(
 
     fun possibleMoves(predicate: (BoardMove) -> Boolean = { true }) =
         selectedPosition?.let {
-            gameSnaphotState.legalMovesFrom(it)
+            gameSnapshotState.legalMovesFrom(it)
                 .filter(predicate)
         } ?: emptyList()
 

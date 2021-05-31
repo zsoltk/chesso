@@ -2,7 +2,7 @@ package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
-import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
@@ -28,20 +28,20 @@ class GameController(
     val gamePlayState: GamePlayState
         get() = getGamePlayState()
 
-    val gameSnaphotState: GameSnaphotState
-        get() = gamePlayState.gameState.currentSnaphotState
+    val gameSnapshotState: GameSnapshotState
+        get() = gamePlayState.gameState.currentSnapshotState
 
     private val boardState: BoardState
-        get() = gameSnaphotState.boardState
+        get() = gameSnapshotState.boardState
 
     val toMove: Set
         get() = boardState.toMove
 
-    fun reset(gameSnaphotState: GameSnaphotState = GameSnaphotState()) {
+    fun reset(gameSnapshotState: GameSnapshotState = GameSnapshotState()) {
         setGamePlayState?.invoke(
             GamePlayState(
                 gameState = GameState(
-                    states = listOf(gameSnaphotState)
+                    states = listOf(gameSnapshotState)
                 )
             )
         )
@@ -59,7 +59,7 @@ class GameController(
         square(this).hasPiece(boardState.toMove)
 
     fun onClick(position: Position) {
-        if (gameSnaphotState.resolution != Resolution.IN_PROGRESS) return
+        if (gameSnapshotState.resolution != Resolution.IN_PROGRESS) return
         if (position.hasOwnPiece()) {
             selectPosition(position)
         } else if (canMoveTo(position)) {
@@ -88,14 +88,14 @@ class GameController(
     private fun applyMove(boardMove: BoardMove) {
         var states = gamePlayState.gameState.states.toMutableList()
         val currentIndex = gamePlayState.gameState.currentIndex
-        val transition = gameSnaphotState.calculateAppliedMove(
+        val transition = gameSnapshotState.calculateAppliedMove(
             boardMove = boardMove,
             boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
         )
 
-        states[currentIndex] = transition.fromSnaphotState
+        states[currentIndex] = transition.fromSnapshotState
         states = states.subList(0, currentIndex + 1)
-        states.add(transition.toSnaphotState)
+        states.add(transition.toSnapshotState)
 
         setGamePlayState?.invoke(
             GamePlayState(
@@ -108,7 +108,7 @@ class GameController(
     }
 
     private fun findBoardMove(from: Position, to: Position): BoardMove? {
-        val legalMoves = gameSnaphotState
+        val legalMoves = gameSnapshotState
             .legalMovesFrom(from)
             .filter { it.to == to }
 
@@ -131,7 +131,7 @@ class GameController(
     private fun handlePromotion(to: Position, legalMoves: List<BoardMove>): BoardMove? {
         var promotionState = gamePlayState.promotionState
         if (setGamePlayState == null && promotionState == PromotionState.None) {
-            promotionState = PromotionState.ContinueWith(Queen(gameSnaphotState.toMove))
+            promotionState = PromotionState.ContinueWith(Queen(gameSnapshotState.toMove))
         }
 
         when (val promotion = promotionState) {

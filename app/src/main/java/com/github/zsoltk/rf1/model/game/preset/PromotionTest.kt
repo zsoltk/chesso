@@ -6,7 +6,7 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.BoardState
-import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Knight
 import com.github.zsoltk.rf1.model.piece.Pawn
@@ -31,7 +31,7 @@ object PromotionTest : Preset {
                 board = board,
                 toMove = WHITE
             )
-            reset(GameSnaphotState(boardState))
+            reset(GameSnapshotState(boardState))
         }
     }
 }
