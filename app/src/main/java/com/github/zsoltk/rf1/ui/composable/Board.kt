@@ -39,7 +39,7 @@ import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.GameController
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Piece
@@ -53,25 +53,25 @@ private enum class MoveState {
 fun AnimatedBoard(
     gameController: GameController
 ) {
-    val currentState by remember { mutableStateOf(gameController.game.currentState) }
+    val currentState by remember { mutableStateOf(gameController.game.currentSnaphotState) }
 
     Board(
-        gameState = gameController.game.prevState ?: gameController.game.currentState,
+        gameSnaphotState = gameController.game.prevSnaphotState ?: gameController.game.currentSnaphotState,
         uiState = gameController.uiState,
         onClick = { position -> gameController.onClick(position) },
-        move = gameController.gameState.lastMove
+        move = gameController.gameSnaphotState.lastMove
     )
 }
 
 @Composable
 fun Board(
-    gameState: GameState,
+    gameSnaphotState: GameSnaphotState,
     uiState: UiState,
     onClick: (Position) -> Unit,
     move: AppliedMove? = null,
 ) {
     Board(
-        fetchSquare = { position -> gameState.boardState.board[position] },
+        fetchSquare = { position -> gameSnaphotState.boardState.board[position] },
         highlightedPositions = uiState.highlightedPositions,
         clickablePositions = uiState.clickablePositions,
         possibleMoves = uiState.possibleMovesWithoutCaptures,

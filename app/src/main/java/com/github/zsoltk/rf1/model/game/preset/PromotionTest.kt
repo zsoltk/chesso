@@ -6,12 +6,10 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.BoardState
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Knight
 import com.github.zsoltk.rf1.model.piece.Pawn
-import com.github.zsoltk.rf1.model.piece.Queen
-import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 import com.github.zsoltk.rf1.ui.Rf1Theme
@@ -33,7 +31,7 @@ object PromotionTest : Preset {
                 board = board,
                 toMove = WHITE
             )
-            reset(GameState(boardState))
+            reset(GameSnaphotState(boardState))
         }
     }
 }

@@ -3,7 +3,7 @@ package com.github.zsoltk.rf1.model.game
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Set
 
@@ -11,7 +11,7 @@ class Game {
 
     var states by mutableStateOf(
         listOf(
-            GameState()
+            GameSnaphotState()
         )
     )
 
@@ -23,17 +23,17 @@ class Game {
     val hasNextIndex: Boolean
         get() = currentIndex < states.lastIndex
 
-    val currentState: GameState
+    val currentSnaphotState: GameSnaphotState
         get() = states[currentIndex]
 
-    val prevState: GameState?
+    val prevSnaphotState: GameSnaphotState?
         get() = if (hasPrevIndex) states[currentIndex-1] else null
 
     val toMove: Set
-        get() = currentState.boardState.toMove
+        get() = currentSnaphotState.boardState.toMove
 
     val resolution: Resolution
-        get() = currentState.resolution
+        get() = currentSnaphotState.resolution
 
     fun moves(): List<AppliedMove> =
         states

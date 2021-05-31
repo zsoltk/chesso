@@ -2,7 +2,7 @@ package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Move
@@ -21,8 +21,8 @@ class Pawn(override val set: Set) : Piece {
 
     override val textSymbol: String = ""
 
-    override fun pseudoLegalMoves(gameState: GameState, checkCheck: Boolean): List<BoardMove> {
-        val board = gameState.board
+    override fun pseudoLegalMoves(gameSnaphotState: GameSnaphotState, checkCheck: Boolean): List<BoardMove> {
+        val board = gameSnaphotState.board
         val square = board.find(this) ?: return emptyList()
         val moves = mutableListOf<BoardMove>()
 
@@ -30,8 +30,8 @@ class Pawn(override val set: Set) : Piece {
         advanceTwoSquares(board, square)?.let { moves += it }
         captureDiagonalLeft(board, square)?.let { moves += it }
         captureDiagonalRight(board, square)?.let { moves += it }
-        enPassantCaptureLeft(gameState, square)?.let { moves += it }
-        enPassantCaptureRight(gameState, square)?.let { moves += it }
+        enPassantCaptureLeft(gameSnaphotState, square)?.let { moves += it }
+        enPassantCaptureRight(gameSnaphotState, square)?.let { moves += it }
 
         return moves.flatMap {
             it.checkForPromotion()
@@ -89,22 +89,22 @@ class Pawn(override val set: Set) : Piece {
     }
 
     private fun enPassantCaptureLeft(
-        gameState: GameState,
+        gameSnaphotState: GameSnaphotState,
         square: Square
-    ): BoardMove? = enPassantDiagonal(gameState, square, -1)
+    ): BoardMove? = enPassantDiagonal(gameSnaphotState, square, -1)
 
     private fun enPassantCaptureRight(
-        gameState: GameState,
+        gameSnaphotState: GameSnaphotState,
         square: Square
-    ): BoardMove? = enPassantDiagonal(gameState, square, 1)
+    ): BoardMove? = enPassantDiagonal(gameSnaphotState, square, 1)
 
     private fun enPassantDiagonal(
-        gameState: GameState,
+        gameSnaphotState: GameSnaphotState,
         square: Square,
         deltaFile: Int
     ): BoardMove? {
         if (square.position.rank != if (set == WHITE) 5 else 4) return null
-        val lastMove = gameState.lastMove ?: return null
+        val lastMove = gameSnaphotState.lastMove ?: return null
         if (lastMove.piece !is Pawn) return null
         val fromInitialSquare = (lastMove.from.rank == if (set == WHITE) 7 else 2)
         val twoSquareMove = (lastMove.to.rank == square.position.rank)
@@ -112,8 +112,8 @@ class Pawn(override val set: Set) : Piece {
 
         return if (fromInitialSquare && twoSquareMove && isOnNextFile) {
             val deltaRank = if (set == WHITE) 1 else -1
-            val enPassantTarget = gameState.board[square.file + deltaFile, square.rank + deltaRank]
-            val capturedPieceSquare = gameState.board[square.file + deltaFile, square.rank]
+            val enPassantTarget = gameSnaphotState.board[square.file + deltaFile, square.rank + deltaRank]
+            val capturedPieceSquare = gameSnaphotState.board[square.file + deltaFile, square.rank]
             requireNotNull(enPassantTarget)
             requireNotNull(capturedPieceSquare)
 

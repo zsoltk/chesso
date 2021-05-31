@@ -13,7 +13,7 @@ import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 
-data class GameState(
+data class GameSnaphotState(
     val boardState: BoardState = BoardState(),
     val resolution: Resolution = Resolution.IN_PROGRESS,
     val move: AppliedMove? = null,
@@ -90,10 +90,10 @@ data class GameState(
 
         return GameStateTransition(
             move = appliedMove,
-            fromState = this.copy(
+            fromSnaphotState = this.copy(
                 move = appliedMove
             ),
-            toState = copy(
+            toSnaphotState = copy(
                 boardState = tempNewGameState.boardState,
                 resolution = when {
                     isCheckMate -> Resolution.CHECKMATE
@@ -109,7 +109,7 @@ data class GameState(
         )
     }
 
-    fun derivePseudoGameState(boardMove: BoardMove): GameState = copy(
+    fun derivePseudoGameState(boardMove: BoardMove): GameSnaphotState = copy(
         boardState = boardState.deriveBoardState(boardMove),
         move = null,
         lastMove = AppliedMove(

@@ -1,6 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
@@ -16,9 +16,9 @@ class Knight(override val set: Set) : Piece {
 
     override val textSymbol: String = "N"
 
-    override fun pseudoLegalMoves(gameState: GameState, checkCheck: Boolean): List<BoardMove> =
+    override fun pseudoLegalMoves(gameSnaphotState: GameSnaphotState, checkCheck: Boolean): List<BoardMove> =
         targets
-            .map { singleCaptureMove(gameState, it.first, it.second) }
+            .map { singleCaptureMove(gameSnaphotState, it.first, it.second) }
             .filterNotNull()
 
     companion object {

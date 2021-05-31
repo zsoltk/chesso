@@ -2,18 +2,18 @@ package com.github.zsoltk.rf1.model.piece
 
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnaphotState
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.MoveIntention
 
 fun Piece.singleCaptureMove(
-    gameState: GameState,
+    gameSnaphotState: GameSnaphotState,
     deltaFile: Int,
     deltaRank: Int
 ): BoardMove? {
-    val board = gameState.board
+    val board = gameSnaphotState.board
     val square = board.find(this) ?: return null
     val target = board[square.file + deltaFile, square.rank + deltaRank] ?: return null
 
@@ -33,11 +33,11 @@ fun Piece.singleCaptureMove(
 }
 
 fun Piece.lineMoves(
-    gameState: GameState,
+    gameSnaphotState: GameSnaphotState,
     directions: List<Pair<Int, Int>>,
 ) : List<BoardMove> {
     val moves = mutableListOf<BoardMove>()
-    val board = gameState.board
+    val board = gameSnaphotState.board
     val square = board.find(this) ?: return emptyList()
 
     directions.map {
