@@ -37,8 +37,7 @@ fun Game(game: Game = Game(), uiState: UiState = UiState()) {
         Moves(game)
         CapturedPieces(game)
         AnimatedBoard(
-            gameController = gameController,
-            gameStateTransition = game.transitions.last()
+            gameController = gameController
         )
         Spacer(modifier = Modifier.height(48.dp))
         TimeTravelButtons(gameController)

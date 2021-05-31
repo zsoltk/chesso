@@ -1,5 +1,11 @@
 package com.github.zsoltk.rf1.ui.composable
 
+import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateOffset
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,14 +19,18 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
@@ -28,25 +38,43 @@ import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.state.GameStateTransition
+import com.github.zsoltk.rf1.model.game.state.InitialState
 import com.github.zsoltk.rf1.model.game.state.UiState
+import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
+private enum class MoveState {
+    From, To
+}
+
 @Composable
 fun AnimatedBoard(
-    gameController: GameController,
-    gameStateTransition: GameStateTransition
+    gameController: GameController
 ) {
-    Board(
-        gameController = gameController,
-        gameState = gameStateTransition.toState
-    )
+    when (val transitionState = gameController.transitionState) {
+        is InitialState -> {
+            Board(
+                gameController = gameController,
+                gameState = transitionState.initialState,
+                move = null
+            )
+        }
+        is GameStateTransition -> {
+            Board(
+                gameController = gameController,
+                gameState = transitionState.fromState,
+                move = transitionState.move,
+            )
+        }
+    }
 }
 
 @Composable
 fun Board(
     gameController: GameController,
-    gameState: GameState
+    gameState: GameState,
+    move: AppliedMove? = null,
 ) {
     Board(
         fetchSquare = { position -> gameState.boardState.board[position] },
@@ -55,7 +83,8 @@ fun Board(
         clickablePositions = gameController.clickablePositions(),
         possibleMoves = gameController.possibleMovesWithoutCaptures(),
         possibleCaptures = gameController.possibleCaptures(),
-        onClick = { gameController.onClick(it) }
+        onClick = { gameController.onClick(it) },
+        move = move,
     )
 }
 
@@ -66,7 +95,8 @@ fun Board(
     clickablePositions: List<Position>,
     possibleMoves: List<Position>,
     possibleCaptures: List<Position>,
-    onClick: (Position) -> Unit
+    onClick: (Position) -> Unit,
+    move: AppliedMove? = null,
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -90,11 +120,20 @@ fun Board(
         EightByEight { position ->
             Piece(
                 piece = fetchSquare(position).piece,
-                modifier = Modifier.offset()
+                offset = pieceOffset(position, move).times(squareSize.value)
             )
         }
     }
 }
+
+@Composable
+private fun pieceOffset(position: Position, move: AppliedMove?): Offset =
+    if (position == move?.from) {
+        Offset(
+            x = (move.to.file - move.from.file) * 1f,
+            y = (move.to.rank - move.from.rank) * -1f,
+        )
+    } else Offset.Zero
 
 @Composable
 private fun EightByEight(
@@ -202,11 +241,36 @@ private fun PositionLabel(
 }
 
 @Composable
-private fun Piece(piece: Piece?, modifier: Modifier = Modifier) {
+private fun Piece(
+    piece: Piece?,
+    modifier: Modifier = Modifier,
+    offset: Offset? = null
+) {
     piece?.let {
+        val appliedOffset = if (offset != null) {
+            var currentState = remember { MutableTransitionState(MoveState.From) }
+            currentState.targetState = MoveState.To
+            val transition = updateTransition(currentState, label = "Move progress")
+            val animatedOffsetValue by transition.animateOffset(
+                transitionSpec = {
+                    tween(durationMillis = 100, easing = LinearEasing)
+                },
+                label = "Move progress"
+            ) { state: MoveState ->
+                when (state) {
+                    MoveState.From -> Offset.Zero
+                    MoveState.To -> offset
+                }
+            }
+
+            Log.d("wtf", "$animatedOffsetValue")
+            animatedOffsetValue
+
+        } else Offset.Zero
+
         Text(
             text = it.symbol,
-            modifier = modifier,
+            modifier = modifier.offset(Dp(appliedOffset.x), Dp(appliedOffset.y)),
             fontSize = 40.sp
         )
     }
@@ -277,13 +341,8 @@ fun BoardPreview() {
             selectedPosition = Position.f3
         }
 
-        Board(
-            fetchSquare = { gameController.square(it) },
-            highlightedPositions = gameController.highlightedPositions(),
-            clickablePositions = gameController.clickablePositions(),
-            possibleMoves = gameController.possibleMovesWithoutCaptures(),
-            possibleCaptures = gameController.possibleCaptures(),
-            onClick = { gameController.onClick(it) }
+        AnimatedBoard(
+            gameController = gameController
         )
     }
 }

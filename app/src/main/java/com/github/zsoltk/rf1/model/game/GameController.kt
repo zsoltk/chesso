@@ -7,7 +7,8 @@ import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
-import com.github.zsoltk.rf1.model.game.state.GameStateTransition
+import com.github.zsoltk.rf1.model.game.state.GameStateDescriptor
+import com.github.zsoltk.rf1.model.game.state.InitialState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Promotion
@@ -32,6 +33,9 @@ class GameController(
     private val boardState: BoardState
         get() = gameState.boardState
 
+    val transitionState: GameStateDescriptor
+        get() = game.currentTransition
+
     private var promotionState: PromotionState =
         PromotionState.None
 
@@ -46,7 +50,7 @@ class GameController(
 
     fun reset(gameState: GameState = GameState()) {
         game.states = listOf(gameState)
-        game.transitions = listOf(GameStateTransition(gameState))
+        game.transitions = listOf(InitialState(gameState))
         uiState.selectedPosition = null
     }
 
@@ -129,7 +133,7 @@ class GameController(
             boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
         )
 
-        states[currentIndex] = transition.fromState!!
+        states[currentIndex] = transition.fromState
         states = states.subList(0, currentIndex + 1)
         transitions[currentIndex] = transition
         transitions = transitions.subList(0, currentIndex + 1)
