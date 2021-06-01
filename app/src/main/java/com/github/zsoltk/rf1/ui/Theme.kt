@@ -1,10 +1,12 @@
 package com.github.zsoltk.rf1.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 
 private val DarkColorPalette = darkColors(
@@ -13,19 +15,17 @@ private val DarkColorPalette = darkColors(
     secondary = teal200
 )
 
+@SuppressLint("ConflictingOnColor")
 private val LightColorPalette = lightColors(
-    primary = purple500,
-    primaryVariant = purple700,
-    secondary = teal200
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
+    primary = space_cadet,
+    primaryVariant = manatee,
+    secondary = atomic_tangerine,
+    background = alice_blue,
+    surface = alice_blue,
     onPrimary = Color.White,
     onSecondary = Color.Black,
     onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    onSurface = space_cadet,
 )
 
 @Composable

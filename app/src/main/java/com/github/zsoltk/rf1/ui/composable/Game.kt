@@ -3,7 +3,7 @@ package com.github.zsoltk.rf1.ui.composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,7 +36,11 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
         preset = preset
     ) }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+    ) {
         ToMove(gamePlayState.gameState)
         Moves(gamePlayState.gameState)
         CapturedPieces(gamePlayState.gameState)
@@ -44,7 +48,6 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
             gamePlayState = gamePlayState,
             gameController = gameController
         )
-        Spacer(modifier = Modifier.height(48.dp))
         TimeTravelButtons(gameController)
     }
 
@@ -66,7 +69,7 @@ private fun ToMove(gameState: GameState) {
         modifier = Modifier
             .fillMaxWidth()
             .height(36.dp)
-            .background(MaterialTheme.colors.primaryVariant),
+            .background(MaterialTheme.colors.primary),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -79,7 +82,9 @@ private fun ToMove(gameState: GameState) {
 
 @Composable
 private fun TimeTravelButtons(gameController: GameController) {
-    Row {
+    Row(
+        Modifier.padding(24.dp)
+    ) {
         Button(
             onClick = { gameController.stepBackward() },
             enabled = gameController.canStepBack()

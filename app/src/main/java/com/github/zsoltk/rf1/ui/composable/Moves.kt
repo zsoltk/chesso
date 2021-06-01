@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +25,9 @@ import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import com.github.zsoltk.rf1.ui.atomic_tangerine
+import com.github.zsoltk.rf1.ui.black_coral
+import com.github.zsoltk.rf1.ui.silver_sand
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,7 +36,7 @@ fun Moves(gameState: GameState) {
         modifier = Modifier
             .fillMaxWidth()
             .height(36.dp)
-            .background(Color.LightGray),
+            .background(black_coral),
         contentAlignment = Alignment.CenterStart
     ) {
         val listState = rememberLazyListState()
@@ -59,7 +61,7 @@ fun Moves(gameState: GameState) {
 
                 item {
                     if (index == selectedItemIndex) {
-                        Pill { Move(move) }
+                        Pill(move.effect != null) { Move(move) }
                     } else {
                         Move(move)
                     }
@@ -90,9 +92,14 @@ private fun StepNumber(stepNumber: Int) {
 
 @Composable
 private fun Pill(
+    isHighlighted: Boolean,
     content: @Composable () -> Unit,
 ) {
-    Box(modifier = Modifier.background(Color.Gray, RoundedCornerShape(6.dp))) {
+    Box(modifier = Modifier.background(
+        color = if (isHighlighted) atomic_tangerine else silver_sand,
+        shape = RoundedCornerShape(6.dp)
+    )
+    ) {
         content()
     }
 }

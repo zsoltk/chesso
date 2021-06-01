@@ -36,7 +36,7 @@ fun CapturedPieces(gameState: GameState) {
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(MaterialTheme.colors.secondaryVariant)
+            .background(MaterialTheme.colors.background)
     ) {
         Row(
             modifier = Modifier
@@ -73,7 +73,7 @@ private fun CapturedPieceList(capturedPieces: List<Piece>, capturedBy: Set, scor
         }
         Text(
             text = stringBuilder.toString(),
-            color = MaterialTheme.colors.onSecondary,
+            color = MaterialTheme.colors.onBackground,
             fontSize = 20.sp
         )
         if (capturedBy == WHITE && score > 0) {
@@ -86,7 +86,7 @@ private fun CapturedPieceList(capturedPieces: List<Piece>, capturedBy: Set, scor
 private fun Score(score: Int) {
     Text(
         text = "+${score.absoluteValue}",
-        color = MaterialTheme.colors.onSecondary,
+        color = MaterialTheme.colors.onBackground,
         fontSize = 12.sp,
         modifier = Modifier.padding(
             all = 8.dp

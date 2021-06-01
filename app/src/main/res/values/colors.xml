@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="space_cadet">#FF2B2D42</color>
+    <color name="manatee">#FF8D99AE</color>
+    <color name="alice_blue">#FFEDF2F4</color>
+    <color name="sizzling_red">#FFF05D5E</color>
+    <color name="imperial_red">#FFEF233C</color>
+    <color name="amaranth_red">#FFD90429</color>
+    <color name="atomic_tangerine">#FFF0965D</color>
 </resources>

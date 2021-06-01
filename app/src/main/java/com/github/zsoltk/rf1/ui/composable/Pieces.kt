@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
@@ -81,6 +82,7 @@ fun Piece(
         ) {
             Text(
                 text = piece.symbol,
+                color = Color.Black,
                 modifier = Modifier.offset(Dp(dpOffset.x), Dp(dpOffset.y)),
                 fontSize = 40.sp
             )
