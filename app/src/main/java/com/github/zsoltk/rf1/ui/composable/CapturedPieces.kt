@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.zsoltk.rf1.model.game.Game
 import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.Knight
 import com.github.zsoltk.rf1.model.piece.Pawn
@@ -31,7 +31,7 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 import kotlin.math.absoluteValue
 
 @Composable
-fun CapturedPieces(game: Game) {
+fun CapturedPieces(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,13 +45,13 @@ fun CapturedPieces(game: Game) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val capturedPieces = game.currentState.capturedPieces
+            val capturedPieces = gameState.currentSnapshotState.capturedPieces
                 .sortedWith { t1, t2 ->
                     if (t1.value == t2.value) t1.symbol.hashCode() - t2.symbol.hashCode()
                     else t1.value - t2.value
                 }
 
-            val score = game.currentState.score
+            val score = gameState.currentSnapshotState.score
             CapturedPieceList(capturedPieces, capturedBy = WHITE, score)
             CapturedPieceList(capturedPieces, capturedBy = BLACK, score)
         }
@@ -99,9 +99,9 @@ private fun Score(score: Int) {
 fun TakenPiecesPreview() {
     Rf1Theme {
         CapturedPieces(
-            game = Game().apply {
+            gameState = GameState(
                 states = listOf(
-                    GameState(
+                    GameSnapshotState(
                         capturedPieces = listOf(
                             Pawn(WHITE),
                             Pawn(WHITE),
@@ -121,7 +121,7 @@ fun TakenPiecesPreview() {
                         )
                     )
                 )
-            }
+            )
         )
     }
 }

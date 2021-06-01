@@ -20,48 +20,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.board.Position.*
-import com.github.zsoltk.rf1.model.game.Game
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
-import com.github.zsoltk.rf1.model.game.preset.PromotionTest
-import com.github.zsoltk.rf1.model.game.state.UiState
+import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(game: Game = Game(), uiState: UiState = UiState()) {
-    var showPromotionDialog by remember { mutableStateOf(false) }
-    val onPromotion = { showPromotionDialog = true }
-    val gameController = remember { GameController(game, uiState, onPromotion, PromotionTest) }
+fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
+    var gamePlayState by remember { mutableStateOf(state) }
+    val gameController = remember { GameController(
+        getGamePlayState = { gamePlayState },
+        setGamePlayState = { gamePlayState = it },
+        preset = preset
+    ) }
 
     Column {
-        ToMove(game)
-        Moves(game)
-        CapturedPieces(game)
+        ToMove(gamePlayState.gameState)
+        Moves(gamePlayState.gameState)
+        CapturedPieces(gamePlayState.gameState)
         Board(
-            fetchSquare = { gameController.square(it) },
-            highlightedPositions = gameController.highlightedPositions(),
-            clickablePositions = gameController.clickablePositions(),
-            possibleMoves = gameController.possibleMovesWithoutCaptures(),
-            possibleCaptures = gameController.possibleCaptures(),
-            onClick = { gameController.onClick(it) }
+            gamePlayState = gamePlayState,
+            gameController = gameController
         )
         Spacer(modifier = Modifier.height(48.dp))
         TimeTravelButtons(gameController)
     }
 
-    if (showPromotionDialog) {
+    if (gamePlayState.uiState.showPromotionDialog) {
         PromotionDialog(gameController.toMove) {
             gameController.onPromotionPieceSelected(it)
-            showPromotionDialog = false
         }
     }
 }
 
 @Composable
-private fun ToMove(game: Game) {
-    val text = when (game.resolution) {
-        Resolution.IN_PROGRESS -> "${game.toMove} to move"
-        else -> game.resolution.toString().replace("_", " ")
+private fun ToMove(gameState: GameState) {
+    val text = when (gameState.resolution) {
+        Resolution.IN_PROGRESS -> "${gameState.toMove} to move"
+        else -> gameState.resolution.toString().replace("_", " ")
     }
 
     Row(
@@ -101,9 +99,8 @@ private fun TimeTravelButtons(gameController: GameController) {
 @Composable
 fun GamePreview() {
     Rf1Theme {
-        val game = Game()
-        val uiState = UiState()
-        GameController(game, uiState).apply {
+        var gamePlayState = GamePlayState()
+        GameController({ gamePlayState }, { gamePlayState = it}).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
@@ -113,14 +110,10 @@ fun GamePreview() {
             applyMove(e4, d5)
             applyMove(d8, d5)
             applyMove(c3, d5)
+            onClick(g8)
         }
-        uiState.apply {
-            selectedPosition = g8
-        }
-
         Game(
-            game = game,
-            uiState = uiState
+            state = gamePlayState,
         )
     }
 }

@@ -6,7 +6,7 @@ import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.GameController
 import com.github.zsoltk.rf1.model.game.state.BoardState
-import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Queen
 import com.github.zsoltk.rf1.model.piece.Rook
@@ -30,7 +30,7 @@ object ThreefoldRepetitionTest : Preset {
                 board = board,
                 toMove = Set.WHITE
             )
-            reset(GameState(boardState))
+            reset(GameSnapshotState(boardState))
         }
     }
 }

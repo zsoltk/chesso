@@ -2,13 +2,14 @@ package com.github.zsoltk.rf1.model.game
 
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
-import com.github.zsoltk.rf1.model.game.state.GameState
-import com.github.zsoltk.rf1.model.game.state.UiState
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
+import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.game.state.PromotionState
 import com.github.zsoltk.rf1.model.move.BoardMove
-import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Queen
@@ -16,36 +17,34 @@ import com.github.zsoltk.rf1.model.piece.Set
 import java.lang.IllegalStateException
 
 class GameController(
-    private val game: Game,
-    private val uiState: UiState,
-    private val onPromotion: (() -> Unit)? = null,
+    val getGamePlayState: () -> GamePlayState,
+    private val setGamePlayState: ((GamePlayState) -> Unit)? = null,
     preset: Preset? = null
 ) {
     init {
         preset?.let { applyPreset(it) }
     }
 
-    private val gameState: GameState
-        get() = game.currentState
+    val gamePlayState: GamePlayState
+        get() = getGamePlayState()
+
+    val gameSnapshotState: GameSnapshotState
+        get() = gamePlayState.gameState.currentSnapshotState
 
     private val boardState: BoardState
-        get() = gameState.boardState
-
-    private var promotionState: PromotionState =
-        PromotionState.None
+        get() = gameSnapshotState.boardState
 
     val toMove: Set
         get() = boardState.toMove
 
-    private sealed class PromotionState {
-        object None : PromotionState()
-        data class Await(val position: Position) : PromotionState()
-        data class ContinueWith(val piece: Piece) : PromotionState()
-    }
-
-    fun reset(gameState: GameState = GameState()) {
-        game.states = listOf(gameState)
-        uiState.selectedPosition = null
+    fun reset(gameSnapshotState: GameSnapshotState = GameSnapshotState()) {
+        setGamePlayState?.invoke(
+            GamePlayState(
+                gameState = GameState(
+                    states = listOf(gameSnapshotState)
+                )
+            )
+        )
     }
 
     fun applyPreset(preset: Preset) {
@@ -56,61 +55,30 @@ class GameController(
     fun square(position: Position): Square =
         boardState.board[position]
 
-    fun highlightedPositions(): List<Position> =
-        lastMovePositions() + uiSelectedPositions()
-
-    private fun lastMovePositions(): List<Position> =
-        gameState.lastMove?.let { listOf(it.from, it.to) } ?: emptyList()
-
-    private fun uiSelectedPositions(): List<Position> =
-        uiState.selectedPosition?.let { listOf(it) } ?: emptyList()
-
-    fun clickablePositions(): List<Position> =
-        ownPiecePositions() +
-            possibleCaptures() +
-            possibleMovesWithoutCaptures()
-
-    private fun ownPiecePositions(): List<Position> =
-        boardState.board.pieces
-            .filter { (position, _) -> position.hasOwnPiece() }
-            .map { it.key }
-
-    fun possibleCaptures(): List<Position> =
-        possibleMoves { it.preMove is Capture }.targetPositions()
-
-    fun possibleMovesWithoutCaptures(): List<Position> =
-        possibleMoves { it.preMove !is Capture }.targetPositions()
-
-    private fun possibleMoves(predicate: (BoardMove) -> Boolean = { true }) =
-        uiState.selectedPosition?.let {
-            gameState.legalMovesFrom(it)
-                .filter(predicate)
-        } ?: emptyList()
-
     private fun Position.hasOwnPiece() =
         square(this).hasPiece(boardState.toMove)
 
     fun onClick(position: Position) {
-        if (gameState.resolution != Resolution.IN_PROGRESS) return
+        if (gameSnapshotState.resolution != Resolution.IN_PROGRESS) return
         if (position.hasOwnPiece()) {
             selectPosition(position)
         } else if (canMoveTo(position)) {
-            val selectedPosition = uiState.selectedPosition
+            val selectedPosition = gamePlayState.uiState.selectedPosition
             requireNotNull(selectedPosition)
             applyMove(selectedPosition, position)
         }
     }
 
     private fun selectPosition(position: Position) {
-        if (uiState.selectedPosition == position) {
-            uiState.selectedPosition = null
-        } else {
-            uiState.selectedPosition = position
-        }
+        setGamePlayState?.invoke(
+            gamePlayState.copy(
+                uiState = gamePlayState.uiState.select(position)
+            )
+        )
     }
 
     private fun canMoveTo(position: Position) =
-        position in possibleMoves().targetPositions()
+        position in gamePlayState.uiState.possibleMoves().targetPositions()
 
     fun applyMove(from: Position, to: Position) {
         val boardMove = findBoardMove(from, to) ?: return
@@ -118,22 +86,30 @@ class GameController(
     }
 
     private fun applyMove(boardMove: BoardMove) {
-        var states = game.states.toMutableList()
-        val currentIndex = game.currentIndex
-        val appliedMove = gameState.calculateAppliedMove(
+        var states = gamePlayState.gameState.states.toMutableList()
+        val currentIndex = gamePlayState.gameState.currentIndex
+        val transition = gameSnapshotState.calculateAppliedMove(
             boardMove = boardMove,
             boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
         )
 
-        states[currentIndex] = appliedMove.updatedCurrentState
+        states[currentIndex] = transition.fromSnapshotState
         states = states.subList(0, currentIndex + 1)
-        game.currentIndex = states.lastIndex
-        game.states = states + appliedMove.newState
-        stepForward()
+        states.add(transition.toSnapshotState)
+
+        setGamePlayState?.invoke(
+            GamePlayState(
+                gameState = gamePlayState.gameState.copy(
+                    states = states,
+                    currentIndex = states.lastIndex,
+                    lastActiveState = gamePlayState.gameState.currentSnapshotState
+                )
+            )
+        )
     }
 
     private fun findBoardMove(from: Position, to: Position): BoardMove? {
-        val legalMoves = gameState
+        val legalMoves = gameSnapshotState
             .legalMovesFrom(from)
             .filter { it.to == to }
 
@@ -154,14 +130,21 @@ class GameController(
     }
 
     private fun handlePromotion(to: Position, legalMoves: List<BoardMove>): BoardMove? {
-        if (onPromotion == null && promotionState == PromotionState.None) {
-            promotionState = PromotionState.ContinueWith(Queen(gameState.toMove))
+        var promotionState = gamePlayState.promotionState
+        if (setGamePlayState == null && promotionState == PromotionState.None) {
+            promotionState = PromotionState.ContinueWith(Queen(gameSnapshotState.toMove))
         }
 
         when (val promotion = promotionState) {
             is PromotionState.None -> {
-                promotionState = PromotionState.Await(to)
-                onPromotion!!.invoke()
+                setGamePlayState?.invoke(
+                    gamePlayState.copy(
+                        uiState = gamePlayState.uiState.copy(
+                            showPromotionDialog = true
+                        ),
+                        promotionState = PromotionState.Await(to)
+                    )
+                )
             }
             is PromotionState.Await -> {
                 throw IllegalStateException()
@@ -180,30 +163,49 @@ class GameController(
     }
 
     fun onPromotionPieceSelected(piece: Piece) {
-        val state = promotionState
+        val state = gamePlayState.promotionState
         if (state !is PromotionState.Await) error("Not in expected state: $state")
         val position = state.position
-        promotionState = PromotionState.ContinueWith(piece)
+        setGamePlayState?.invoke(
+            gamePlayState.copy(
+                uiState = gamePlayState.uiState.copy(
+                    showPromotionDialog = false
+                ),
+                promotionState = PromotionState.ContinueWith(piece)
+            )
+        )
         onClick(position)
     }
 
     fun canStepBack(): Boolean =
-        game.hasPrevIndex
+        gamePlayState.gameState.hasPrevIndex
 
     fun canStepForward(): Boolean =
-        game.hasNextIndex
+        gamePlayState.gameState.hasNextIndex
 
     fun stepForward() {
         if (canStepForward()) {
-            game.currentIndex++
-            uiState.selectedPosition = null
+            setGamePlayState?.invoke(
+                GamePlayState(
+                    gameState = gamePlayState.gameState.copy(
+                        currentIndex = gamePlayState.gameState.currentIndex + 1,
+                        lastActiveState = gamePlayState.gameState.currentSnapshotState
+                    )
+                )
+            )
         }
     }
 
     fun stepBackward() {
         if (canStepBack()) {
-            game.currentIndex--
-            uiState.selectedPosition = null
+            setGamePlayState?.invoke(
+                GamePlayState(
+                    gameState = gamePlayState.gameState.copy(
+                        currentIndex = gamePlayState.gameState.currentIndex - 1,
+                        lastActiveState = gamePlayState.gameState.currentSnapshotState
+                    )
+                )
+            )
         }
     }
 }

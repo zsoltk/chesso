@@ -21,15 +21,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.move.AppliedMove
-import com.github.zsoltk.rf1.model.game.Game
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.GameController
-import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import kotlinx.coroutines.launch
 
 @Composable
-fun Moves(game: Game) {
+fun Moves(gameState: GameState) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,8 +47,8 @@ fun Moves(game: Game) {
             modifier = Modifier.padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val moves = game.moves()
-            val selectedItemIndex = game.currentIndex - 1
+            val moves = gameState.moves()
+            val selectedItemIndex = gameState.currentIndex - 1
             moves.forEachIndexed { index, move ->
                 if (index % 2 == 0) {
                     item {
@@ -112,9 +112,8 @@ private fun Move(
 @Composable
 fun MovesPreview() {
     Rf1Theme {
-        val game = Game()
-        val uiState = UiState()
-        GameController(game, uiState).apply {
+        var gamePlayState = GamePlayState()
+        GameController({ gamePlayState }, { gamePlayState = it}).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
@@ -131,7 +130,7 @@ fun MovesPreview() {
         }
 
         Moves(
-            game = game
+            gameState = gamePlayState.gameState
         )
     }
 }
