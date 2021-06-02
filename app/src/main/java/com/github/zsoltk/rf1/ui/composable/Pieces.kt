@@ -19,7 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
+import com.github.zsoltk.rf1.model.piece.Bishop
+import com.github.zsoltk.rf1.model.piece.Pawn
 import com.github.zsoltk.rf1.model.piece.Piece
+import com.github.zsoltk.rf1.model.piece.Rook
 
 @Composable
 fun Pieces(
@@ -84,7 +87,12 @@ fun Piece(
                 text = piece.symbol,
                 color = Color.Black,
                 modifier = Modifier.offset(Dp(dpOffset.x), Dp(dpOffset.y)),
-                fontSize = 40.sp
+                fontSize = when (piece) {
+                    is Pawn -> 36.sp
+                    is Bishop -> 41.sp
+                    is Rook -> 41.sp
+                    else -> 40.sp
+                }
             )
         }
     }
