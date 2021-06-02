@@ -6,9 +6,9 @@ import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.Resolution
+import com.github.zsoltk.rf1.model.game.controller.Reducer.Action
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
-import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.state.PromotionState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Promotion
@@ -40,11 +40,7 @@ class GameController(
 
     fun reset(gameSnapshotState: GameSnapshotState = GameSnapshotState()) {
         setGamePlayState?.invoke(
-            GamePlayState(
-                gameState = GameState(
-                    states = listOf(gameSnapshotState)
-                )
-            )
+            Reducer(gamePlayState, Action.ResetTo(gameSnapshotState))
         )
     }
 
@@ -72,9 +68,7 @@ class GameController(
 
     private fun selectPosition(position: Position) {
         setGamePlayState?.invoke(
-            gamePlayState.copy(
-                uiState = gamePlayState.uiState.select(position)
-            )
+            Reducer(gamePlayState, Action.SelectPosition(position))
         )
     }
 
@@ -87,25 +81,8 @@ class GameController(
     }
 
     private fun applyMove(boardMove: BoardMove) {
-        var states = gamePlayState.gameState.states.toMutableList()
-        val currentIndex = gamePlayState.gameState.currentIndex
-        val transition = gameSnapshotState.calculateAppliedMove(
-            boardMove = boardMove,
-            boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
-        )
-
-        states[currentIndex] = transition.fromSnapshotState
-        states = states.subList(0, currentIndex + 1)
-        states.add(transition.toSnapshotState)
-
         setGamePlayState?.invoke(
-            GamePlayState(
-                gameState = gamePlayState.gameState.copy(
-                    states = states,
-                    currentIndex = states.lastIndex,
-                    lastActiveState = gamePlayState.gameState.currentSnapshotState
-                )
-            )
+            Reducer(gamePlayState, Action.ApplyMove(boardMove))
         )
     }
 
@@ -130,7 +107,7 @@ class GameController(
         }
     }
 
-    private fun handlePromotion(to: Position, legalMoves: List<BoardMove>): BoardMove? {
+    private fun handlePromotion(at: Position, legalMoves: List<BoardMove>): BoardMove? {
         var promotionState = gamePlayState.promotionState
         if (setGamePlayState == null && promotionState == PromotionState.None) {
             promotionState = PromotionState.ContinueWith(Queen(gameSnapshotState.toMove))
@@ -139,19 +116,13 @@ class GameController(
         when (val promotion = promotionState) {
             is PromotionState.None -> {
                 setGamePlayState?.invoke(
-                    gamePlayState.copy(
-                        uiState = gamePlayState.uiState.copy(
-                            showPromotionDialog = true
-                        ),
-                        promotionState = PromotionState.Await(to)
-                    )
+                    Reducer(gamePlayState, Action.RequestPromotion(at))
                 )
             }
             is PromotionState.Await -> {
                 throw IllegalStateException()
             }
             is PromotionState.ContinueWith -> {
-                promotionState = PromotionState.None
                 return legalMoves.find { move ->
                     (move.consequence as Promotion).let {
                         it.piece::class == promotion.piece::class
@@ -168,46 +139,21 @@ class GameController(
         if (state !is PromotionState.Await) error("Not in expected state: $state")
         val position = state.position
         setGamePlayState?.invoke(
-            gamePlayState.copy(
-                uiState = gamePlayState.uiState.copy(
-                    showPromotionDialog = false
-                ),
-                promotionState = PromotionState.ContinueWith(piece)
-            )
+            Reducer(gamePlayState, Action.PromoteTo(piece))
         )
         onClick(position)
     }
 
-    fun canStepBack(): Boolean =
-        gamePlayState.gameState.hasPrevIndex
-
-    fun canStepForward(): Boolean =
-        gamePlayState.gameState.hasNextIndex
-
     fun stepForward() {
-        if (canStepForward()) {
-            setGamePlayState?.invoke(
-                GamePlayState(
-                    gameState = gamePlayState.gameState.copy(
-                        currentIndex = gamePlayState.gameState.currentIndex + 1,
-                        lastActiveState = gamePlayState.gameState.currentSnapshotState
-                    )
-                )
-            )
-        }
+        setGamePlayState?.invoke(
+            Reducer(gamePlayState, Action.StepForward)
+        )
     }
 
     fun stepBackward() {
-        if (canStepBack()) {
-            setGamePlayState?.invoke(
-                GamePlayState(
-                    gameState = gamePlayState.gameState.copy(
-                        currentIndex = gamePlayState.gameState.currentIndex - 1,
-                        lastActiveState = gamePlayState.gameState.currentSnapshotState
-                    )
-                )
-            )
-        }
+        setGamePlayState?.invoke(
+            Reducer(gamePlayState, Action.StepBackward)
+        )
     }
 }
 

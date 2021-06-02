@@ -48,7 +48,11 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
             gamePlayState = gamePlayState,
             gameController = gameController
         )
-        TimeTravelButtons(gameController)
+        TimeTravelButtons(
+            gamePlayState = gamePlayState,
+            onStepBack = { gameController.stepBackward() },
+            onStepForward = { gameController.stepForward() }
+        )
     }
 
     if (gamePlayState.uiState.showPromotionDialog) {
@@ -81,19 +85,23 @@ private fun ToMove(gameState: GameState) {
 }
 
 @Composable
-private fun TimeTravelButtons(gameController: GameController) {
+private fun TimeTravelButtons(
+    gamePlayState: GamePlayState,
+    onStepBack: () -> Unit,
+    onStepForward: () -> Unit,
+) {
     Row(
         Modifier.padding(24.dp)
     ) {
         Button(
-            onClick = { gameController.stepBackward() },
-            enabled = gameController.canStepBack()
+            onClick = onStepBack,
+            enabled = gamePlayState.gameState.hasPrevIndex
         ) {
             Text("<")
         }
         Button(
-            onClick = { gameController.stepForward() },
-            enabled = gameController.canStepForward()
+            onClick = onStepForward,
+            enabled = gamePlayState.gameState.hasNextIndex
         ) {
             Text(">")
         }
