@@ -155,5 +155,11 @@ class GameController(
             Reducer(gamePlayState, Action.StepBackward)
         )
     }
+
+    fun goToMove(index: Int) {
+        setGamePlayState?.invoke(
+            Reducer(gamePlayState, Action.GoToMove(index))
+        )
+    }
 }
 

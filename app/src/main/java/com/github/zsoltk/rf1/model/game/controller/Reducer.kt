@@ -13,6 +13,7 @@ object Reducer {
     sealed class Action {
         object StepForward : Action()
         object StepBackward : Action()
+        data class GoToMove(val moveIndex: Int) : Action()
         data class ResetTo(val gameSnapshotState: GameSnapshotState) : Action()
         data class SelectPosition(val position: Position) : Action()
         data class ApplyMove(val boardMove: BoardMove) : Action()
@@ -23,20 +24,35 @@ object Reducer {
     operator fun invoke(gamePlayState: GamePlayState, action: Action): GamePlayState =
         when (action) {
             is Action.StepForward -> {
-                gamePlayState.copy(
-                    gameState = gamePlayState.gameState.copy(
-                        currentIndex = gamePlayState.gameState.currentIndex + 1,
-                        lastActiveState = gamePlayState.gameState.currentSnapshotState
+                if (gamePlayState.gameState.hasNextIndex) {
+                    gamePlayState.copy(
+                        gameState = gamePlayState.gameState.copy(
+                            currentIndex = gamePlayState.gameState.currentIndex + 1,
+                            lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        )
                     )
-                )
+                } else gamePlayState
             }
             is Action.StepBackward -> {
-                gamePlayState.copy(
-                    gameState = gamePlayState.gameState.copy(
-                        currentIndex = gamePlayState.gameState.currentIndex - 1,
-                        lastActiveState = gamePlayState.gameState.currentSnapshotState
+                if (gamePlayState.gameState.hasPrevIndex) {
+                    gamePlayState.copy(
+                        gameState = gamePlayState.gameState.copy(
+                            currentIndex = gamePlayState.gameState.currentIndex - 1,
+                            lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        )
                     )
-                )
+                } else gamePlayState
+            }
+            is Action.GoToMove -> {
+                val snapshotIndex = action.moveIndex + 1
+                if (snapshotIndex in gamePlayState.gameState.states.indices) {
+                    gamePlayState.copy(
+                        gameState = gamePlayState.gameState.copy(
+                            currentIndex = snapshotIndex,
+                            lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        )
+                    )
+                } else gamePlayState
             }
             is Action.ResetTo -> {
                 GamePlayState(

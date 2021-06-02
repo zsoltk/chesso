@@ -1,6 +1,7 @@
 package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,10 @@ import com.github.zsoltk.rf1.ui.silver_sand
 import kotlinx.coroutines.launch
 
 @Composable
-fun Moves(gameState: GameState) {
+fun Moves(
+    gameState: GameState,
+    onClickMove: (Int) -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,9 +65,11 @@ fun Moves(gameState: GameState) {
 
                 item {
                     if (index == selectedItemIndex) {
-                        Pill(move.effect != null) { Move(move) }
+                        Pill(move.effect != null) {
+                            Move(move) { onClickMove(index) }
+                        }
                     } else {
-                        Move(move)
+                        Move(move) { onClickMove(index) }
                     }
                 }
 
@@ -95,10 +101,12 @@ private fun Pill(
     isHighlighted: Boolean,
     content: @Composable () -> Unit,
 ) {
-    Box(modifier = Modifier.background(
-        color = if (isHighlighted) atomic_tangerine else silver_sand,
-        shape = RoundedCornerShape(6.dp)
-    )
+    Box(
+        modifier = Modifier
+            .background(
+                color = if (isHighlighted) atomic_tangerine else silver_sand,
+                shape = RoundedCornerShape(6.dp)
+            )
     ) {
         content()
     }
@@ -106,12 +114,15 @@ private fun Pill(
 
 @Composable
 private fun Move(
-    move: AppliedMove
+    move: AppliedMove,
+    onClick: () -> Unit,
 ) {
     Text(
         text = move.toString(),
         color = MaterialTheme.colors.onSecondary,
-        modifier = Modifier.padding(start = 3.dp, end = 3.dp)
+        modifier = Modifier
+            .padding(start = 3.dp, end = 3.dp)
+            .clickable(onClick = onClick)
     )
 }
 
@@ -137,7 +148,8 @@ fun MovesPreview() {
         }
 
         Moves(
-            gameState = gamePlayState.gameState
+            gameState = gamePlayState.gameState,
+            onClickMove = {}
         )
     }
 }

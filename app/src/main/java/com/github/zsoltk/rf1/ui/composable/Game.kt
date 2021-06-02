@@ -42,7 +42,7 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
             .background(MaterialTheme.colors.background)
     ) {
         ToMove(gamePlayState.gameState)
-        Moves(gamePlayState.gameState)
+        Moves(gamePlayState.gameState, onClickMove = { gameController.goToMove(it) })
         CapturedPieces(gamePlayState.gameState)
         Board(
             gamePlayState = gamePlayState,
