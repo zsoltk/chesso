@@ -29,6 +29,9 @@ object Reducer {
                         gameState = gamePlayState.gameState.copy(
                             currentIndex = gamePlayState.gameState.currentIndex + 1,
                             lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        ),
+                        uiState = gamePlayState.uiState.copy(
+                            selectedPosition = null
                         )
                     )
                 } else gamePlayState
@@ -39,6 +42,9 @@ object Reducer {
                         gameState = gamePlayState.gameState.copy(
                             currentIndex = gamePlayState.gameState.currentIndex - 1,
                             lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        ),
+                        uiState = gamePlayState.uiState.copy(
+                            selectedPosition = null
                         )
                     )
                 } else gamePlayState
@@ -50,6 +56,9 @@ object Reducer {
                         gameState = gamePlayState.gameState.copy(
                             currentIndex = snapshotIndex,
                             lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        ),
+                        uiState = gamePlayState.uiState.copy(
+                            selectedPosition = null
                         )
                     )
                 } else gamePlayState
