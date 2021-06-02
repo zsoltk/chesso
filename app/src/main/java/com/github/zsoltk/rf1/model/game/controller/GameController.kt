@@ -1,10 +1,11 @@
-package com.github.zsoltk.rf1.model.game
+package com.github.zsoltk.rf1.model.game.controller
 
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState

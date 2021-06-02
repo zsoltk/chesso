@@ -40,7 +40,7 @@ import com.github.zsoltk.rf1.model.board.Position.e7
 import com.github.zsoltk.rf1.model.board.Position.f1
 import com.github.zsoltk.rf1.model.board.Position.f3
 import com.github.zsoltk.rf1.model.board.Position.g4
-import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.UiState

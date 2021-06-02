@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position.*
-import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.piece.King

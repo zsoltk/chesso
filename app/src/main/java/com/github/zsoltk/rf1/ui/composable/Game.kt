@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.state.GameState
-import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState

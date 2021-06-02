@@ -3,7 +3,7 @@ package com.github.zsoltk.rf1.model.game.preset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.zsoltk.rf1.model.board.Position
-import com.github.zsoltk.rf1.model.game.GameController
+import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.composable.Preset
 
