@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.game.state
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.Resolution
@@ -12,7 +13,9 @@ import com.github.zsoltk.rf1.model.piece.King
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class GameSnapshotState(
     val boardState: BoardState = BoardState(),
     val resolution: Resolution = Resolution.IN_PROGRESS,
@@ -20,7 +23,7 @@ data class GameSnapshotState(
     val lastMove: AppliedMove? = null,
     val castlingInfo: CastlingInfo = CastlingInfo.from(boardState.board),
     val capturedPieces: List<Piece> = emptyList()
-) {
+) : Parcelable {
 
     val board: Board
         get() = boardState.board

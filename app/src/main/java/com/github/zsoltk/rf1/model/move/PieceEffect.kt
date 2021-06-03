@@ -1,10 +1,12 @@
 package com.github.zsoltk.rf1.model.move
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.piece.Piece
+import kotlinx.parcelize.Parcelize
 
-interface PieceEffect {
+interface PieceEffect : Parcelable {
 
     val piece: Piece
 
@@ -22,6 +24,7 @@ interface PrimaryMove : PieceEffect {
 
 interface Consequence : PieceEffect
 
+@Parcelize
 data class Move(
     override val piece: Piece,
     override val from: Position,
@@ -45,6 +48,7 @@ data class Move(
         )
 }
 
+@Parcelize
 data class KingSideCastle(
     override val piece: Piece,
     override val from: Position,
@@ -59,6 +63,7 @@ data class KingSideCastle(
         )
 }
 
+@Parcelize
 data class QueenSideCastle(
     override val piece: Piece,
     override val from: Position,
@@ -73,6 +78,7 @@ data class QueenSideCastle(
         )
 }
 
+@Parcelize
 data class Capture(
     override val piece: Piece,
     val position: Position,
@@ -84,6 +90,7 @@ data class Capture(
         )
 }
 
+@Parcelize
 data class Promotion(
     val position: Position,
     override val piece: Piece,

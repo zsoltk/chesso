@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +30,7 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
-    var gamePlayState by remember { mutableStateOf(state) }
+    var gamePlayState by rememberSaveable { mutableStateOf(state) }
     val gameController = remember { GameController(
         getGamePlayState = { gamePlayState },
         setGamePlayState = { gamePlayState = it },

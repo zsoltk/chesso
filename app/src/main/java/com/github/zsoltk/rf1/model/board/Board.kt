@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.board
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.move.PieceEffect
 import com.github.zsoltk.rf1.model.piece.Bishop
@@ -12,15 +13,19 @@ import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import java.lang.IllegalArgumentException
 
+@Parcelize
 data class Board(
     val pieces: Map<Position, Piece>
-) {
+) : Parcelable {
     constructor() : this(
         pieces = initialPieces
     )
 
+    @IgnoredOnParcel
     val squares = Position.values().map { position ->
         position to Square(position, pieces[position])
     }.toMap()

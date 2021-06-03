@@ -1,9 +1,10 @@
 package com.github.zsoltk.rf1.model.piece
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.BoardMove
 
-interface Piece {
+interface Piece : Parcelable {
 
     val set: Set
 

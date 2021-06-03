@@ -4,7 +4,9 @@ import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 class Queen(override val set: Set) : Piece {
 
     override val value: Int = 9

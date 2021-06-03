@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.game.state
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.move.BoardMove
@@ -8,18 +9,23 @@ import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class CastlingInfo(
     val holders: Map<Set, Holder> = mapOf(
         WHITE to Holder(),
         BLACK to Holder()
     )
-) {
+) : Parcelable {
+
+    @Parcelize
     data class Holder(
         val kingHasMoved: Boolean = false,
         val kingSideRookHasMoved: Boolean = false,
         val queenSideRookHasMoved: Boolean = false,
-    ) {
+    ) : Parcelable {
+
         val canCastleKingSide: Boolean
             get() = !kingHasMoved && !kingSideRookHasMoved
 

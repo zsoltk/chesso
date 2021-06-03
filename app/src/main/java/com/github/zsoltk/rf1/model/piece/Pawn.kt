@@ -9,7 +9,9 @@ import com.github.zsoltk.rf1.model.move.Move
 import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 class Pawn(override val set: Set) : Piece {
 
     override val value: Int = 1

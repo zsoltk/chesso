@@ -1,32 +1,43 @@
 package com.github.zsoltk.rf1.model.game.state
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.targetPositions
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class UiState(
     private val gameSnapshotState: GameSnapshotState,
     val selectedPosition: Position? = null,
     val showPromotionDialog: Boolean = false
-) {
+) : Parcelable {
+
+    @IgnoredOnParcel
     private val lastMovePositions: List<Position> =
         gameSnapshotState.lastMove?.let { listOf(it.from, it.to) } ?: emptyList()
 
+    @IgnoredOnParcel
     private val uiSelectedPositions: List<Position> =
         selectedPosition?.let { listOf(it) } ?: emptyList()
 
+    @IgnoredOnParcel
     val highlightedPositions: List<Position> =
         lastMovePositions + uiSelectedPositions
 
+    @IgnoredOnParcel
     private val ownPiecePositions: List<Position> =
         gameSnapshotState.board.pieces
             .filter { (_, piece) -> piece.set == gameSnapshotState.boardState.toMove }
             .map { it.key }
 
+    @IgnoredOnParcel
     val possibleCaptures: List<Position> =
         possibleMoves { it.preMove is Capture }.targetPositions()
 
+    @IgnoredOnParcel
     val possibleMovesWithoutCaptures: List<Position> =
         possibleMoves { it.preMove !is Capture }.targetPositions()
 
@@ -36,6 +47,7 @@ data class UiState(
                 .filter(predicate)
         } ?: emptyList()
 
+    @IgnoredOnParcel
     val clickablePositions: List<Position> =
         ownPiecePositions +
             possibleCaptures +

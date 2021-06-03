@@ -1,14 +1,17 @@
 package com.github.zsoltk.rf1.model.move
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.piece.Pawn
 import com.github.zsoltk.rf1.model.piece.Piece
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class BoardMove(
     val move: PrimaryMove,
     val preMove: PreMove? = null,
     val consequence: Consequence? = null
-) {
+) : Parcelable {
     val from: Position = move.from
 
     val to: Position = move.to

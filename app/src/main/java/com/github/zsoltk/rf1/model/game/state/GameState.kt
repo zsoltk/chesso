@@ -1,14 +1,17 @@
 package com.github.zsoltk.rf1.model.game.state
 
+import android.os.Parcelable
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.move.AppliedMove
 import com.github.zsoltk.rf1.model.piece.Set
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class GameState(
     val states: List<GameSnapshotState> = listOf(GameSnapshotState()),
     val currentIndex: Int = 0,
     val lastActiveState: GameSnapshotState = states.first(),
-) {
+) : Parcelable {
     val hasPrevIndex: Boolean
         get() = currentIndex > 0
 
