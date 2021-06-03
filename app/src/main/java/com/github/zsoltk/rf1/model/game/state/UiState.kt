@@ -65,12 +65,4 @@ data class UiState(
                 selectedPosition = position
             )
         }
-
-    fun showPromotionDialog(): UiState = copy(
-        showPromotionDialog = true
-    )
-
-    fun hidePromotionDialog(): UiState = copy(
-        showPromotionDialog = true
-    )
 }

@@ -58,7 +58,7 @@ class GameController(
     fun onClick(position: Position) {
         if (gameSnapshotState.resolution != Resolution.IN_PROGRESS) return
         if (position.hasOwnPiece()) {
-            selectPosition(position)
+            toggleSelectPosition(position)
         } else if (canMoveTo(position)) {
             val selectedPosition = gamePlayState.uiState.selectedPosition
             requireNotNull(selectedPosition)
@@ -66,9 +66,9 @@ class GameController(
         }
     }
 
-    private fun selectPosition(position: Position) {
+    private fun toggleSelectPosition(position: Position) {
         setGamePlayState?.invoke(
-            Reducer(gamePlayState, Action.SelectPosition(position))
+            Reducer(gamePlayState, Action.ToggleSelectPosition(position))
         )
     }
 

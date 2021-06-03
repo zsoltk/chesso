@@ -15,7 +15,7 @@ object Reducer {
         object StepBackward : Action()
         data class GoToMove(val moveIndex: Int) : Action()
         data class ResetTo(val gameSnapshotState: GameSnapshotState) : Action()
-        data class SelectPosition(val position: Position) : Action()
+        data class ToggleSelectPosition(val position: Position) : Action()
         data class ApplyMove(val boardMove: BoardMove) : Action()
         data class RequestPromotion(val at: Position) : Action()
         data class PromoteTo(val piece: Piece) : Action()
@@ -70,10 +70,20 @@ object Reducer {
                     )
                 )
             }
-            is Action.SelectPosition -> {
-                gamePlayState.copy(
-                    uiState = gamePlayState.uiState.select(action.position)
-                )
+            is Action.ToggleSelectPosition -> {
+                if (gamePlayState.uiState.selectedPosition == action.position) {
+                    gamePlayState.copy(
+                        uiState = gamePlayState.uiState.copy(
+                            selectedPosition = null
+                        )
+                    )
+                } else {
+                    gamePlayState.copy(
+                        uiState = gamePlayState.uiState.copy(
+                            selectedPosition = action.position
+                        )
+                    )
+                }
             }
             is Action.ApplyMove -> {
                 val gameSnapshotState = gamePlayState.gameState.currentSnapshotState
