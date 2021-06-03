@@ -51,7 +51,7 @@ class King(override val set: Set) : Piece {
 
         return BoardMove(
             move = KingSideCastle(this, eSquare.position, gSquare.position),
-            consequence = Move(Rook(set), hSquare.position, fSquare.position)
+            consequence = Move(hSquare.piece!!, hSquare.position, fSquare.position)
         )
     }
 
@@ -72,7 +72,7 @@ class King(override val set: Set) : Piece {
 
         return BoardMove(
             move = QueenSideCastle(this, eSquare.position, cSquare.position),
-            consequence = Move(Rook(set), aSquare.position, dSquare.position)
+            consequence = Move(aSquare.piece!!, aSquare.position, dSquare.position)
         )
     }
 
