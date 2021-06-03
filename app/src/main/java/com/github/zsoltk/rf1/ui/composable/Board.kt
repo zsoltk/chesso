@@ -2,6 +2,7 @@ package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +47,7 @@ import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import java.util.UUID
 
 @Composable
 fun Board(
@@ -136,10 +139,11 @@ private fun Square(
 
     Box(
         modifier = modifier
-            .clickable(
-                enabled = clickable,
-                onClick = onClick
-            )
+            .pointerInput(UUID.randomUUID()) {
+                detectTapGestures(
+                    onPress = { if (clickable) onClick() },
+                )
+            }
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRect(if (isDark) Color.LightGray else Color.White)
@@ -227,7 +231,11 @@ private fun CircleDecoratedSquare(
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .clickable(onClick = onClick)
+            .pointerInput(UUID.randomUUID()) {
+                detectTapGestures(
+                    onPress = { onClick() },
+                )
+            }
     ) {
         drawCircle(
             color = Color.DarkGray,
