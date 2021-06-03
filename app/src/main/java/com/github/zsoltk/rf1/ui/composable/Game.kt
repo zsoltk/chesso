@@ -1,12 +1,16 @@
 package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -31,11 +35,13 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 @Composable
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
     var gamePlayState by rememberSaveable { mutableStateOf(state) }
-    val gameController = remember { GameController(
-        getGamePlayState = { gamePlayState },
-        setGamePlayState = { gamePlayState = it },
-        preset = preset
-    ) }
+    val gameController = remember {
+        GameController(
+            getGamePlayState = { gamePlayState },
+            setGamePlayState = { gamePlayState = it },
+            preset = preset
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -49,10 +55,11 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
             gamePlayState = gamePlayState,
             gameController = gameController
         )
-        TimeTravelButtons(
+        GameControls(
             gamePlayState = gamePlayState,
             onStepBack = { gameController.stepBackward() },
-            onStepForward = { gameController.stepForward() }
+            onStepForward = { gameController.stepForward() },
+            onNewGame = { gameController.reset() }
         )
     }
 
@@ -86,25 +93,40 @@ private fun ToMove(gameState: GameState) {
 }
 
 @Composable
-private fun TimeTravelButtons(
+private fun GameControls(
     gamePlayState: GamePlayState,
     onStepBack: () -> Unit,
     onStepForward: () -> Unit,
+    onNewGame: () -> Unit,
 ) {
     Row(
-        Modifier.padding(24.dp)
+        modifier = Modifier
+            .padding(24.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
-        Button(
-            onClick = onStepBack,
-            enabled = gamePlayState.gameState.hasPrevIndex
-        ) {
-            Text("<")
+
+        Row {
+            Button(
+                onClick = onStepBack,
+                enabled = gamePlayState.gameState.hasPrevIndex
+            ) {
+                Text("<")
+            }
+            Spacer(Modifier.size(4.dp))
+            Button(
+                onClick = onStepForward,
+                enabled = gamePlayState.gameState.hasNextIndex
+            ) {
+                Text(">")
+            }
         }
+        Spacer(Modifier.size(4.dp))
         Button(
-            onClick = onStepForward,
-            enabled = gamePlayState.gameState.hasNextIndex
+            enabled = gamePlayState.gameState.states.size > 1,
+            onClick = onNewGame,
         ) {
-            Text(">")
+            Text("New")
         }
     }
 }
@@ -114,7 +136,7 @@ private fun TimeTravelButtons(
 fun GamePreview() {
     Rf1Theme {
         var gamePlayState = GamePlayState()
-        GameController({ gamePlayState }, { gamePlayState = it}).apply {
+        GameController({ gamePlayState }, { gamePlayState = it }).apply {
             applyMove(e2, e4)
             applyMove(e7, e5)
             applyMove(b1, c3)
