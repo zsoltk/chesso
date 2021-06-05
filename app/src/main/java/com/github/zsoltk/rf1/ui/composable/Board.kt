@@ -1,16 +1,13 @@
 package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,26 +19,13 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.zsoltk.rf1.model.board.Coordinate
 import com.github.zsoltk.rf1.model.board.Position
-import com.github.zsoltk.rf1.model.board.Position.b1
-import com.github.zsoltk.rf1.model.board.Position.b5
-import com.github.zsoltk.rf1.model.board.Position.b8
-import com.github.zsoltk.rf1.model.board.Position.c3
-import com.github.zsoltk.rf1.model.board.Position.c6
-import com.github.zsoltk.rf1.model.board.Position.c8
-import com.github.zsoltk.rf1.model.board.Position.d1
-import com.github.zsoltk.rf1.model.board.Position.d5
-import com.github.zsoltk.rf1.model.board.Position.d7
-import com.github.zsoltk.rf1.model.board.Position.d8
-import com.github.zsoltk.rf1.model.board.Position.e2
-import com.github.zsoltk.rf1.model.board.Position.e4
-import com.github.zsoltk.rf1.model.board.Position.e5
-import com.github.zsoltk.rf1.model.board.Position.e7
-import com.github.zsoltk.rf1.model.board.Position.f1
-import com.github.zsoltk.rf1.model.board.Position.f3
-import com.github.zsoltk.rf1.model.board.Position.g4
+import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.board.toCoordinate
 import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
@@ -52,12 +36,14 @@ import java.util.UUID
 @Composable
 fun Board(
     gamePlayState: GamePlayState,
-    gameController: GameController
+    gameController: GameController,
+    isFlipped: Boolean = false
 ) {
     Board(
         fromState = gamePlayState.gameState.lastActiveState,
         toState = gamePlayState.gameState.currentSnapshotState,
         uiState = gamePlayState.uiState,
+        isFlipped = isFlipped,
         onClick = { position -> gameController.onClick(position) }
     )
 }
@@ -67,6 +53,7 @@ fun Board(
     fromState: GameSnapshotState,
     toState: GameSnapshotState,
     uiState: UiState,
+    isFlipped: Boolean = false,
     onClick: (Position) -> Unit
 ) {
     BoxWithConstraints(
@@ -79,7 +66,7 @@ fun Board(
             fromState.boardState.board[position]
         }
 
-        EightByEight { position ->
+        Position.values().forEach { position ->
             Square(
                 position = position,
                 isHighlighted = position in uiState.highlightedPositions,
@@ -87,41 +74,18 @@ fun Board(
                 isPossibleMove = position in uiState.possibleMovesWithoutCaptures,
                 isPossibleCapture = position in uiState.possibleCaptures,
                 onClick = { onClick(position) },
-                isDark = fetchSquare(position).isDark
+                isDark = fetchSquare(position).isDark,
+                coordinate = position.toCoordinate(isFlipped),
+                squareSize = squareSize
             )
         }
 
-        Pieces(fromState, toState, squareSize)
-    }
-}
-
-@Composable
-private fun EightByEight(
-    content: @Composable (Position) -> Unit
-) {
-    Column {
-        for (rank in 8 downTo 1) {
-            Row(Modifier.weight(1f)) {
-                for (file in 1..8) {
-                    InSquare(Modifier.weight(1f)) {
-                        content(Position.from(file, rank))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun InSquare(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
-    ) {
-        content()
+        Pieces(
+            fromState = fromState,
+            toState = toState,
+            squareSize = squareSize,
+            isFlipped = isFlipped
+        )
     }
 }
 
@@ -134,45 +98,55 @@ private fun Square(
     isPossibleMove: Boolean,
     isPossibleCapture: Boolean,
     isDark: Boolean,
-    modifier: Modifier = Modifier
+    coordinate: Coordinate,
+    squareSize: Dp,
 ) {
+    val size = Modifier.size(squareSize)
 
     Box(
-        modifier = modifier
+        modifier = coordinate
+            .toOffset(squareSize)
             .pointerInput(UUID.randomUUID()) {
                 detectTapGestures(
                     onPress = { if (clickable) onClick() },
                 )
             }
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(size) {
             drawRect(if (isDark) Color.LightGray else Color.White)
         }
 
         if (isHighlighted) {
-            HighlightSquare()
+            HighlightSquare(size)
         }
-        if (position.file == 1) {
-            PositionLabel(position.rank.toString(), Alignment.TopStart)
-        }
-        if (position.rank == 1) {
+        if (coordinate.x == Coordinate.min.x) {
             PositionLabel(
-                position.fileAsLetter.toString(),
-                Alignment.BottomEnd
+                text = position.rank.toString(),
+                alignment = Alignment.TopStart,
+                modifier = size
+            )
+        }
+        if (coordinate.y == Coordinate.max.y) {
+            PositionLabel(
+                text = position.fileAsLetter.toString(),
+                alignment = Alignment.BottomEnd,
+                modifier = size
             )
         }
 
         if (isPossibleMove) {
-            PossibleMove(onClick)
+            PossibleMove(onClick, size)
         } else if (isPossibleCapture) {
-            PossibleCapture(onClick)
+            PossibleCapture(onClick, size)
         }
     }
 }
 
 @Composable
-private fun HighlightSquare() {
-    Canvas(modifier = Modifier.fillMaxSize()) {
+private fun HighlightSquare(
+    modifier: Modifier,
+) {
+    Canvas(modifier = modifier) {
         drawRect(
             color = Color.Yellow,
             size = size,
@@ -184,15 +158,13 @@ private fun HighlightSquare() {
 @Composable
 private fun PositionLabel(
     text: String,
-    alignment: Alignment
+    alignment: Alignment,
+    modifier: Modifier,
 ) {
     Box(
         contentAlignment = alignment,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 2.dp)
+        modifier = modifier.padding(end = 2.dp)
     ) {
-        // TODO text colour = inverse of square colour
         Text(
             text = text,
             fontSize = 10.sp
@@ -202,23 +174,27 @@ private fun PositionLabel(
 
 @Composable
 private fun PossibleMove(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier,
 ) {
     CircleDecoratedSquare(
         onClick = onClick,
         radius = { size.minDimension / 6f },
-        drawStyle = { Fill }
+        drawStyle = { Fill },
+        modifier = modifier
     )
 }
 
 @Composable
 private fun PossibleCapture(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier,
 ) {
     CircleDecoratedSquare(
         onClick = onClick,
         radius = { size.minDimension / 3f },
-        drawStyle = { Stroke(width = size.minDimension / 12f) }
+        drawStyle = { Stroke(width = size.minDimension / 12f) },
+        modifier = modifier
     )
 }
 
@@ -226,11 +202,11 @@ private fun PossibleCapture(
 private fun CircleDecoratedSquare(
     onClick: () -> Unit,
     radius: DrawScope.() -> Float,
-    drawStyle: DrawScope.() -> DrawStyle
+    drawStyle: DrawScope.() -> DrawStyle,
+    modifier: Modifier,
 ) {
     Canvas(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .pointerInput(UUID.randomUUID()) {
                 detectTapGestures(
                     onPress = { onClick() },

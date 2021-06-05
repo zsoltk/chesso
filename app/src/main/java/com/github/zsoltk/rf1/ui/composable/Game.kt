@@ -34,6 +34,7 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
+    var isFlipped by rememberSaveable { mutableStateOf(false) }
     var gamePlayState by rememberSaveable { mutableStateOf(state) }
     val gameController = remember {
         GameController(
@@ -53,13 +54,15 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
         CapturedPieces(gamePlayState.gameState)
         Board(
             gamePlayState = gamePlayState,
-            gameController = gameController
+            gameController = gameController,
+            isFlipped = isFlipped
         )
         GameControls(
             gamePlayState = gamePlayState,
             onStepBack = { gameController.stepBackward() },
             onStepForward = { gameController.stepForward() },
-            onNewGame = { gameController.reset() }
+            onNewGame = { gameController.reset() },
+            onFlipBoard = { isFlipped = !isFlipped }
         )
     }
 
@@ -98,6 +101,7 @@ private fun GameControls(
     onStepBack: () -> Unit,
     onStepForward: () -> Unit,
     onNewGame: () -> Unit,
+    onFlipBoard: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -121,12 +125,19 @@ private fun GameControls(
                 Text(">")
             }
         }
-        Spacer(Modifier.size(4.dp))
-        Button(
-            enabled = gamePlayState.gameState.states.size > 1,
-            onClick = onNewGame,
-        ) {
-            Text("New")
+        Row {
+            Button(
+                onClick = onFlipBoard,
+            ) {
+                Text("Flip")
+            }
+            Spacer(Modifier.size(4.dp))
+            Button(
+                enabled = gamePlayState.gameState.states.size > 1,
+                onClick = onNewGame,
+            ) {
+                Text("New")
+            }
         }
     }
 }
