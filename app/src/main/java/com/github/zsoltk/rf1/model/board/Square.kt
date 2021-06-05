@@ -17,7 +17,7 @@ data class Square(
         position.rank
 
     val isDark: Boolean =
-        (position.ordinal + file % 2) % 2 == 1
+        position.isDark()
 
     val isEmpty: Boolean
         get() = piece == null

@@ -10,6 +10,9 @@ fun validate(file: Int, rank: Int) {
     require(rank <= 8)
 }
 
+fun Position.isDark(): Boolean =
+    (ordinal + file % 2) % 2 == 1
+
 fun Position.toCoordinate(isFlipped: Boolean): Coordinate = if (isFlipped)
     Coordinate(
         x = Coordinate.max.x - file + 1,

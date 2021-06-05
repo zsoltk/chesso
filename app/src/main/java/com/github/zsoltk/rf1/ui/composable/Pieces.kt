@@ -22,13 +22,13 @@ import com.github.zsoltk.rf1.model.piece.Bishop
 import com.github.zsoltk.rf1.model.piece.Pawn
 import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Rook
+import com.github.zsoltk.rf1.ui.properties.BoardRenderProperties
 
 @Composable
 fun Pieces(
+    properties: BoardRenderProperties,
     fromState: GameSnapshotState,
     toState: GameSnapshotState,
-    squareSize: Dp,
-    isFlipped: Boolean,
 ) {
     val progress = remember(toState) { Animatable(0f) }
     LaunchedEffect(toState) {
@@ -39,22 +39,22 @@ fun Pieces(
     }
 
     toState.board.pieces.forEach { (toPosition, piece) ->
-        val offset1 = toPosition.toCoordinate(isFlipped)
+        val offset1 = toPosition.toCoordinate(properties.isFlipped)
         val fromPosition = fromState.board.find(piece)?.position
         if (fromPosition == null) {
             Piece(
                 piece = piece,
-                squareSize = squareSize,
-                modifier = offset1.toOffset(squareSize)
+                squareSize = properties.squareSize,
+                modifier = offset1.toOffset(properties.squareSize)
             )
 
         } else {
-            val offset0 = fromPosition.toCoordinate(isFlipped)
+            val offset0 = fromPosition.toCoordinate(properties.isFlipped)
             val currentOffset = offset0 + (offset1 - offset0).times(progress.value)
             Piece(
                 piece = piece,
-                squareSize = squareSize,
-                modifier = currentOffset.toOffset(squareSize)
+                squareSize = properties.squareSize,
+                modifier = currentOffset.toOffset(properties.squareSize)
             )
         }
     }
