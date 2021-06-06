@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.ui.decoration.board
+package com.github.zsoltk.rf1.ui.renderer.board.decoration
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -23,7 +23,8 @@ import com.github.zsoltk.rf1.model.piece.Piece
 import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.ui.composable.BoardPreview
 import com.github.zsoltk.rf1.ui.composable.toOffset
-import com.github.zsoltk.rf1.ui.properties.BoardRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.board.BoardRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.board.BoardDecoration
 
 object Pieces : BoardDecoration {
 

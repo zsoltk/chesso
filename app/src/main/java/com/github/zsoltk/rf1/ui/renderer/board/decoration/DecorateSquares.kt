@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.ui.decoration.board
+package com.github.zsoltk.rf1.ui.renderer.board.decoration
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -8,9 +8,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.input.pointer.pointerInput
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.ui.composable.toOffset
-import com.github.zsoltk.rf1.ui.decoration.square.SquareDecoration
-import com.github.zsoltk.rf1.ui.properties.BoardRenderProperties
-import com.github.zsoltk.rf1.ui.properties.SquareRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.square.SquareDecoration
+import com.github.zsoltk.rf1.ui.renderer.board.BoardRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.square.SquareRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.board.BoardDecoration
 import java.util.UUID
 
 class DecorateSquares(

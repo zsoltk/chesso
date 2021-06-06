@@ -1,7 +1,6 @@
-package com.github.zsoltk.rf1.ui.decoration.square
+package com.github.zsoltk.rf1.ui.renderer.square
 
 import androidx.compose.runtime.Composable
-import com.github.zsoltk.rf1.ui.properties.SquareRenderProperties
 
 interface SquareDecoration {
 

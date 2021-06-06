@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.ui.decoration.square
+package com.github.zsoltk.rf1.ui.renderer.square.decoration
 
 import com.github.zsoltk.rf1.model.board.Coordinate
 

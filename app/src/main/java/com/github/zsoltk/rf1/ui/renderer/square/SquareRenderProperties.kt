@@ -1,10 +1,11 @@
-package com.github.zsoltk.rf1.ui.properties
+package com.github.zsoltk.rf1.ui.renderer.square
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import com.github.zsoltk.rf1.model.board.Coordinate
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.toCoordinate
+import com.github.zsoltk.rf1.ui.renderer.board.BoardRenderProperties
 
 data class SquareRenderProperties(
     val position: Position,

@@ -13,7 +13,7 @@ import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.ui.Rf1Theme
-import com.github.zsoltk.rf1.ui.properties.BoardRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.board.BoardRenderProperties
 import com.github.zsoltk.rf1.ui.renderer.board.DefaultBoardRenderer
 
 @Composable

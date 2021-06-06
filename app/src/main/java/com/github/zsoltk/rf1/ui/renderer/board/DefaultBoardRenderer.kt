@@ -1,8 +1,7 @@
 package com.github.zsoltk.rf1.ui.renderer.board
 
-import com.github.zsoltk.rf1.ui.decoration.board.BoardDecoration
-import com.github.zsoltk.rf1.ui.decoration.board.DecorateSquares
-import com.github.zsoltk.rf1.ui.decoration.board.Pieces
+import com.github.zsoltk.rf1.ui.renderer.board.decoration.DecorateSquares
+import com.github.zsoltk.rf1.ui.renderer.board.decoration.Pieces
 import com.github.zsoltk.rf1.ui.renderer.square.DefaultSquareRenderer
 
 object DefaultBoardRenderer : BoardRenderer {

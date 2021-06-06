@@ -1,9 +1,10 @@
-package com.github.zsoltk.rf1.ui.decoration.square
+package com.github.zsoltk.rf1.ui.renderer.square.decoration
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import com.github.zsoltk.rf1.model.board.Coordinate
-import com.github.zsoltk.rf1.ui.properties.SquareRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.square.SquareRenderProperties
+import com.github.zsoltk.rf1.ui.renderer.square.SquareDecoration
 
 open class SquarePositionLabelPacked(
     private val display: (Coordinate) -> Boolean,

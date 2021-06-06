@@ -1,10 +1,9 @@
 package com.github.zsoltk.rf1.ui.renderer.square
 
-import com.github.zsoltk.rf1.ui.decoration.square.DefaultHighlightSquare
-import com.github.zsoltk.rf1.ui.decoration.square.DefaultSquareBackground
-import com.github.zsoltk.rf1.ui.decoration.square.DefaultSquarePositionLabel
-import com.github.zsoltk.rf1.ui.decoration.square.SquareDecoration
-import com.github.zsoltk.rf1.ui.decoration.square.TargetMarks
+import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultHighlightSquare
+import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultSquareBackground
+import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultSquarePositionLabel
+import com.github.zsoltk.rf1.ui.renderer.square.decoration.TargetMarks
 
 object DefaultSquareRenderer : SquareRenderer {
 

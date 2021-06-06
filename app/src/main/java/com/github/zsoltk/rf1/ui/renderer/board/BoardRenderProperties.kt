@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.ui.properties
+package com.github.zsoltk.rf1.ui.renderer.board
 
 import androidx.compose.ui.unit.Dp
 import com.github.zsoltk.rf1.model.board.Position
