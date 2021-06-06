@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.ui.decoration
+package com.github.zsoltk.rf1.ui.decoration.square
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures

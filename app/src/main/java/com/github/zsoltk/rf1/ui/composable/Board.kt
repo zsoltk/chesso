@@ -1,15 +1,10 @@
 package com.github.zsoltk.rf1.ui.composable
 
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
@@ -19,9 +14,7 @@ import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.properties.BoardRenderProperties
-import com.github.zsoltk.rf1.ui.properties.SquareRenderProperties
-import com.github.zsoltk.rf1.ui.renderer.DefaultRenderer
-import java.util.UUID
+import com.github.zsoltk.rf1.ui.renderer.board.DefaultBoardRenderer
 
 @Composable
 fun Board(
@@ -51,56 +44,21 @@ fun Board(
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
-        val boardProperties = remember(isFlipped, maxWidth) {
+        val boardProperties =
             BoardRenderProperties(
+                fromState = fromState,
+                toState = toState,
+                uiState = uiState,
                 squareSize = maxWidth / 8,
-                isFlipped = isFlipped
+                isFlipped = isFlipped,
+                onClick = onClick
             )
-        }
-        Position.values().forEach { position ->
-            key(position) {
-                val properties = remember(uiState, isFlipped, boardProperties.squareSize) {
-                    SquareRenderProperties(
-                        position = position,
-                        isHighlighted = position in uiState.highlightedPositions,
-                        clickable = position in uiState.clickablePositions,
-                        isPossibleMoveWithoutCapture = position in uiState.possibleMovesWithoutCaptures,
-                        isPossibleCapture = position in uiState.possibleCaptures,
-                        onClick = { onClick(position) },
-                        boardProperties = boardProperties
-                    )
-                }
-                Square(properties = properties)
-            }
-        }
 
-        Pieces(
-            properties = boardProperties,
-            fromState = fromState,
-            toState = toState
-        )
-    }
-}
-
-@Composable
-private fun Square(
-    properties: SquareRenderProperties,
-) {
-    Box(
-        modifier = properties.coordinate
-            .toOffset(properties.boardProperties.squareSize)
-            .pointerInput(UUID.randomUUID()) {
-                detectTapGestures(
-                    onPress = { if (properties.clickable) properties.onClick() },
-                )
-            }
-    ) {
-        DefaultRenderer.decorations.forEach {
-            it.render(properties)
+        DefaultBoardRenderer.decorations.forEach {
+            it.render(properties = boardProperties)
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
