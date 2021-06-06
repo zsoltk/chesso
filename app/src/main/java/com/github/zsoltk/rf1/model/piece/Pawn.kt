@@ -30,8 +30,26 @@ class Pawn(override val set: Set) : Piece {
 
         advanceSingle(board, square)?.let { moves += it }
         advanceTwoSquares(board, square)?.let { moves += it }
-        captureDiagonalLeft(board, square)?.let { moves += it }
-        captureDiagonalRight(board, square)?.let { moves += it }
+        captureDiagonalLeft(board, square, false)?.let { moves += it }
+        captureDiagonalRight(board, square, false)?.let { moves += it }
+        enPassantCaptureLeft(gameSnapshotState, square)?.let { moves += it }
+        enPassantCaptureRight(gameSnapshotState, square)?.let { moves += it }
+
+        return moves.flatMap {
+            it.checkForPromotion()
+        }
+    }
+
+    override fun pressure(
+        gameSnapshotState: GameSnapshotState,
+        checkCheck: Boolean,
+    ): List<BoardMove> {
+        val board = gameSnapshotState.board
+        val square = board.find(this) ?: return emptyList()
+        val moves = mutableListOf<BoardMove>()
+
+        captureDiagonalLeft(board, square, true)?.let { moves += it }
+        captureDiagonalRight(board, square, true)?.let { moves += it }
         enPassantCaptureLeft(gameSnapshotState, square)?.let { moves += it }
         enPassantCaptureRight(gameSnapshotState, square)?.let { moves += it }
 
@@ -69,24 +87,27 @@ class Pawn(override val set: Set) : Piece {
 
     private fun captureDiagonalLeft(
         board: Board,
-        square: Square
-    ): BoardMove? = captureDiagonal(board, square, -1)
+        square: Square,
+        pressureCheck: Boolean
+    ): BoardMove? = captureDiagonal(board, square, -1, pressureCheck)
 
     private fun captureDiagonalRight(
         board: Board,
-        square: Square
-    ): BoardMove? = captureDiagonal(board, square, 1)
+        square: Square,
+        pressureCheck: Boolean
+    ): BoardMove? = captureDiagonal(board, square, 1, pressureCheck)
 
     private fun captureDiagonal(
         board: Board,
         square: Square,
-        deltaFile: Int
+        deltaFile: Int,
+        pressureCheck: Boolean
     ): BoardMove? {
         val deltaRank = if (set == WHITE) 1 else -1
-        val target = board[square.file + deltaFile, square.rank + deltaRank]
-        return if (target?.hasPiece(set.opposite()) == true) BoardMove(
+        val target = board[square.file + deltaFile, square.rank + deltaRank] ?: return null
+        return if (pressureCheck || target.hasPiece(set.opposite())) BoardMove(
             move = Move(this, square.position, target.position),
-            preMove = Capture(target.piece!!, target.position)
+            preMove = target.piece?.let { Capture(target.piece, target.position) }
         ) else null
     }
 

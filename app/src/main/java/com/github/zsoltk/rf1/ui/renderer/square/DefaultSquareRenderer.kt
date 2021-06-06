@@ -3,6 +3,7 @@ package com.github.zsoltk.rf1.ui.renderer.square
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultHighlightSquare
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultSquareBackground
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultSquarePositionLabel
+import com.github.zsoltk.rf1.ui.renderer.square.decoration.PressureOnSquare
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.TargetMarks
 
 object DefaultSquareRenderer : SquareRenderer {
@@ -12,6 +13,7 @@ object DefaultSquareRenderer : SquareRenderer {
             DefaultSquareBackground,
             DefaultHighlightSquare,
             DefaultSquarePositionLabel,
+            PressureOnSquare,
             TargetMarks
         )
 }

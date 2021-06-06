@@ -17,5 +17,12 @@ interface Piece : Parcelable {
     /**
      * List of moves that are legally possible for the piece without applying pin / check constraints
      */
-    fun pseudoLegalMoves(gameSnapshotState: GameSnapshotState, checkCheck: Boolean): List<BoardMove> = emptyList()
+    fun pseudoLegalMoves(gameSnapshotState: GameSnapshotState, checkCheck: Boolean): List<BoardMove> =
+        emptyList()
+
+    /**
+     * Not required for the game, adds supplementary info only. 
+     */
+    fun pressure(gameSnapshotState: GameSnapshotState, checkCheck: Boolean): List<BoardMove> =
+        pseudoLegalMoves(gameSnapshotState, checkCheck)
 }
