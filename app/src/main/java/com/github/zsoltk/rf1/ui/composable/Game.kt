@@ -76,10 +76,15 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
             }
         }
         if (showVizDialog) {
-            PickActiveVisualisationDialog {
-                showVizDialog = false
-                gameController.setVisualisation(it)
-            }
+            PickActiveVisualisationDialog(
+                onDismiss = {
+                    showVizDialog = false
+                },
+                onItemSelected = {
+                    showVizDialog = false
+                    gameController.setVisualisation(it)
+                }
+            )
         }
     }
 }

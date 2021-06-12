@@ -22,11 +22,12 @@ import com.github.zsoltk.rf1.model.dataviz.datasetVisualisations
 
 @Composable
 fun PickActiveVisualisationDialog(
+    onDismiss: () -> Unit,
     onItemSelected: (DatasetVisualisation) -> Unit
 ) {
     MaterialTheme {
         Dialog(
-            onDismissRequest = { },
+            onDismissRequest = onDismiss,
             properties = DialogProperties(
                 dismissOnBackPress = true,
                 dismissOnClickOutside = true
