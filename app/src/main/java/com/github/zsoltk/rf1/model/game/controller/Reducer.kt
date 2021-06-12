@@ -1,6 +1,7 @@
 package com.github.zsoltk.rf1.model.game.controller
 
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.GameState
@@ -19,6 +20,7 @@ object Reducer {
         data class ApplyMove(val boardMove: BoardMove) : Action()
         data class RequestPromotion(val at: Position) : Action()
         data class PromoteTo(val piece: Piece) : Action()
+        data class SetVisualisation(val visualisation: DatasetVisualisation) : Action()
     }
 
     operator fun invoke(gamePlayState: GamePlayState, action: Action): GamePlayState =
@@ -103,7 +105,8 @@ object Reducer {
                         states = states,
                         currentIndex = states.lastIndex,
                         lastActiveState = gamePlayState.gameState.currentSnapshotState
-                    )
+                    ),
+                    visualisation = gamePlayState.visualisation
                 )
             }
             is Action.RequestPromotion -> {
@@ -120,6 +123,11 @@ object Reducer {
                         showPromotionDialog = false
                     ),
                     promotionState = PromotionState.ContinueWith(action.piece)
+                )
+            }
+            is Action.SetVisualisation -> {
+                gamePlayState.copy(
+                    visualisation = action.visualisation
                 )
             }
         }

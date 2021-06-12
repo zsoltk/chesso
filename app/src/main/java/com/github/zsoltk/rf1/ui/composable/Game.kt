@@ -2,7 +2,6 @@ package com.github.zsoltk.rf1.ui.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
@@ -36,6 +37,7 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
     var gamePlayState by rememberSaveable { mutableStateOf(state) }
+    var showVizDialog by remember { mutableStateOf(false) }
     val gameController = remember {
         GameController(
             getGamePlayState = { gamePlayState },
@@ -44,37 +46,46 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-    ) {
-        ToMove(gamePlayState.gameState)
-        Moves(gamePlayState.gameState, onClickMove = { gameController.goToMove(it) })
-        CapturedPieces(gamePlayState.gameState)
-        Board(
-            gamePlayState = gamePlayState,
-            gameController = gameController,
-            isFlipped = isFlipped
-        )
-        GameControls(
-            gamePlayState = gamePlayState,
-            onStepBack = { gameController.stepBackward() },
-            onStepForward = { gameController.stepForward() },
-            onNewGame = { gameController.reset() },
-            onFlipBoard = { isFlipped = !isFlipped }
-        )
-    }
+    CompositionLocalProvider(ActiveDatasetVisualisation provides gamePlayState.visualisation) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+        ) {
+            Status(gamePlayState.gameState)
+            Moves(gamePlayState.gameState, onClickMove = { gameController.goToMove(it) })
+            CapturedPieces(gamePlayState.gameState)
+            Board(
+                gamePlayState = gamePlayState,
+                gameController = gameController,
+                isFlipped = isFlipped
+            )
+            GameControls(
+                gamePlayState = gamePlayState,
+                onStepBack = { gameController.stepBackward() },
+                onStepForward = { gameController.stepForward() },
+                onVizClicked = { showVizDialog = true },
+                onFlipBoard = { isFlipped = !isFlipped },
+                onNewGame = { gameController.reset() }
+            )
+        }
 
-    if (gamePlayState.uiState.showPromotionDialog) {
-        PromotionDialog(gameController.toMove) {
-            gameController.onPromotionPieceSelected(it)
+        if (gamePlayState.uiState.showPromotionDialog) {
+            PromotionDialog(gameController.toMove) {
+                gameController.onPromotionPieceSelected(it)
+            }
+        }
+        if (showVizDialog) {
+            PickActiveVisualisationDialog {
+                showVizDialog = false
+                gameController.setVisualisation(it)
+            }
         }
     }
 }
 
 @Composable
-private fun ToMove(gameState: GameState) {
+private fun Status(gameState: GameState) {
     val text = when (gameState.resolution) {
         Resolution.IN_PROGRESS -> "${gameState.toMove} to move"
         else -> gameState.resolution.toString().replace("_", " ")
@@ -100,8 +111,9 @@ private fun GameControls(
     gamePlayState: GamePlayState,
     onStepBack: () -> Unit,
     onStepForward: () -> Unit,
-    onNewGame: () -> Unit,
+    onVizClicked: () -> Unit,
     onFlipBoard: () -> Unit,
+    onNewGame: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -126,6 +138,12 @@ private fun GameControls(
             }
         }
         Row {
+            Button(
+                onClick = onVizClicked,
+            ) {
+                Text("Viz")
+            }
+            Spacer(Modifier.size(4.dp))
             Button(
                 onClick = onFlipBoard,
             ) {

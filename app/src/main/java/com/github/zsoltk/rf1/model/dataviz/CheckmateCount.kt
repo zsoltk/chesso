@@ -1,21 +1,27 @@
-package com.github.zsoltk.rf1.ui.renderer.square.decoration
+package com.github.zsoltk.rf1.model.dataviz
 
+import androidx.compose.ui.graphics.Color
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.ui.amaranth_red
 import com.github.zsoltk.rf1.ui.silver_sand
+import kotlinx.parcelize.Parcelize
 
 /**
  * Based on the post of /u/atlas_scrubbed in /r/chess on Reddit:
  *
  * https://www.reddit.com/r/chess/comments/kp7qwe/i_looked_at_a_million_games_played_on_lichess_and
  */
-object CheckmateCount : Counts(
-    colorMin = silver_sand,
-    colorMax = amaranth_red
-) {
+@Parcelize
+object CheckmateCount : DatasetVisualisation {
 
-    override fun countAt(position: Position): Int =
+    override val name: String = "Checkmates on a given square"
+    override val minValue: Int = 465
+    override val maxValue: Int = 26745
+    override val colorMin: Color = silver_sand
+    override val colorMax: Color = amaranth_red
+
+    override fun valueAt(position: Position): Int =
         when(position) {
             a1 -> 3458
             b1 -> 4367

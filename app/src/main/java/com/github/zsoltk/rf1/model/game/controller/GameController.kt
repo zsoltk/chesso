@@ -5,6 +5,7 @@ import com.github.zsoltk.rf1.model.game.state.BoardState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.targetPositions
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.controller.Reducer.Action
 import com.github.zsoltk.rf1.model.game.preset.Preset
@@ -142,6 +143,12 @@ class GameController(
             Reducer(gamePlayState, Action.PromoteTo(piece))
         )
         onClick(position)
+    }
+
+    fun setVisualisation(visualisation: DatasetVisualisation) {
+        setGamePlayState?.invoke(
+            Reducer(gamePlayState, Action.SetVisualisation(visualisation))
+        )
     }
 
     fun stepForward() {

@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.ui.renderer.square
 
+import com.github.zsoltk.rf1.ui.renderer.square.decoration.DatasetVisualiser
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultHighlightSquare
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultSquareBackground
 import com.github.zsoltk.rf1.ui.renderer.square.decoration.DefaultSquarePositionLabel
@@ -12,6 +13,7 @@ object DefaultSquareRenderer : SquareRenderer {
             DefaultSquareBackground,
             DefaultHighlightSquare,
             DefaultSquarePositionLabel,
+            DatasetVisualiser,
             TargetMarks
         )
 }
