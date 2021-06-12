@@ -24,10 +24,10 @@ object DatasetVisualiser : SquareDecoration {
     @Composable
     override fun render(properties: SquareRenderProperties) {
         ActiveDatasetVisualisation.current.let { viz ->
-            val count = viz.valueAt(properties.position)
+            val count = viz.valueAt(properties.position, properties.boardProperties.toState)
             val percentage = count?.let {
                 (1.0f * count - viz.minValue) / (viz.maxValue - viz.minValue)
-            }
+            }?.coerceIn(0f, 1f)
 
             val intermediateColor = percentage?.let {
                 Color(

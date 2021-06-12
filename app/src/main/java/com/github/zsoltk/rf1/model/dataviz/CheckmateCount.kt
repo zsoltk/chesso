@@ -3,6 +3,7 @@ package com.github.zsoltk.rf1.model.dataviz
 import androidx.compose.ui.graphics.Color
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.ui.amaranth_red
 import com.github.zsoltk.rf1.ui.silver_sand
 import kotlinx.parcelize.Parcelize
@@ -21,7 +22,7 @@ object CheckmateCount : DatasetVisualisation {
     override val colorMin: Color = silver_sand
     override val colorMax: Color = amaranth_red
 
-    override fun valueAt(position: Position): Int =
+    override fun valueAt(position: Position, state: GameSnapshotState): Int =
         when(position) {
             a1 -> 3458
             b1 -> 4367

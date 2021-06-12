@@ -3,6 +3,7 @@ package com.github.zsoltk.rf1.model.dataviz
 import androidx.compose.ui.graphics.Color
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -19,7 +20,7 @@ object KnightsMoveCount : DatasetVisualisation {
     override val colorMin = Color.DarkGray
     override val colorMax = Color.Green
 
-    override fun valueAt(position: Position): Int =
+    override fun valueAt(position: Position, state: GameSnapshotState): Int =
         when(position) {
             a1 -> 2
             b1 -> 3

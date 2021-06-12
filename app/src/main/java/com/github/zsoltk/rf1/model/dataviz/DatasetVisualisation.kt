@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 
 interface DatasetVisualisation : Parcelable {
 
@@ -17,13 +18,14 @@ interface DatasetVisualisation : Parcelable {
 
     val colorMax: Color
 
-    fun valueAt(position: Position): Int?
+    fun valueAt(position: Position, state: GameSnapshotState): Int?
 }
 
 val datasetVisualisations = listOf(
     None,
     KnightsMoveCount,
-    CheckmateCount
+    CheckmateCount,
+    LegalMoveCount
 )
 
 val ActiveDatasetVisualisation = compositionLocalOf<DatasetVisualisation> { None }
