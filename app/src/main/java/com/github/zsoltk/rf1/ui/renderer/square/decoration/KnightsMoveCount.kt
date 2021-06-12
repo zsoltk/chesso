@@ -1,54 +1,21 @@
 package com.github.zsoltk.rf1.ui.renderer.square.decoration
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.ui.amaranth_red
-import com.github.zsoltk.rf1.ui.atomic_tangerine
-import com.github.zsoltk.rf1.ui.black_coral
-import com.github.zsoltk.rf1.ui.renderer.square.SquareRenderProperties
-import com.github.zsoltk.rf1.ui.renderer.square.SquareDecoration
 import com.github.zsoltk.rf1.ui.silver_sand
-import com.github.zsoltk.rf1.ui.sizzling_red
 
-object KnightsMoveCount : SquareDecoration {
+/**
+ * Based on the post of /u/IconicIsotope in /r/chess on Reddit:
+ *
+ * https://www.reddit.com/r/chess/comments/nij28s/knight_moves_a_simple_table_i_made_showing_the
+ */
+object KnightsMoveCount : Counts(
+    colorMin = amaranth_red,
+    colorMax = silver_sand
+) {
 
-    @Composable
-    override fun render(properties: SquareRenderProperties) {
-        val moveCount = moveCount(properties.position)
-
-        Box(
-            modifier = properties.sizeModifier
-                .background(moveCount.toColor().copy(alpha = 1f))
-                .alpha(1f)
-            ,
-            contentAlignment = Alignment.TopEnd
-        ) {
-            Text(
-                text = moveCount.toString(),
-                fontSize = 18.sp
-            )
-        }
-    }
-
-    private fun Int.toColor(): Color =
-        when(this) {
-            2 -> amaranth_red
-            3 -> sizzling_red
-            4 -> atomic_tangerine
-            6 -> black_coral
-            8 -> silver_sand
-            else -> Color.DarkGray
-        }
-
-    private fun moveCount(position: Position): Int =
+    override fun countAt(position: Position): Int =
         when(position) {
             a1 -> 2
             b1 -> 3
