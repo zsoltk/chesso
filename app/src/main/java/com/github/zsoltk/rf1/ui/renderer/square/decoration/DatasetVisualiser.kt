@@ -40,7 +40,7 @@ object DatasetVisualiser : SquareDecoration {
 
             val color by animateColorAsState(
                 targetValue = intermediateColor ?: Color.Transparent,
-                animationSpec = tween(2500)
+                animationSpec = tween(1500)
             )
 
             count?.let {
