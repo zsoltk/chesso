@@ -18,12 +18,15 @@ data class BoardMove(
 
     val piece: Piece = move.piece
 
-    override fun toString(): String {
+    override fun toString(): String =
+        toString(useFigurineNotation = true)
+
+    fun toString(useFigurineNotation: Boolean): String {
         if (move is KingSideCastle) return "O-O"
         if (move is QueenSideCastle) return "O-O-O"
         val isCapture = preMove is Capture
         val symbol = when {
-            piece !is Pawn -> piece.symbol
+            piece !is Pawn -> if (useFigurineNotation) piece.symbol else piece.textSymbol
             isCapture -> from.fileAsLetter
             else -> ""
         }
