@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object KnightsMoveCount : DatasetVisualisation {
 
-    override val name = "Knight's available moves"
+    override val name = "Knight's max number of moves"
     override val minValue: Int = 2
     override val maxValue: Int = 8
     override val colorMin = Color.DarkGray

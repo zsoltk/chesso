@@ -23,9 +23,9 @@ interface DatasetVisualisation : Parcelable {
 
 val datasetVisualisations = listOf(
     None,
+    LegalMoveCount,
     KnightsMoveCount,
-    CheckmateCount,
-    LegalMoveCount
+    CheckmateCount
 )
 
 val ActiveDatasetVisualisation = compositionLocalOf<DatasetVisualisation> { None }
