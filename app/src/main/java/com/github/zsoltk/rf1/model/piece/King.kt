@@ -48,10 +48,11 @@ class King(override val set: Set) : Piece {
         val hSquare = gameSnapshotState.board[h, rank]!!
         if (fSquare.isNotEmpty || gSquare.isNotEmpty) return null
         if (gameSnapshotState.hasCheckFor(fSquare.position) || gameSnapshotState.hasCheckFor(gSquare.position)) return null
+        if (hSquare.piece !is Rook) return null
 
         return BoardMove(
             move = KingSideCastle(this, eSquare.position, gSquare.position),
-            consequence = Move(hSquare.piece!!, hSquare.position, fSquare.position)
+            consequence = Move(hSquare.piece, hSquare.position, fSquare.position)
         )
     }
 
@@ -69,10 +70,11 @@ class King(override val set: Set) : Piece {
         val aSquare = gameSnapshotState.board[a, rank]!!
         if (dSquare.isNotEmpty || cSquare.isNotEmpty || bSquare.isNotEmpty) return null
         if (gameSnapshotState.hasCheckFor(dSquare.position) || gameSnapshotState.hasCheckFor(cSquare.position)) return null
+        if (aSquare.piece !is Rook) return null
 
         return BoardMove(
             move = QueenSideCastle(this, eSquare.position, cSquare.position),
-            consequence = Move(aSquare.piece!!, aSquare.position, dSquare.position)
+            consequence = Move(aSquare.piece, aSquare.position, dSquare.position)
         )
     }
 
