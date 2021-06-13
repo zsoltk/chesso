@@ -24,17 +24,19 @@ object DatasetVisualiser : SquareDecoration {
     @Composable
     override fun render(properties: SquareRenderProperties) {
         ActiveDatasetVisualisation.current.let { viz ->
-            val count = viz.valueAt(properties.position, properties.boardProperties.toState)
-            val percentage = count?.let {
-                (1.0f * count - viz.minValue) / (viz.maxValue - viz.minValue)
+            val datapoint = viz.dataPointAt(properties.position, properties.boardProperties.toState)
+            val percentage = datapoint?.value?.let {
+                (1.0f * datapoint.value - viz.minValue) / (viz.maxValue - viz.minValue)
             }?.coerceIn(0f, 1f)
 
             val intermediateColor = percentage?.let {
+                val colorMin = datapoint.colorScale.first
+                val colorMax = datapoint.colorScale.second
                 Color(
-                    red = viz.colorMin.red + percentage * (viz.colorMax.red - viz.colorMin.red),
-                    green = viz.colorMin.green + percentage * (viz.colorMax.green - viz.colorMin.green),
-                    blue = viz.colorMin.blue + percentage * (viz.colorMax.blue - viz.colorMin.blue),
-                    alpha = viz.colorMin.alpha + percentage * (viz.colorMax.alpha - viz.colorMin.alpha),
+                    red = colorMin.red + percentage * (colorMax.red - colorMin.red),
+                    green = colorMin.green + percentage * (colorMax.green - colorMin.green),
+                    blue = colorMin.blue + percentage * (colorMax.blue - colorMin.blue),
+                    alpha = colorMin.alpha + percentage * (colorMax.alpha - colorMin.alpha),
                 )
             }
 
@@ -43,16 +45,18 @@ object DatasetVisualiser : SquareDecoration {
                 animationSpec = tween(1500)
             )
 
-            count?.let {
+            datapoint?.let {
                 Box(
                     modifier = properties.sizeModifier
                         .background(color),
                     contentAlignment = Alignment.TopEnd
                 ) {
-                    Text(
-                        text = count.toString(),
-                        fontSize = 10.sp
-                    )
+                    datapoint.label?.let {
+                        Text(
+                            text = datapoint.label,
+                            fontSize = 10.sp
+                        )
+                    }
                 }
             }
         }

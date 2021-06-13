@@ -14,16 +14,19 @@ interface DatasetVisualisation : Parcelable {
 
     val maxValue: Int
 
-    val colorMin: Color
-
-    val colorMax: Color
-
-    fun valueAt(position: Position, state: GameSnapshotState): Int?
+    fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint?
 }
+
+data class Datapoint(
+    val value: Int?,
+    val label: String?,
+    val colorScale: Pair<Color, Color>,
+)
 
 val datasetVisualisations = listOf(
     None,
     LegalMoveCount,
+    Influence,
     KnightsMoveCount,
     CheckmateCount
 )

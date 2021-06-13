@@ -15,12 +15,21 @@ import kotlinx.parcelize.Parcelize
 object KnightsMoveCount : DatasetVisualisation {
 
     override val name = "Knight's max number of moves"
-    override val minValue: Int = 2
-    override val maxValue: Int = 8
-    override val colorMin = Color.DarkGray
-    override val colorMax = Color.Green
 
-    override fun valueAt(position: Position, state: GameSnapshotState): Int =
+    override val minValue: Int = 2
+
+    override val maxValue: Int = 8
+
+    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint {
+        val value = valueAt(position)
+        return Datapoint(
+            value = value,
+            label = value.toString(),
+            colorScale = Color.DarkGray to Color.Green
+        )
+    }
+
+    private fun valueAt(position: Position): Int =
         when(position) {
             a1 -> 2
             b1 -> 3

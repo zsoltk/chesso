@@ -1,6 +1,5 @@
 package com.github.zsoltk.rf1.model.dataviz
 
-import androidx.compose.ui.graphics.Color
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
@@ -17,12 +16,21 @@ import kotlinx.parcelize.Parcelize
 object CheckmateCount : DatasetVisualisation {
 
     override val name: String = "Checkmates on a given square"
-    override val minValue: Int = 465
-    override val maxValue: Int = 26745
-    override val colorMin: Color = silver_sand
-    override val colorMax: Color = amaranth_red
 
-    override fun valueAt(position: Position, state: GameSnapshotState): Int =
+    override val minValue: Int = 465
+
+    override val maxValue: Int = 26745
+
+    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint {
+        val value = valueAt(position)
+        return Datapoint(
+            value = value,
+            label = value.toString(),
+            colorScale = silver_sand to amaranth_red,
+        )
+    }
+
+    private fun valueAt(position: Position): Int =
         when(position) {
             a1 -> 3458
             b1 -> 4367
