@@ -2,7 +2,7 @@ package com.github.zsoltk.rf1.model.game.state
 
 import android.os.Parcelable
 import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
-import com.github.zsoltk.rf1.model.dataviz.None
+import com.github.zsoltk.rf1.model.dataviz.impl.None
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

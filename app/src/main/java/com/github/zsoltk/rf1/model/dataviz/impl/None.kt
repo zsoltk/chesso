@@ -1,6 +1,8 @@
-package com.github.zsoltk.rf1.model.dataviz
+package com.github.zsoltk.rf1.model.dataviz.impl
 
 import com.github.zsoltk.rf1.model.board.Position
+import com.github.zsoltk.rf1.model.dataviz.Datapoint
+import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import kotlinx.parcelize.Parcelize
 
