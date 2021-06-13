@@ -7,7 +7,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.input.pointer.pointerInput
 import com.github.zsoltk.rf1.model.board.Position
-import com.github.zsoltk.rf1.ui.composable.toOffset
+import com.github.zsoltk.rf1.ui.composable.toOffsetModifier
 import com.github.zsoltk.rf1.ui.renderer.square.SquareDecoration
 import com.github.zsoltk.rf1.ui.renderer.board.BoardRenderProperties
 import com.github.zsoltk.rf1.ui.renderer.square.SquareRenderProperties
@@ -48,7 +48,7 @@ class DecorateSquares(
     ) {
         Box(
             modifier = properties.coordinate
-                .toOffset(properties.boardProperties.squareSize)
+                .toOffsetModifier(properties.boardProperties.squareSize)
                 .pointerInput(UUID.randomUUID()) {
                     detectTapGestures(
                         onPress = { if (properties.clickable) properties.onClick() },
