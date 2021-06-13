@@ -27,10 +27,10 @@ class GameController(
         preset?.let { applyPreset(it) }
     }
 
-    val gamePlayState: GamePlayState
+    private val gamePlayState: GamePlayState
         get() = getGamePlayState()
 
-    val gameSnapshotState: GameSnapshotState
+    private val gameSnapshotState: GameSnapshotState
         get() = gamePlayState.gameState.currentSnapshotState
 
     private val boardState: BoardState

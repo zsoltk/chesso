@@ -6,6 +6,7 @@ import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.state.PromotionState
+import com.github.zsoltk.rf1.model.game.state.UiState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Piece
 
@@ -23,48 +24,14 @@ object Reducer {
         data class SetVisualisation(val visualisation: DatasetVisualisation) : Action()
     }
 
-    operator fun invoke(gamePlayState: GamePlayState, action: Action): GamePlayState =
-        when (action) {
-            is Action.StepForward -> {
-                if (gamePlayState.gameState.hasNextIndex) {
-                    gamePlayState.copy(
-                        gameState = gamePlayState.gameState.copy(
-                            currentIndex = gamePlayState.gameState.currentIndex + 1,
-                            lastActiveState = gamePlayState.gameState.currentSnapshotState
-                        ),
-                        uiState = gamePlayState.uiState.copy(
-                            selectedPosition = null
-                        )
-                    )
-                } else gamePlayState
-            }
-            is Action.StepBackward -> {
-                if (gamePlayState.gameState.hasPrevIndex) {
-                    gamePlayState.copy(
-                        gameState = gamePlayState.gameState.copy(
-                            currentIndex = gamePlayState.gameState.currentIndex - 1,
-                            lastActiveState = gamePlayState.gameState.currentSnapshotState
-                        ),
-                        uiState = gamePlayState.uiState.copy(
-                            selectedPosition = null
-                        )
-                    )
-                } else gamePlayState
-            }
-            is Action.GoToMove -> {
-                val snapshotIndex = action.moveIndex + 1
-                if (snapshotIndex in gamePlayState.gameState.states.indices) {
-                    gamePlayState.copy(
-                        gameState = gamePlayState.gameState.copy(
-                            currentIndex = snapshotIndex,
-                            lastActiveState = gamePlayState.gameState.currentSnapshotState
-                        ),
-                        uiState = gamePlayState.uiState.copy(
-                            selectedPosition = null
-                        )
-                    )
-                } else gamePlayState
-            }
+    operator fun invoke(gamePlayState: GamePlayState, action: Action): GamePlayState {
+        val gameState = gamePlayState.gameState
+        val currentSnapshotState = gameState.currentSnapshotState
+
+        return when (action) {
+            is Action.StepForward -> gamePlayState.stepBy(1)
+            is Action.StepBackward -> gamePlayState.stepBy(-1)
+            is Action.GoToMove -> gamePlayState.goToSnapshot(action.moveIndex + 1)
             is Action.ResetTo -> {
                 GamePlayState(
                     gameState = GameState(
@@ -88,10 +55,9 @@ object Reducer {
                 }
             }
             is Action.ApplyMove -> {
-                val gameSnapshotState = gamePlayState.gameState.currentSnapshotState
-                var states = gamePlayState.gameState.states.toMutableList()
-                val currentIndex = gamePlayState.gameState.currentIndex
-                val transition = gameSnapshotState.calculateAppliedMove(
+                var states = gameState.states.toMutableList()
+                val currentIndex = gameState.currentIndex
+                val transition = currentSnapshotState.calculateAppliedMove(
                     boardMove = action.boardMove,
                     boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
                 )
@@ -101,10 +67,10 @@ object Reducer {
                 states.add(transition.toSnapshotState)
 
                 GamePlayState(
-                    gameState = gamePlayState.gameState.copy(
+                    gameState = gameState.copy(
                         states = states,
                         currentIndex = states.lastIndex,
-                        lastActiveState = gamePlayState.gameState.currentSnapshotState
+                        lastActiveState = currentSnapshotState
                     ),
                     visualisation = gamePlayState.visualisation
                 )
@@ -131,4 +97,23 @@ object Reducer {
                 )
             }
         }
+    }
+
+    private fun GamePlayState.stepBy(step: Int): GamePlayState {
+        val newIndex = gameState.currentIndex + step
+        if (newIndex !in 0..gameState.states.lastIndex) return this
+        return goToSnapshot(newIndex)
+    }
+
+    private fun GamePlayState.goToSnapshot(index: Int): GamePlayState {
+        if (index !in 0..gameState.states.lastIndex) return this
+
+        return copy(
+            gameState = gameState.copy(
+                currentIndex = index,
+                lastActiveState = gameState.currentSnapshotState
+            ),
+            uiState = UiState(gameState.states[index])
+        )
+    }
 }
