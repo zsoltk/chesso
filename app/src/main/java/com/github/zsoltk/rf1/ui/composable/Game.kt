@@ -127,40 +127,37 @@ private fun GameControls(
         horizontalArrangement = Arrangement.SpaceAround
     ) {
 
-        Row {
-            Button(
-                onClick = onStepBack,
-                enabled = gamePlayState.gameState.hasPrevIndex
-            ) {
-                Text("<")
-            }
-            Spacer(Modifier.size(4.dp))
-            Button(
-                onClick = onStepForward,
-                enabled = gamePlayState.gameState.hasNextIndex
-            ) {
-                Text(">")
-            }
+        Button(
+            onClick = onStepBack,
+            enabled = gamePlayState.gameState.hasPrevIndex
+        ) {
+            Text("<")
         }
-        Row {
-            Button(
-                onClick = onVizClicked,
-            ) {
-                Text("Viz")
-            }
-            Spacer(Modifier.size(4.dp))
-            Button(
-                onClick = onFlipBoard,
-            ) {
-                Text("Flip")
-            }
-            Spacer(Modifier.size(4.dp))
-            Button(
-                enabled = gamePlayState.gameState.states.size > 1,
-                onClick = onNewGame,
-            ) {
-                Text("New")
-            }
+        Spacer(Modifier.size(4.dp))
+        Button(
+            onClick = onStepForward,
+            enabled = gamePlayState.gameState.hasNextIndex
+        ) {
+            Text(">")
+        }
+        Spacer(Modifier.size(4.dp))
+        Button(
+            onClick = onVizClicked,
+        ) {
+            Text("Viz")
+        }
+        Spacer(Modifier.size(4.dp))
+        Button(
+            onClick = onFlipBoard,
+        ) {
+            Text("Flip")
+        }
+        Spacer(Modifier.size(4.dp))
+        Button(
+            enabled = gamePlayState.gameState.states.size > 1,
+            onClick = onNewGame,
+        ) {
+            Text("New")
         }
     }
 }
