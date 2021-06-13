@@ -36,6 +36,14 @@ data class GameSnapshotState(
             it.value * if (it.set == WHITE) -1 else 1
         }
 
+    val allLegalMoves by lazy {
+        board.pieces.flatMap { (_, piece) ->
+            piece
+                .pseudoLegalMoves(this, false)
+                .applyCheckConstraints()
+        }
+    }
+
     fun hasCheck(): Boolean =
         hasCheckFor(toMove)
 
@@ -53,19 +61,17 @@ data class GameSnapshotState(
             position in otherPieceCaptures.targetPositions()
         }
 
-    fun legalMovesFrom(from: Position): List<BoardMove> {
-        val square = board[from]
-        val piece = square.piece ?: return emptyList()
-        return piece
-            .pseudoLegalMoves(this, false)
-            .applyCheckConstraints(piece.set)
-    }
+    fun legalMovesTo(position: Position): List<BoardMove> =
+        allLegalMoves.filter { it.to == position }
 
-    private fun List<BoardMove>.applyCheckConstraints(set: Set): List<BoardMove> =
+    fun legalMovesFrom(position: Position): List<BoardMove> =
+        allLegalMoves.filter { it.from == position }
+
+    private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
         filter { move ->
             // Any move made should result in no check (clear current if any, and not cause a new one)
             val newGameState = derivePseudoGameState(move)
-            !newGameState.hasCheckFor(set)
+            !newGameState.hasCheckFor(move.piece.set)
         }
 
 
