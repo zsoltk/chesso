@@ -36,7 +36,8 @@ object Reducer {
                 GamePlayState(
                     gameState = GameState(
                         states = listOf(action.gameSnapshotState)
-                    )
+                    ),
+                    visualisation = gamePlayState.visualisation
                 )
             }
             is Action.ToggleSelectPosition -> {
