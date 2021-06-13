@@ -4,7 +4,7 @@ import com.github.zsoltk.rf1.model.game.state.GameState
 
 interface Converter {
 
-    fun import(notation: String): GameState
+    fun import(text: String): GameState
 
     fun export(gameState: GameState): String
 }
