@@ -56,14 +56,16 @@ data class GameSnapshotState(
     fun legalMovesFrom(from: Position): List<BoardMove> {
         val square = board[from]
         val piece = square.piece ?: return emptyList()
-        return piece.pseudoLegalMoves(this, false).applyCheckConstraints()
+        return piece
+            .pseudoLegalMoves(this, false)
+            .applyCheckConstraints(piece.set)
     }
 
-    private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
+    private fun List<BoardMove>.applyCheckConstraints(set: Set): List<BoardMove> =
         filter { move ->
             // Any move made should result in no check (clear current if any, and not cause a new one)
             val newGameState = derivePseudoGameState(move)
-            !newGameState.hasCheckFor(boardState.toMove)
+            !newGameState.hasCheckFor(set)
         }
 
 
