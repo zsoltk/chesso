@@ -81,7 +81,7 @@ class GameController(
         applyMove(boardMove)
     }
 
-    private fun applyMove(boardMove: BoardMove) {
+    fun applyMove(boardMove: BoardMove) {
         setGamePlayState?.invoke(
             Reducer(gamePlayState, Action.ApplyMove(boardMove))
         )
