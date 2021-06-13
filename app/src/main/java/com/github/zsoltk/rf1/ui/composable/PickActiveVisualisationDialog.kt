@@ -46,14 +46,18 @@ private fun PickActiveVisualisationDialogContent(
     onItemSelected: (DatasetVisualisation) -> Unit = {}
 ) {
     Column(
-        modifier = Modifier.background(
-            color = MaterialTheme.colors.surface,
-            shape = MaterialTheme.shapes.medium
-        ),
+        modifier = Modifier
+            .padding(24.dp)
+            .background(
+                color = MaterialTheme.colors.surface,
+                shape = MaterialTheme.shapes.medium
+            ),
         horizontalAlignment = Alignment.Start
     ) {
         datasetVisualisations.forEach { item ->
-            Row {
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
                 Box(
                     modifier = Modifier.size(24.dp),
                     contentAlignment = Alignment.Center
