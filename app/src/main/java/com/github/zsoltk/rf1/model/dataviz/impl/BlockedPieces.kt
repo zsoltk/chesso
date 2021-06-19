@@ -13,20 +13,23 @@ import kotlinx.parcelize.Parcelize
  * Shows a colour only if the number is 0, meaning the piece is blocked from moving.
  */
 @Parcelize
-object LegalMoveCount : DatasetVisualisation {
+object BlockedPieces : DatasetVisualisation {
 
-    override val name = "Legal moves of pieces"
+    override val name = "Blocked pieces"
 
     override val minValue: Int = 0
 
-    override val maxValue: Int = 1
+    override val maxValue: Int = 31
 
     override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint? =
         valueAt(position, state)?.let { value ->
             Datapoint(
                 value = value,
                 label = value.toString(),
-                colorScale = Color.Red.copy(alpha = 0.35f) to Color.Transparent,
+                colorScale = when (value) {
+                    0 -> Color.Red.copy(alpha = 0.35f) to Color.Unspecified
+                    else -> Color.Unspecified to Color.Unspecified
+                },
             )
         }
 
