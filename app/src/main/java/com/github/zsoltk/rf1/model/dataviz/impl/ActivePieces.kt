@@ -17,9 +17,9 @@ object ActivePieces : DatasetVisualisation {
 
     override val name = "Active pieces"
 
-    override val minValue: Int = 0
+    override val minValue: Int = 2
 
-    override val maxValue: Int = 31
+    override val maxValue: Int = 10
 
     override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint? =
         valueAt(position, state)?.let { value ->
