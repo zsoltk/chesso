@@ -4,5 +4,5 @@ import androidx.compose.ui.graphics.Color
 
 object DefaultSquareBackground : SquareBackground(
     lightSquareColor = Color.White,
-    darkSquareColor = Color.LightGray,
+    darkSquareColor = Color(0xFFC0C0C0),
 )
