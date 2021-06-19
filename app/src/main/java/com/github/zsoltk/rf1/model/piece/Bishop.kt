@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
@@ -10,6 +11,12 @@ import kotlinx.parcelize.Parcelize
 class Bishop(override val set: Set) : Piece {
 
     override val value: Int = 3
+
+    override val asset: Int =
+        when (set) {
+            WHITE -> R.drawable.bishop_light
+            BLACK -> R.drawable.bishop_dark
+        }
 
     override val symbol: String = when (set) {
         WHITE -> "♗"

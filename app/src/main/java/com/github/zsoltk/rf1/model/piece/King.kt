@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.File.*
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.move.BoardMove
@@ -14,6 +15,12 @@ import kotlinx.parcelize.Parcelize
 class King(override val set: Set) : Piece {
 
     override val value: Int = Int.MAX_VALUE
+
+    override val asset: Int =
+        when (set) {
+            WHITE -> R.drawable.king_light
+            BLACK -> R.drawable.king_dark
+        }
 
     override val symbol: String = when (set) {
         WHITE -> "♔"

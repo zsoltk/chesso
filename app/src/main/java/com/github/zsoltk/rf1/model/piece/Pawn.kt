@@ -1,5 +1,6 @@
 package com.github.zsoltk.rf1.model.piece
 
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Square
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
@@ -15,6 +16,12 @@ import kotlinx.parcelize.Parcelize
 class Pawn(override val set: Set) : Piece {
 
     override val value: Int = 1
+
+    override val asset: Int =
+        when (set) {
+            WHITE -> R.drawable.pawn_light
+            BLACK -> R.drawable.pawn_dark
+        }
 
     override val symbol: String = when (set) {
         WHITE -> "♙"

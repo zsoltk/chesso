@@ -8,6 +8,8 @@ interface Piece : Parcelable {
 
     val set: Set
 
+    val asset: Int?
+
     val symbol: String
 
     val textSymbol: String
