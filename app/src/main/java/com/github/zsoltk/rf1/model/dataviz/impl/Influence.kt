@@ -8,7 +8,12 @@ import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.piece.Set
 import kotlinx.parcelize.Parcelize
 
-
+/**
+ * Calculates simplified influence based on current game state:
+ * - Calculates how many pieces can move to a square
+ * - Uses different colour scale for dominating side
+ * - Does not take into account defenders, as they're blocked by the piece being defended
+ */
 @Parcelize
 object Influence : DatasetVisualisation {
 

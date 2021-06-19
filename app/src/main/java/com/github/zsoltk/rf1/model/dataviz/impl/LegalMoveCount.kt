@@ -8,6 +8,10 @@ import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import kotlinx.parcelize.Parcelize
 
 
+/**
+ * Calculates how many legal moves a piece can take based on the current game state.
+ * Shows a colour only if the number is 0, meaning the piece is blocked from moving.
+ */
 @Parcelize
 object LegalMoveCount : DatasetVisualisation {
 
