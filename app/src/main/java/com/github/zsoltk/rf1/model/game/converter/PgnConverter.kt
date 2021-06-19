@@ -1,6 +1,7 @@
 package com.github.zsoltk.rf1.model.game.converter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.Resolution
@@ -45,10 +46,13 @@ object PgnConverter : Converter {
             { gamePlayState = it }
         )
         moves.forEach { moveText ->
+            Log.d("PGN", "Pre")
             parseMove(moveText, gamePlayState.gameState).let { move ->
+                Log.d("PGN", "Post parse")
                 gameController.applyMove(move)
-                // Log.d("PGN", "$moveText = $move")
+                Log.d("PGN", "$moveText = $move")
             }
+            Log.d("PGN", "")
 
         }
 
