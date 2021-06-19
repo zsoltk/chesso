@@ -56,6 +56,8 @@ fun Moves(
             val moves = gameState.moves()
             val selectedItemIndex = gameState.currentIndex - 1
             moves.forEachIndexed { index, move ->
+                val selected = index == selectedItemIndex
+
                 if (index % 2 == 0) {
                     item {
                         StepNumber(index / 2 + 1)
@@ -63,8 +65,8 @@ fun Moves(
                     }
                 }
 
-                item {
-                    if (index == selectedItemIndex) {
+                item("$index$selected") {
+                    if (selected) {
                         Pill(move.effect != null) {
                             Move(move) { onClickMove(index) }
                         }
@@ -74,7 +76,9 @@ fun Moves(
                 }
 
                 if (index % 2 == 1) {
-                    item { Spacer(modifier = Modifier.width(10.dp)) }
+                    item {
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
                 }
             }
 
