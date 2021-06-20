@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
@@ -47,6 +48,7 @@ private fun PickActiveVisualisationDialogContent(
 ) {
     Column(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(24.dp)
             .background(
                 color = MaterialTheme.colors.surface,
@@ -56,7 +58,10 @@ private fun PickActiveVisualisationDialogContent(
     ) {
         datasetVisualisations.forEach { item ->
             Row(
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .clickable(onClick = { onItemSelected(item) }),
             ) {
                 Box(
                     modifier = Modifier.size(24.dp),
@@ -70,8 +75,7 @@ private fun PickActiveVisualisationDialogContent(
                 Text(
                     text = item.name,
                     modifier = Modifier
-                        .padding(4.dp)
-                        .clickable(onClick = { onItemSelected(item) }),
+                        .padding(4.dp),
                     color = MaterialTheme.colors.onSurface,
                 )
             }
