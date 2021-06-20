@@ -21,6 +21,7 @@ import com.github.zsoltk.rf1.model.piece.Queen
 import com.github.zsoltk.rf1.model.piece.Rook
 import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
+import com.github.zsoltk.rf1.ui.renderer.board.decoration.Piece
 
 @Composable
 fun PromotionDialog(
@@ -63,14 +64,10 @@ private fun PromotionDialogContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         promotionPieces.forEach { piece ->
-            Text(
-                text = piece.symbol,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .clickable(onClick = { onClick(piece) })
-                ,
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 40.sp
+            Piece(
+                piece = piece,
+                squareSize = 48.dp,
+                modifier = Modifier.clickable(onClick = { onClick(piece) })
             )
         }
     }
