@@ -25,13 +25,19 @@ data class AppliedMove(
     @IgnoredOnParcel
     val piece: Piece = move.piece
 
-    override fun toString(): String {
-        val postFix = when (effect) {
-            MoveEffect.CHECK -> "+"
-            MoveEffect.CHECKMATE -> "#  ${if (boardMove.move.piece.set == WHITE) "1-0" else "0-1"}"
-            MoveEffect.DRAW -> "  ½ - ½"
+    override fun toString(): String =
+        toString(
+            useFigurineNotation = true,
+            includeResult = true
+        )
+
+    fun toString(useFigurineNotation: Boolean, includeResult: Boolean): String {
+        val postFix = when {
+            effect == MoveEffect.CHECK -> "+"
+            includeResult && effect == MoveEffect.CHECKMATE -> "#  ${if (boardMove.move.piece.set == WHITE) "1-0" else "0-1"}"
+            includeResult && effect == MoveEffect.DRAW -> "  ½ - ½"
             else -> ""
         }
-        return "$boardMove$postFix"
+        return "${boardMove.toString(useFigurineNotation)}$postFix"
     }
 }

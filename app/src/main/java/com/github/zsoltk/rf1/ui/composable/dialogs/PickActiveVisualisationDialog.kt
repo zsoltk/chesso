@@ -1,4 +1,4 @@
-package com.github.zsoltk.rf1.ui.composable
+package com.github.zsoltk.rf1.ui.composable.dialogs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

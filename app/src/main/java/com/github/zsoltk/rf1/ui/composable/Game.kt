@@ -24,68 +24,86 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.board.Position.b1
+import com.github.zsoltk.rf1.model.board.Position.b5
+import com.github.zsoltk.rf1.model.board.Position.b8
+import com.github.zsoltk.rf1.model.board.Position.c3
+import com.github.zsoltk.rf1.model.board.Position.c6
+import com.github.zsoltk.rf1.model.board.Position.d5
+import com.github.zsoltk.rf1.model.board.Position.d7
+import com.github.zsoltk.rf1.model.board.Position.d8
+import com.github.zsoltk.rf1.model.board.Position.e2
+import com.github.zsoltk.rf1.model.board.Position.e4
+import com.github.zsoltk.rf1.model.board.Position.e5
+import com.github.zsoltk.rf1.model.board.Position.e7
+import com.github.zsoltk.rf1.model.board.Position.f1
+import com.github.zsoltk.rf1.model.board.Position.g8
 import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
-import com.github.zsoltk.rf1.model.game.state.GameState
-import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
+import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
+fun Game(
+    state: GamePlayState = GamePlayState(),
+    importGameText: String? = null,
+    preset : Preset ? = null,
+) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
-    var gamePlayState by rememberSaveable { mutableStateOf(state) }
-    var showVizDialog by remember { mutableStateOf(false) }
+    val gamePlayState = rememberSaveable { mutableStateOf(state) }
+    val showVizDialog = remember { mutableStateOf(false) }
+    val showGameDialog = remember { mutableStateOf(false) }
+    val showImportDialog = remember { mutableStateOf(false) }
+    val pgnToImport = remember { mutableStateOf(importGameText) }
+
     val gameController = remember {
         GameController(
-            getGamePlayState = { gamePlayState },
-            setGamePlayState = { gamePlayState = it },
+            getGamePlayState = { gamePlayState.value },
+            setGamePlayState = { gamePlayState.value = it },
             preset = preset
         )
     }
 
-    CompositionLocalProvider(ActiveDatasetVisualisation provides gamePlayState.visualisation) {
+    CompositionLocalProvider(ActiveDatasetVisualisation provides gamePlayState.value.visualisation) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
         ) {
-            Status(gamePlayState.gameState)
-            Moves(gamePlayState.gameState, onClickMove = { gameController.goToMove(it) })
-            CapturedPieces(gamePlayState.gameState)
+            Status(gamePlayState.value.gameState)
+            Moves(gamePlayState.value.gameState, onClickMove = { gameController.goToMove(it) })
+            CapturedPieces(gamePlayState.value.gameState)
             Board(
-                gamePlayState = gamePlayState,
+                gamePlayState = gamePlayState.value,
                 gameController = gameController,
                 isFlipped = isFlipped
             )
             GameControls(
-                gamePlayState = gamePlayState,
+                gamePlayState = gamePlayState.value,
                 onStepBack = { gameController.stepBackward() },
                 onStepForward = { gameController.stepForward() },
-                onVizClicked = { showVizDialog = true },
+                onVizClicked = { showVizDialog.value = true },
                 onFlipBoard = { isFlipped = !isFlipped },
-                onNewGame = { gameController.reset() }
+                onGameClicked = { showGameDialog.value = true }
             )
         }
 
-        if (gamePlayState.uiState.showPromotionDialog) {
-            PromotionDialog(gameController.toMove) {
-                gameController.onPromotionPieceSelected(it)
-            }
-        }
-        if (showVizDialog) {
-            PickActiveVisualisationDialog(
-                onDismiss = {
-                    showVizDialog = false
-                },
-                onItemSelected = {
-                    showVizDialog = false
-                    gameController.setVisualisation(it)
-                }
-            )
-        }
+        GameDialogs(
+            gamePlayState = gamePlayState,
+            gameController = gameController,
+            showVizDialog = showVizDialog,
+            showGameDialog = showGameDialog,
+            showImportDialog = showImportDialog,
+            pgnToImport = pgnToImport,
+        )
+
+        ManagedImport(
+            pgnToImport = pgnToImport,
+            gamePlayState = gamePlayState,
+        )
     }
 }
 
@@ -118,7 +136,7 @@ private fun GameControls(
     onStepForward: () -> Unit,
     onVizClicked: () -> Unit,
     onFlipBoard: () -> Unit,
-    onNewGame: () -> Unit,
+    onGameClicked: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -154,10 +172,9 @@ private fun GameControls(
         }
         Spacer(Modifier.size(4.dp))
         Button(
-            enabled = gamePlayState.gameState.states.size > 1,
-            onClick = onNewGame,
+            onClick = onGameClicked,
         ) {
-            Text("New")
+            Text("Game")
         }
     }
 }
