@@ -47,12 +47,18 @@ import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
-fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
+fun Game(
+    state: GamePlayState = GamePlayState(),
+    importGameText: String? = null,
+    preset : Preset ? = null,
+) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
     val gamePlayState = rememberSaveable { mutableStateOf(state) }
     val showVizDialog = remember { mutableStateOf(false) }
     val showGameDialog = remember { mutableStateOf(false) }
     val showImportDialog = remember { mutableStateOf(false) }
+    val pgnToImport = remember { mutableStateOf(importGameText) }
+
     val gameController = remember {
         GameController(
             getGamePlayState = { gamePlayState.value },
@@ -91,6 +97,12 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
             showVizDialog = showVizDialog,
             showGameDialog = showGameDialog,
             showImportDialog = showImportDialog,
+            pgnToImport = pgnToImport,
+        )
+
+        ManagedImport(
+            pgnToImport = pgnToImport,
+            gamePlayState = gamePlayState,
         )
     }
 }

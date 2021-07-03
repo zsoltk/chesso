@@ -3,7 +3,6 @@ package com.github.zsoltk.rf1.ui.composable
 import android.content.Intent
 import android.os.Bundle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,8 +16,6 @@ import com.github.zsoltk.rf1.ui.composable.dialogs.GameDialog
 import com.github.zsoltk.rf1.ui.composable.dialogs.ImportDialog
 import com.github.zsoltk.rf1.ui.composable.dialogs.PickActiveVisualisationDialog
 import com.github.zsoltk.rf1.ui.composable.dialogs.PromotionDialog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun GameDialogs(
@@ -27,6 +24,7 @@ fun GameDialogs(
     showVizDialog: MutableState<Boolean>,
     showGameDialog: MutableState<Boolean>,
     showImportDialog: MutableState<Boolean>,
+    pgnToImport: MutableState<String?>,
 ) {
     ManagedPromotionDialog(
         showPromotionDialog = gamePlayState.value.uiState.showPromotionDialog,
@@ -46,7 +44,7 @@ fun GameDialogs(
 
     ManagedImportDialog(
         showImportDialog = showImportDialog,
-        gamePlayState = gamePlayState
+        pgnToImport = pgnToImport
     )
 }
 
@@ -121,10 +119,8 @@ fun ManagedGameDialog(
 @Composable
 fun ManagedImportDialog(
     showImportDialog: MutableState<Boolean>,
-    gamePlayState: MutableState<GamePlayState>,
+    pgnToImport: MutableState<String?>,
 ) {
-    val (pgnToImport, setPgnToImport) = remember { mutableStateOf("") }
-
     if (showImportDialog.value) {
         ImportDialog(
             onDismiss = {
@@ -132,38 +128,9 @@ fun ManagedImportDialog(
             },
             onImport = { pgn ->
                 showImportDialog.value = false
-                setPgnToImport(pgn)
+                pgnToImport.value = pgn
             }
         )
-    }
-
-    ManagedImport(
-        pgnToImport = pgnToImport,
-        gamePlayState = gamePlayState,
-        setPgnToImport = setPgnToImport
-    )
-}
-
-@Composable
-private fun ManagedImport(
-    pgnToImport: String,
-    gamePlayState: MutableState<GamePlayState>,
-    setPgnToImport: (String) -> Unit,
-) {
-    if (pgnToImport.isNotBlank()) {
-        LoadingSpinner()
-    }
-
-    LaunchedEffect(pgnToImport) {
-        if (pgnToImport.isNotBlank()) {
-            withContext(Dispatchers.IO) {
-                val importedState = PgnConverter.import(pgnToImport)
-                val importedGame = GamePlayState(importedState)
-                gamePlayState.value = importedGame
-
-                setPgnToImport("")
-            }
-        }
     }
 }
 
