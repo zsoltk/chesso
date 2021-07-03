@@ -1,5 +1,7 @@
 package com.github.zsoltk.rf1.ui.composable
 
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,10 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,22 +26,37 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat.startActivity
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
+import com.github.zsoltk.rf1.model.game.converter.PgnConverter
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import com.github.zsoltk.rf1.ui.alice_blue
+import com.github.zsoltk.rf1.ui.composable.dialogs.GameDialog
+import com.github.zsoltk.rf1.ui.composable.dialogs.ImportDialog
+import com.github.zsoltk.rf1.ui.composable.dialogs.PickActiveVisualisationDialog
+import com.github.zsoltk.rf1.ui.composable.dialogs.PromotionDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 
 @Composable
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
     var gamePlayState by rememberSaveable { mutableStateOf(state) }
     var showVizDialog by remember { mutableStateOf(false) }
+    var showGameDialog by remember { mutableStateOf(false) }
+    var showImportDialog by remember { mutableStateOf(false) }
     val gameController = remember {
         GameController(
             getGamePlayState = { gamePlayState },
@@ -66,7 +85,7 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
                 onStepForward = { gameController.stepForward() },
                 onVizClicked = { showVizDialog = true },
                 onFlipBoard = { isFlipped = !isFlipped },
-                onNewGame = { gameController.reset() }
+                onGameClicked = { showGameDialog = true }
             )
         }
 
@@ -85,6 +104,74 @@ fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
                     gameController.setVisualisation(it)
                 }
             )
+        }
+        if (showGameDialog) {
+            val context = LocalContext.current
+
+            GameDialog(
+                onDismiss = {
+                    showGameDialog = false
+                },
+                onNewGame = {
+                    showGameDialog = false
+                    gameController.reset()
+                },
+                onImportGame = {
+                    showGameDialog = false
+                    showImportDialog = true
+                },
+                onExportGame = {
+                    showGameDialog = false
+                    val pgn = PgnConverter.export(gamePlayState.gameState)
+                    val sendIntent: Intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, pgn)
+                        type = "text/plain"
+                    }
+
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    startActivity(context, shareIntent, Bundle())
+                }
+            )
+        }
+
+        var pgnToImport by remember { mutableStateOf("") }
+        if (showImportDialog) {
+            ImportDialog(
+                onDismiss = {
+                    showImportDialog = false
+                },
+                onImport = { pgn ->
+                    showImportDialog = false
+                    pgnToImport = pgn
+                }
+            )
+        }
+        LaunchedEffect(pgnToImport) {
+            if (pgnToImport.isNotBlank()) {
+                withContext(Dispatchers.IO) {
+                    async {
+                        gamePlayState = GamePlayState(PgnConverter.import(pgnToImport))
+                    }.await()
+
+                    pgnToImport = ""
+                }
+            }
+        }
+        if (pgnToImport.isNotBlank()) {
+            MaterialTheme {
+                Dialog(
+                    onDismissRequest = {},
+                    properties = DialogProperties(
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false
+                    )
+                ) {
+                    CircularProgressIndicator(
+                        color = alice_blue
+                    )
+                }
+            }
         }
     }
 }
@@ -118,7 +205,7 @@ private fun GameControls(
     onStepForward: () -> Unit,
     onVizClicked: () -> Unit,
     onFlipBoard: () -> Unit,
-    onNewGame: () -> Unit,
+    onGameClicked: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -154,10 +241,9 @@ private fun GameControls(
         }
         Spacer(Modifier.size(4.dp))
         Button(
-            enabled = gamePlayState.gameState.states.size > 1,
-            onClick = onNewGame,
+            onClick = onGameClicked,
         ) {
-            Text("New")
+            Text("Game")
         }
     }
 }

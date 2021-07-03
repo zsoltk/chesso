@@ -23,7 +23,6 @@ object PgnConverter : Converter {
             .replace("(1-0|0-1|1/2-1/2)\$".toRegex(), "")
             .trim()
 
-        // Log.d("PGN normalised", target)
         val tagsPattern = """\[(\w+)\s"(.*?)"\]""".toRegex()
         val tagsResults = tagsPattern.findAll(target)
         val tags = tagsResults
@@ -37,8 +36,6 @@ object PgnConverter : Converter {
             .toList()
             .filter { it.isNotBlank() }
 
-        // Log.d("PGN", "$moves")
-
         var gamePlayState = GamePlayState()
         val gameController = GameController(
             { gamePlayState },
@@ -47,7 +44,6 @@ object PgnConverter : Converter {
         moves.forEach { moveText ->
             parseMove(moveText, gamePlayState.gameState).let { move ->
                 gameController.applyMove(move)
-                // Log.d("PGN", "$moveText = $move")
             }
 
         }
