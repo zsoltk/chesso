@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.github.zsoltk.rf1.model.game.converter.PgnConverter
 
 @Composable
 fun ImportDialog(
@@ -37,7 +38,7 @@ fun ImportDialog(
             )
         ) {
             ImportDialogContent(
-                validate = { true },
+                validate = { PgnConverter.preValidate(it) },
                 onCancel = onDismiss,
                 onDone = onImport
             )

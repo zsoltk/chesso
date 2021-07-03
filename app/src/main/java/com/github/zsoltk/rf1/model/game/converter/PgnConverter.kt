@@ -17,25 +17,11 @@ import java.util.Date
 
 object PgnConverter : Converter {
 
+    override fun preValidate(text: String): Boolean =
+        moves(text).isNotEmpty()
+
     override fun import(text: String): GameState {
-        val target = text
-            .replace("[\n\r]".toRegex(), "")
-            .replace("(1-0|0-1|1/2-1/2)\$".toRegex(), "")
-            .trim()
-
-        val tagsPattern = """\[(\w+)\s"(.*?)"\]""".toRegex()
-        val tagsResults = tagsPattern.findAll(target)
-        val tags = tagsResults
-            .associate { it.groupValues[1] to it.groupValues[2] }
-
-        val moveChars = """[\w-=+#]"""
-        val movesPattern = """\d+\.\s($moveChars+)(\s($moveChars+))?""".toRegex()
-        val movesResults = movesPattern.findAll(target)
-        val moves = movesResults
-            .flatMap { listOf(it.groupValues[1].trim(), it.groupValues[2].trim()) }
-            .toList()
-            .filter { it.isNotBlank() }
-
+        val moves = moves(text)
         var gamePlayState = GamePlayState()
         val gameController = GameController(
             { gamePlayState },
@@ -49,6 +35,27 @@ object PgnConverter : Converter {
         }
 
         return gamePlayState.gameState
+    }
+
+    private fun moves(text: String): List<String> {
+        val target = text
+            .replace("[\n\r]".toRegex(), "")
+            .replace("(1-0|0-1|1/2-1/2)\$".toRegex(), "")
+            .trim()
+
+        val tagsPattern = """\[(\w+)\s"(.*?)"\]""".toRegex()
+        val tagsResults = tagsPattern.findAll(target)
+        val tags = tagsResults
+            .associate { it.groupValues[1] to it.groupValues[2] }
+
+        val moveChars = """[\w-=+#]"""
+        val movesPattern = """\d+\.\s($moveChars+)(\s($moveChars+))?""".toRegex()
+        val movesResults = movesPattern.findAll(target)
+
+        return movesResults
+            .flatMap { listOf(it.groupValues[1].trim(), it.groupValues[2].trim()) }
+            .toList()
+            .filter { it.isNotBlank() }
     }
 
     private fun parseMove(s: String, gameState: GameState): BoardMove {
