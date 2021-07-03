@@ -1,7 +1,5 @@
 package com.github.zsoltk.rf1.ui.composable
 
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,12 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,153 +22,76 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat.startActivity
-import com.github.zsoltk.rf1.model.board.Position.*
+import com.github.zsoltk.rf1.model.board.Position.b1
+import com.github.zsoltk.rf1.model.board.Position.b5
+import com.github.zsoltk.rf1.model.board.Position.b8
+import com.github.zsoltk.rf1.model.board.Position.c3
+import com.github.zsoltk.rf1.model.board.Position.c6
+import com.github.zsoltk.rf1.model.board.Position.d5
+import com.github.zsoltk.rf1.model.board.Position.d7
+import com.github.zsoltk.rf1.model.board.Position.d8
+import com.github.zsoltk.rf1.model.board.Position.e2
+import com.github.zsoltk.rf1.model.board.Position.e4
+import com.github.zsoltk.rf1.model.board.Position.e5
+import com.github.zsoltk.rf1.model.board.Position.e7
+import com.github.zsoltk.rf1.model.board.Position.f1
+import com.github.zsoltk.rf1.model.board.Position.g8
 import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
-import com.github.zsoltk.rf1.model.game.state.GameState
-import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.Resolution
-import com.github.zsoltk.rf1.model.game.converter.PgnConverter
+import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
+import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.ui.Rf1Theme
-import com.github.zsoltk.rf1.ui.alice_blue
-import com.github.zsoltk.rf1.ui.composable.dialogs.GameDialog
-import com.github.zsoltk.rf1.ui.composable.dialogs.ImportDialog
-import com.github.zsoltk.rf1.ui.composable.dialogs.PickActiveVisualisationDialog
-import com.github.zsoltk.rf1.ui.composable.dialogs.PromotionDialog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 
 @Composable
 fun Game(state: GamePlayState = GamePlayState(), preset: Preset? = null) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
-    var gamePlayState by rememberSaveable { mutableStateOf(state) }
-    var showVizDialog by remember { mutableStateOf(false) }
-    var showGameDialog by remember { mutableStateOf(false) }
-    var showImportDialog by remember { mutableStateOf(false) }
+    val gamePlayState = rememberSaveable { mutableStateOf(state) }
+    val showVizDialog = remember { mutableStateOf(false) }
+    val showGameDialog = remember { mutableStateOf(false) }
+    val showImportDialog = remember { mutableStateOf(false) }
     val gameController = remember {
         GameController(
-            getGamePlayState = { gamePlayState },
-            setGamePlayState = { gamePlayState = it },
+            getGamePlayState = { gamePlayState.value },
+            setGamePlayState = { gamePlayState.value = it },
             preset = preset
         )
     }
 
-    CompositionLocalProvider(ActiveDatasetVisualisation provides gamePlayState.visualisation) {
+    CompositionLocalProvider(ActiveDatasetVisualisation provides gamePlayState.value.visualisation) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
         ) {
-            Status(gamePlayState.gameState)
-            Moves(gamePlayState.gameState, onClickMove = { gameController.goToMove(it) })
-            CapturedPieces(gamePlayState.gameState)
+            Status(gamePlayState.value.gameState)
+            Moves(gamePlayState.value.gameState, onClickMove = { gameController.goToMove(it) })
+            CapturedPieces(gamePlayState.value.gameState)
             Board(
-                gamePlayState = gamePlayState,
+                gamePlayState = gamePlayState.value,
                 gameController = gameController,
                 isFlipped = isFlipped
             )
             GameControls(
-                gamePlayState = gamePlayState,
+                gamePlayState = gamePlayState.value,
                 onStepBack = { gameController.stepBackward() },
                 onStepForward = { gameController.stepForward() },
-                onVizClicked = { showVizDialog = true },
+                onVizClicked = { showVizDialog.value = true },
                 onFlipBoard = { isFlipped = !isFlipped },
-                onGameClicked = { showGameDialog = true }
+                onGameClicked = { showGameDialog.value = true }
             )
         }
 
-        if (gamePlayState.uiState.showPromotionDialog) {
-            PromotionDialog(gameController.toMove) {
-                gameController.onPromotionPieceSelected(it)
-            }
-        }
-        if (showVizDialog) {
-            PickActiveVisualisationDialog(
-                onDismiss = {
-                    showVizDialog = false
-                },
-                onItemSelected = {
-                    showVizDialog = false
-                    gameController.setVisualisation(it)
-                }
-            )
-        }
-        if (showGameDialog) {
-            val context = LocalContext.current
-
-            GameDialog(
-                onDismiss = {
-                    showGameDialog = false
-                },
-                onNewGame = {
-                    showGameDialog = false
-                    gameController.reset()
-                },
-                onImportGame = {
-                    showGameDialog = false
-                    showImportDialog = true
-                },
-                onExportGame = {
-                    showGameDialog = false
-                    val pgn = PgnConverter.export(gamePlayState.gameState)
-                    val sendIntent: Intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, pgn)
-                        type = "text/plain"
-                    }
-
-                    val shareIntent = Intent.createChooser(sendIntent, null)
-                    startActivity(context, shareIntent, Bundle())
-                }
-            )
-        }
-
-        var pgnToImport by remember { mutableStateOf("") }
-        if (showImportDialog) {
-            ImportDialog(
-                onDismiss = {
-                    showImportDialog = false
-                },
-                onImport = { pgn ->
-                    showImportDialog = false
-                    pgnToImport = pgn
-                }
-            )
-        }
-        LaunchedEffect(pgnToImport) {
-            if (pgnToImport.isNotBlank()) {
-                withContext(Dispatchers.IO) {
-                    async {
-                        gamePlayState = GamePlayState(PgnConverter.import(pgnToImport))
-                    }.await()
-
-                    pgnToImport = ""
-                }
-            }
-        }
-        if (pgnToImport.isNotBlank()) {
-            MaterialTheme {
-                Dialog(
-                    onDismissRequest = {},
-                    properties = DialogProperties(
-                        dismissOnBackPress = false,
-                        dismissOnClickOutside = false
-                    )
-                ) {
-                    CircularProgressIndicator(
-                        color = alice_blue
-                    )
-                }
-            }
-        }
+        GameDialogs(
+            gamePlayState = gamePlayState,
+            gameController = gameController,
+            showVizDialog = showVizDialog,
+            showGameDialog = showGameDialog,
+            showImportDialog = showImportDialog,
+        )
     }
 }
 
