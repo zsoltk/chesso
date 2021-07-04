@@ -1,6 +1,7 @@
 package com.github.zsoltk.rf1.model.dataviz.impl
 
 import androidx.compose.ui.graphics.Color
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.dataviz.Datapoint
 import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
@@ -17,11 +18,14 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object Influence : DatasetVisualisation {
 
-    override val name = "Influence (simplified)"
+    override val name = R.string.viz_influence_simplified
+
     override val minValue: Int = -5
+
     override val maxValue: Int = 5
 
     private val redScale = Color.Red.copy(alpha = 0.5f) to Color.Transparent
+
     private val blueScale = Color.Transparent to Color.Blue.copy(alpha = 0.5f)
 
     override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint? {

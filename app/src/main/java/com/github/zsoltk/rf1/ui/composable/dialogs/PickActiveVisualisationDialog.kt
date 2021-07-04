@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -73,7 +74,7 @@ private fun PickActiveVisualisationDialogContent(
                 }
 
                 Text(
-                    text = item.name,
+                    text = stringResource(item.name),
                     modifier = Modifier
                         .padding(4.dp),
                     color = MaterialTheme.colors.onSurface,

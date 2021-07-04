@@ -6,7 +6,7 @@ import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 
 interface DatasetVisualisation : Parcelable {
 
-    val name: String
+    val name: Int
 
     val minValue: Int
 

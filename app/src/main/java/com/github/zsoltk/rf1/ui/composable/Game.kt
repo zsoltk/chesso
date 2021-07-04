@@ -25,25 +25,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.rf1.R
-import com.github.zsoltk.rf1.model.board.Position.b1
-import com.github.zsoltk.rf1.model.board.Position.b5
-import com.github.zsoltk.rf1.model.board.Position.b8
-import com.github.zsoltk.rf1.model.board.Position.c3
-import com.github.zsoltk.rf1.model.board.Position.c6
-import com.github.zsoltk.rf1.model.board.Position.d5
-import com.github.zsoltk.rf1.model.board.Position.d7
-import com.github.zsoltk.rf1.model.board.Position.d8
-import com.github.zsoltk.rf1.model.board.Position.e2
-import com.github.zsoltk.rf1.model.board.Position.e4
-import com.github.zsoltk.rf1.model.board.Position.e5
-import com.github.zsoltk.rf1.model.board.Position.e7
-import com.github.zsoltk.rf1.model.board.Position.f1
-import com.github.zsoltk.rf1.model.board.Position.g8
+import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
-import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.model.game.preset.CheckMateInOneMovePreset
 import com.github.zsoltk.rf1.model.game.preset.Preset
@@ -126,12 +113,6 @@ fun Game(
 
 @Composable
 private fun Status(gameState: GameState) {
-    val text = when (gameState.resolution) {
-        Resolution.IN_PROGRESS -> "${gameState.toMove} to move"
-        Resolution.CHECKMATE -> "${gameState.toMove.opposite()} wins"
-        else -> gameState.resolution.toString().replace("_", " ")
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -140,7 +121,7 @@ private fun Status(gameState: GameState) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = text,
+            text = stringResource(gameState.resolutionText()),
             modifier = Modifier.padding(start = 16.dp),
             color = MaterialTheme.colors.onPrimary
         )
@@ -168,7 +149,7 @@ private fun GameControls(
             Icon(
                 painter = painterResource(id = R.drawable.ic_keyboard_arrow_left),
                 tint = LocalTextStyle.current.color,
-                contentDescription = "Previous move"
+                contentDescription = stringResource(R.string.action_previous_move)
             )
         }
         Spacer(Modifier.size(4.dp))
@@ -179,7 +160,7 @@ private fun GameControls(
             Icon(
                 painter = painterResource(id = R.drawable.ic_keyboard_arrow_right),
                 tint = LocalTextStyle.current.color,
-                contentDescription = "Next move"
+                contentDescription = stringResource(R.string.action_next_move)
             )
         }
         Spacer(Modifier.size(4.dp))
@@ -189,7 +170,7 @@ private fun GameControls(
             Icon(
                 painter = painterResource(id = R.drawable.ic_layers),
                 tint = LocalTextStyle.current.color,
-                contentDescription = "Visualisation"
+                contentDescription = stringResource(R.string.action_pick_active_visualisation)
             )
         }
         Spacer(Modifier.size(4.dp))
@@ -199,7 +180,7 @@ private fun GameControls(
             Icon(
                 painter = painterResource(id = R.drawable.ic_loop),
                 tint = LocalTextStyle.current.color,
-                contentDescription = "Flip board"
+                contentDescription = stringResource(R.string.action_flip)
             )
         }
         Spacer(Modifier.size(4.dp))
@@ -209,7 +190,7 @@ private fun GameControls(
             Icon(
                 painter = painterResource(id = R.drawable.ic_menu),
                 tint = LocalTextStyle.current.color,
-                contentDescription = "Menu"
+                contentDescription = stringResource(R.string.action_game_menu)
             )
         }
     }

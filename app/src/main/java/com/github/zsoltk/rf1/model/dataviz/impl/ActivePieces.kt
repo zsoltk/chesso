@@ -1,6 +1,7 @@
 package com.github.zsoltk.rf1.model.dataviz.impl
 
 import androidx.compose.ui.graphics.Color
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.dataviz.Datapoint
 import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
@@ -15,7 +16,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object ActivePieces : DatasetVisualisation {
 
-    override val name = "Active pieces"
+    override val name = R.string.viz_active_pieces
 
     override val minValue: Int = 2
 

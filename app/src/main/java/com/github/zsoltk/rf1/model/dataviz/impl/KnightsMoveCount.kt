@@ -1,6 +1,7 @@
 package com.github.zsoltk.rf1.model.dataviz.impl
 
 import androidx.compose.ui.graphics.Color
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.dataviz.Datapoint
@@ -16,7 +17,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 object KnightsMoveCount : DatasetVisualisation {
 
-    override val name = "Knight's max number of moves"
+    override val name = R.string.viz_knight_move_count
 
     override val minValue: Int = 2
 

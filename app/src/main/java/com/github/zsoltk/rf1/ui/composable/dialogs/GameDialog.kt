@@ -1,7 +1,9 @@
 package com.github.zsoltk.rf1.ui.composable.dialogs
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.zsoltk.rf1.R
 
 @Composable
 fun GameDialog(
@@ -13,9 +15,9 @@ fun GameDialog(
     ClickableListItemsDialog(
         onDismiss = onDismiss,
         items = listOf(
-            "New" to onNewGame,
-            "Import" to onImportGame,
-            "Export" to onExportGame,
+            stringResource(R.string.game_new) to onNewGame,
+            stringResource(R.string.game_import) to onImportGame,
+            stringResource(R.string.game_export) to onExportGame,
         )
     )
 }
