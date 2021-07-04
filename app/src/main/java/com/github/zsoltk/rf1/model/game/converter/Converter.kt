@@ -6,7 +6,7 @@ interface Converter {
 
     fun preValidate(text: String): Boolean
 
-    fun import(text: String): GameState
+    fun import(text: String): ImportResult
 
     fun export(gameState: GameState): String
 }

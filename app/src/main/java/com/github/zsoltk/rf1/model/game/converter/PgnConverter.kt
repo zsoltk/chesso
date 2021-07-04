@@ -3,6 +3,7 @@ package com.github.zsoltk.rf1.model.game.converter
 import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.controller.GameController
+import com.github.zsoltk.rf1.model.game.converter.ImportResult.ImportedGame
 import com.github.zsoltk.rf1.model.game.state.GameMetaInfo
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
@@ -17,7 +18,8 @@ object PgnConverter : Converter {
 
     private const val MOVE_CASTLE_QUEENSIDE = "O-O-O"
 
-    private val MOVE_REGEX = "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[KBRQ])?[+#]?".toRegex()
+    private val MOVE_REGEX =
+        "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[KBRQ])?[+#]?".toRegex()
 
     override fun preValidate(text: String): Boolean {
         val moves = extractData(text).moves
@@ -28,7 +30,7 @@ object PgnConverter : Converter {
     private fun validateMoveText(s: String): Boolean =
         (s == MOVE_CASTLE_KINGSIDE || s == MOVE_CASTLE_QUEENSIDE || MOVE_REGEX.matchEntire(s) != null)
 
-    override fun import(text: String): GameState {
+    override fun import(text: String): ImportResult {
         val pgnImportDataHolder = extractData(text)
         var gamePlayState = GamePlayState(
             gameState = GameState(
@@ -39,14 +41,19 @@ object PgnConverter : Converter {
             { gamePlayState },
             { gamePlayState = it }
         )
-        pgnImportDataHolder.moves.forEach { moveText ->
-            createMove(moveText, gamePlayState.gameState).let { move ->
-                gameController.applyMove(move)
-            }
 
+        try {
+            pgnImportDataHolder.moves.forEach { moveText ->
+                createMove(moveText, gamePlayState.gameState).let { move ->
+                    gameController.applyMove(move)
+                }
+
+            }
+        } catch (t: Throwable) {
+            return ImportResult.ValidationError(t.message ?: "Import error")
         }
 
-        return gamePlayState.gameState
+        return ImportedGame(gamePlayState.gameState)
     }
 
     private fun extractData(text: String): PgnImportDataHolder {
@@ -126,7 +133,7 @@ object PgnConverter : Converter {
             GameMetaInfo.KEY_BLACK,
             GameMetaInfo.KEY_RESULT,
             GameMetaInfo.KEY_TERMINATION,
-        ) .forEach { tag ->
+        ).forEach { tag ->
             gameState.gameMetaInfo.tags[tag]?.let { valueForTag ->
                 sb.append("[$tag \"$valueForTag\"]\n")
             }

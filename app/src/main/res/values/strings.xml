@@ -25,4 +25,6 @@
     <string name="resolution_black_wins">BLACK wins</string>
     <string name="resolution_draw_by_repetition">DRAW BY REPETITION</string>
     <string name="resolution_insufficient_material">INSUFFICIENT MATERIAL</string>
+
+    <string name="import_validation_error_generic">Error while importing game</string>
 </resources>
