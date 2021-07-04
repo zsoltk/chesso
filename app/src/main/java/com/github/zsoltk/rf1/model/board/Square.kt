@@ -17,7 +17,7 @@ data class Square(
         position.rank
 
     val isDark: Boolean =
-        position.isDark()
+        position.isDarkSquare()
 
     val isEmpty: Boolean
         get() = piece == null

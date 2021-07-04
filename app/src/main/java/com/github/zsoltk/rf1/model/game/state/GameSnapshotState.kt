@@ -4,8 +4,8 @@ import android.os.Parcelable
 import com.github.zsoltk.rf1.model.board.Board
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.Resolution
-import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.AppliedMove
+import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.Capture
 import com.github.zsoltk.rf1.model.move.MoveEffect
 import com.github.zsoltk.rf1.model.move.targetPositions
@@ -86,6 +86,7 @@ data class GameSnapshotState(
         val isCheckNoMate = validMoves.isNotEmpty() && isCheck
         val isCheckMate = validMoves.isEmpty() && isCheck
         val isStaleMate = validMoves.isEmpty() && !isCheck
+        val insufficientMaterial = tempNewGameState.board.pieces.hasInsufficientMaterial()
         val threefoldRepetition = (boardStatesSoFar + tempNewGameState.boardState).hasThreefoldRepetition()
 
         val appliedMove = AppliedMove(
@@ -94,6 +95,7 @@ data class GameSnapshotState(
                 isCheckNoMate -> MoveEffect.CHECK
                 isCheckMate -> MoveEffect.CHECKMATE
                 isStaleMate -> MoveEffect.DRAW
+                insufficientMaterial -> MoveEffect.DRAW
                 threefoldRepetition -> MoveEffect.DRAW
                 else -> null
             },
@@ -110,6 +112,7 @@ data class GameSnapshotState(
                     isCheckMate -> Resolution.CHECKMATE
                     isStaleMate -> Resolution.STALEMATE
                     threefoldRepetition -> Resolution.DRAW_BY_REPETITION
+                    insufficientMaterial -> Resolution.INSUFFICIENT_MATERIAL
                     else -> Resolution.IN_PROGRESS
                 },
                 move = null,
@@ -120,7 +123,7 @@ data class GameSnapshotState(
         )
     }
 
-    fun derivePseudoGameState(boardMove: BoardMove): GameSnapshotState = copy(
+    private fun derivePseudoGameState(boardMove: BoardMove): GameSnapshotState = copy(
         boardState = boardState.deriveBoardState(boardMove),
         move = null,
         lastMove = AppliedMove(
