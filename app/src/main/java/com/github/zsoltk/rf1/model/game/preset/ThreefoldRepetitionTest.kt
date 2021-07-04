@@ -14,7 +14,7 @@ import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.composable.Preset
 
-object ThreefoldRepetitionTest : Preset {
+object ThreefoldRepetitionPreset : Preset {
 
     override fun apply(gameController: GameController) {
         gameController.apply {
@@ -37,9 +37,9 @@ object ThreefoldRepetitionTest : Preset {
 
 @Preview(showBackground = true)
 @Composable
-fun ThreefoldRepetitionTestPreview() {
+fun ThreefoldRepetitionPresetPreview() {
     Rf1Theme {
-        Preset(ThreefoldRepetitionTest)
+        Preset(ThreefoldRepetitionPreset)
     }
 }
 

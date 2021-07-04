@@ -15,7 +15,7 @@ import com.github.zsoltk.rf1.model.piece.Set.WHITE
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.composable.Preset
 
-object PromotionTest : Preset {
+object PromotionPreset : Preset {
 
     override fun apply(gameController: GameController) {
         gameController.apply {
@@ -38,9 +38,9 @@ object PromotionTest : Preset {
 
 @Preview(showBackground = true)
 @Composable
-fun PromotionTestPreview() {
+fun PromotionPresetPreview() {
     Rf1Theme {
-        Preset(PromotionTest)
+        Preset(PromotionPreset)
     }
 }
 

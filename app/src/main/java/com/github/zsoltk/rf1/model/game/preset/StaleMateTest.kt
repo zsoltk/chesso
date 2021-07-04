@@ -15,7 +15,7 @@ import com.github.zsoltk.rf1.model.piece.Set.WHITE
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.composable.Preset
 
-object StaleMateTest : Preset {
+object StaleMatePreset : Preset {
 
     override fun apply(gameController: GameController) {
         gameController.apply {
@@ -38,9 +38,9 @@ object StaleMateTest : Preset {
 
 @Preview(showBackground = true)
 @Composable
-fun StaleMateTestPreview() {
+fun StaleMatePresetPreview() {
     Rf1Theme {
-        Preset(StaleMateTest)
+        Preset(StaleMatePreset)
     }
 }
 

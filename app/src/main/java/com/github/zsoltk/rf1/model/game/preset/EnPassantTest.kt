@@ -7,7 +7,7 @@ import com.github.zsoltk.rf1.model.game.controller.GameController
 import com.github.zsoltk.rf1.ui.Rf1Theme
 import com.github.zsoltk.rf1.ui.composable.Preset
 
-object EnPassantTest : Preset {
+object EnPassantPreset : Preset {
 
     override fun apply(gameController: GameController) {
         gameController.apply {
@@ -22,9 +22,9 @@ object EnPassantTest : Preset {
 
 @Preview(showBackground = true)
 @Composable
-fun EnPassantTestPreview() {
+fun EnPassantPresetPreview() {
     Rf1Theme {
-        Preset(EnPassantTest)
+        Preset(EnPassantPreset)
     }
 }
 
