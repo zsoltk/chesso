@@ -45,16 +45,18 @@ import com.github.zsoltk.rf1.model.board.Position.g8
 import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.controller.GameController
+import com.github.zsoltk.rf1.model.game.preset.CheckMateInOneMovePreset
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
+import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.ui.Rf1Theme
 
 @Composable
 fun Game(
     state: GamePlayState = GamePlayState(),
     importGameText: String? = null,
-    preset : Preset ? = null,
+    preset: Preset? = CheckMateInOneMovePreset,
 ) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
     val gamePlayState = rememberSaveable { mutableStateOf(state) }
@@ -79,11 +81,22 @@ fun Game(
         ) {
             Status(gamePlayState.value.gameState)
             Moves(gamePlayState.value.gameState, onClickMove = { gameController.goToMove(it) })
-            CapturedPieces(gamePlayState.value.gameState)
+            CapturedPieces(
+                gameState = gamePlayState.value.gameState,
+                capturedBy = Set.BLACK,
+                arrangement = Arrangement.Start,
+                scoreAlignment = Alignment.End,
+            )
             Board(
                 gamePlayState = gamePlayState.value,
                 gameController = gameController,
                 isFlipped = isFlipped
+            )
+            CapturedPieces(
+                gameState = gamePlayState.value.gameState,
+                capturedBy = Set.WHITE,
+                arrangement = Arrangement.End,
+                scoreAlignment = Alignment.Start
             )
             GameControls(
                 gamePlayState = gamePlayState.value,
@@ -144,9 +157,7 @@ private fun GameControls(
     onGameClicked: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .padding(top = 24.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
 

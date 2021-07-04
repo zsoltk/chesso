@@ -3,6 +3,7 @@ package com.github.zsoltk.rf1.ui.composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,56 +29,88 @@ import com.github.zsoltk.rf1.model.piece.Set
 import com.github.zsoltk.rf1.model.piece.Set.BLACK
 import com.github.zsoltk.rf1.model.piece.Set.WHITE
 import com.github.zsoltk.rf1.ui.Rf1Theme
+import com.github.zsoltk.rf1.ui.renderer.board.decoration.Piece
 import kotlin.math.absoluteValue
 
 @Composable
-fun CapturedPieces(gameState: GameState) {
+fun CapturedPieces(
+    gameState: GameState,
+    capturedBy: Set,
+    arrangement: Arrangement.Horizontal,
+    scoreAlignment: Alignment.Horizontal,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(36.dp)
+            .padding(top = 2.dp, bottom = 2.dp)
             .background(MaterialTheme.colors.background)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = arrangement,
             verticalAlignment = Alignment.CenterVertically
         ) {
             val capturedPieces = gameState.currentSnapshotState.capturedPieces
+                .filter { it.set == capturedBy.opposite() }
                 .sortedWith { t1, t2 ->
                     if (t1.value == t2.value) t1.symbol.hashCode() - t2.symbol.hashCode()
                     else t1.value - t2.value
                 }
 
             val score = gameState.currentSnapshotState.score
-            CapturedPieceList(capturedPieces, capturedBy = WHITE, score)
-            CapturedPieceList(capturedPieces, capturedBy = BLACK, score)
+            val displayScore = (capturedBy == BLACK && score < 0) || (capturedBy == WHITE && score > 0)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (scoreAlignment == Alignment.Start && displayScore) {
+                    Score(score = score)
+                }
+                CapturedPieceListText(
+                    capturedPieces = capturedPieces,
+                )
+                if (scoreAlignment == Alignment.End && displayScore) {
+                    Score(score = score)
+                }
+            }
         }
     }
 }
 
+@Deprecated("Use CapturedPieceListIcons instead")
 @Composable
-private fun CapturedPieceList(capturedPieces: List<Piece>, capturedBy: Set, score: Int) {
+private fun CapturedPieceListText(
+    capturedPieces: List<Piece>
+) {
     val stringBuilder = StringBuilder()
-    capturedPieces
-        .filter { it.set == capturedBy.opposite() }
-        .forEach { stringBuilder.append(it.symbol) }
+    capturedPieces.forEach { piece ->
+        stringBuilder.append(piece.symbol)
+    }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (capturedBy == BLACK && score < 0) {
-            Score(score)
-        }
-        Text(
-            text = stringBuilder.toString(),
-            color = MaterialTheme.colors.onBackground,
-            fontSize = 20.sp
-        )
-        if (capturedBy == WHITE && score > 0) {
-            Score(score)
+    Text(
+        text = stringBuilder.toString(),
+        color = MaterialTheme.colors.onBackground,
+        fontSize = 20.sp
+    )
+}
+
+/**
+ * TODO pack horizontally
+ */
+@Composable
+private fun CapturedPieceListIcons(
+    capturedPieces: List<Piece>
+) {
+    BoxWithConstraints {
+        Row {
+            capturedPieces.forEach { piece ->
+                Piece(
+                    piece = piece,
+                    squareSize = this@BoxWithConstraints.maxHeight,
+                )
+            }
         }
     }
 }
@@ -89,7 +122,8 @@ private fun Score(score: Int) {
         color = MaterialTheme.colors.onBackground,
         fontSize = 12.sp,
         modifier = Modifier.padding(
-            all = 8.dp
+            start = 8.dp,
+            end = 8.dp
         ),
     )
 }
@@ -121,7 +155,10 @@ fun TakenPiecesPreview() {
                         )
                     )
                 )
-            )
+            ),
+            capturedBy = BLACK,
+            Arrangement.End,
+            Alignment.Start
         )
     }
 }

@@ -21,7 +21,7 @@ import com.github.zsoltk.rf1.model.piece.Rook
 fun Piece(
     piece: Piece,
     squareSize: Dp,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     key(piece) {
         Box(
@@ -39,6 +39,7 @@ fun Piece(
                     text = piece.symbol,
                     color = Color.Black,
                     fontSize = when (piece) {
+                        // TODO should accommodate non-board rendering
                         is Pawn -> 36.sp
                         is Bishop -> 41.sp
                         is Rook -> 41.sp
