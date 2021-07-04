@@ -2,6 +2,7 @@ package com.github.zsoltk.rf1.model.game.controller
 
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
+import com.github.zsoltk.rf1.model.game.state.GameMetaInfo
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameSnapshotState
 import com.github.zsoltk.rf1.model.game.state.GameState
@@ -16,7 +17,7 @@ object Reducer {
         object StepForward : Action()
         object StepBackward : Action()
         data class GoToMove(val moveIndex: Int) : Action()
-        data class ResetTo(val gameSnapshotState: GameSnapshotState) : Action()
+        data class ResetTo(val gameSnapshotState: GameSnapshotState, val gameMetaInfo: GameMetaInfo) : Action()
         data class ToggleSelectPosition(val position: Position) : Action()
         data class ApplyMove(val boardMove: BoardMove) : Action()
         data class RequestPromotion(val at: Position) : Action()
@@ -35,6 +36,7 @@ object Reducer {
             is Action.ResetTo -> {
                 GamePlayState(
                     gameState = GameState(
+                        gameMetaInfo = action.gameMetaInfo,
                         states = listOf(action.gameSnapshotState)
                     ),
                     visualisation = gamePlayState.visualisation
@@ -71,9 +73,12 @@ object Reducer {
                     gameState = gameState.copy(
                         states = states,
                         currentIndex = states.lastIndex,
-                        lastActiveState = currentSnapshotState
-                    ),
-                    visualisation = gamePlayState.visualisation
+                        lastActiveState = currentSnapshotState,
+                        gameMetaInfo = gameState.gameMetaInfo.withResolution(
+                            resolution = gameState.resolution,
+                            lastToMove = gameState.states.last().toMove
+                        )
+                    )
                 )
             }
             is Action.RequestPromotion -> {

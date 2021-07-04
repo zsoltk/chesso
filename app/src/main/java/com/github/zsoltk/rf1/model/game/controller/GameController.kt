@@ -9,6 +9,7 @@ import com.github.zsoltk.rf1.model.dataviz.DatasetVisualisation
 import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.controller.Reducer.Action
 import com.github.zsoltk.rf1.model.game.preset.Preset
+import com.github.zsoltk.rf1.model.game.state.GameMetaInfo
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.PromotionState
 import com.github.zsoltk.rf1.model.move.BoardMove
@@ -39,9 +40,12 @@ class GameController(
     val toMove: Set
         get() = boardState.toMove
 
-    fun reset(gameSnapshotState: GameSnapshotState = GameSnapshotState()) {
+    fun reset(
+        gameSnapshotState: GameSnapshotState = GameSnapshotState(),
+        gameMetaInfo: GameMetaInfo = GameMetaInfo.createWithDefaults()
+    ) {
         setGamePlayState?.invoke(
-            Reducer(gamePlayState, Action.ResetTo(gameSnapshotState))
+            Reducer(gamePlayState, Action.ResetTo(gameSnapshotState, gameMetaInfo))
         )
     }
 

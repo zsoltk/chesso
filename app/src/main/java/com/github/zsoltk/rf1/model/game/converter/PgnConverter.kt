@@ -3,31 +3,32 @@ package com.github.zsoltk.rf1.model.game.converter
 import android.annotation.SuppressLint
 import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Position
-import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.controller.GameController
+import com.github.zsoltk.rf1.model.game.state.GameMetaInfo
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
 import com.github.zsoltk.rf1.model.move.KingSideCastle
 import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.move.QueenSideCastle
-import com.github.zsoltk.rf1.model.piece.Set.BLACK
-import java.text.SimpleDateFormat
-import java.util.Date
 
 object PgnConverter : Converter {
 
     override fun preValidate(text: String): Boolean =
-        moves(text).isNotEmpty()
+        extractData(text).moves.isNotEmpty()
 
     override fun import(text: String): GameState {
-        val moves = moves(text)
-        var gamePlayState = GamePlayState()
+        val pgnImportDataHolder = extractData(text)
+        var gamePlayState = GamePlayState(
+            gameState = GameState(
+                gameMetaInfo = pgnImportDataHolder.metaInfo
+            )
+        )
         val gameController = GameController(
             { gamePlayState },
             { gamePlayState = it }
         )
-        moves.forEach { moveText ->
+        pgnImportDataHolder.moves.forEach { moveText ->
             parseMove(moveText, gamePlayState.gameState).let { move ->
                 gameController.applyMove(move)
             }
@@ -37,7 +38,7 @@ object PgnConverter : Converter {
         return gamePlayState.gameState
     }
 
-    private fun moves(text: String): List<String> {
+    private fun extractData(text: String): PgnImportDataHolder {
         val target = text
             .replace("[\n\r]".toRegex(), "")
             .replace("(1-0|0-1|1/2-1/2)\$".toRegex(), "")
@@ -51,11 +52,15 @@ object PgnConverter : Converter {
         val moveChars = """[\w-=+#]"""
         val movesPattern = """\d+\.\s($moveChars+)(\s($moveChars+))?""".toRegex()
         val movesResults = movesPattern.findAll(target)
-
-        return movesResults
+        val moves = movesResults
             .flatMap { listOf(it.groupValues[1].trim(), it.groupValues[2].trim()) }
             .toList()
             .filter { it.isNotBlank() }
+
+        return PgnImportDataHolder(
+            metaInfo = GameMetaInfo(tags = tags),
+            moves = moves
+        )
     }
 
     private fun parseMove(s: String, gameState: GameState): BoardMove {
@@ -102,35 +107,19 @@ object PgnConverter : Converter {
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     override fun export(gameState: GameState): String {
         val sb = StringBuilder()
-        val sdf = SimpleDateFormat("yyyy-M-dd")
-        val currentDate = sdf.format(Date())
-        val player1 = "Player 1"
-        val player2 = "Player 2"
-
-        sb.append("[Event \"Chesso game\"]\n")
-        sb.append("[Site \"Chesso app\"]\n")
-        sb.append("[Date \"$currentDate\"]\n")
-        sb.append("[White \"$player1\"]\n")
-        sb.append("[Black \"$player2\"]\n")
-        when (gameState.resolution) {
-            Resolution.IN_PROGRESS -> {
-            }
-            Resolution.CHECKMATE -> {
-                val result = if (gameState.states.last().toMove == BLACK) "1-0" else "0-1"
-                val winner = if (gameState.states.last().toMove == BLACK) player1 else player2
-                sb.append("[Result \"$result\"]\n")
-                sb.append("[Termination \"$winner won by checkmate\"]\n")
-            }
-            Resolution.STALEMATE -> {
-                sb.append("[Result \"½ - ½\"]\n")
-                sb.append("[Termination \"Stalemate\"]\n")
-            }
-            Resolution.DRAW_BY_REPETITION -> {
-                sb.append("[Result \"½ - ½\"]\n")
-                sb.append("[Termination \"Draw by repetition\"]\n")
+        listOf(
+            GameMetaInfo.KEY_EVENT,
+            GameMetaInfo.KEY_SITE,
+            GameMetaInfo.KEY_DATE,
+            GameMetaInfo.KEY_WHITE,
+            GameMetaInfo.KEY_BLACK,
+            GameMetaInfo.KEY_RESULT,
+            GameMetaInfo.KEY_TERMINATION,
+        ) .forEach { tag ->
+            gameState.gameMetaInfo.tags[tag]?.let { valueForTag ->
+                sb.append("[$tag \"$valueForTag\"]\n")
             }
         }
 

@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class GamePlayState(
-    val gameState: GameState = GameState(),
+    val gameState: GameState = GameState(GameMetaInfo.createWithDefaults()),
     val uiState: UiState = UiState(gameState.currentSnapshotState),
     val promotionState: PromotionState = PromotionState.None,
     val visualisation: DatasetVisualisation = None
