@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +24,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.Position.b1
 import com.github.zsoltk.rf1.model.board.Position.b5
 import com.github.zsoltk.rf1.model.board.Position.b8
@@ -140,41 +144,61 @@ private fun GameControls(
 ) {
     Row(
         modifier = Modifier
-            .padding(24.dp)
+            .padding(top = 24.dp)
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.Center
     ) {
 
         Button(
             onClick = onStepBack,
             enabled = gamePlayState.gameState.hasPrevIndex
         ) {
-            Text("<")
+            Icon(
+                painter = painterResource(id = R.drawable.ic_keyboard_arrow_left),
+                tint = LocalTextStyle.current.color,
+                contentDescription = "Previous move"
+            )
         }
         Spacer(Modifier.size(4.dp))
         Button(
             onClick = onStepForward,
             enabled = gamePlayState.gameState.hasNextIndex
         ) {
-            Text(">")
+            Icon(
+                painter = painterResource(id = R.drawable.ic_keyboard_arrow_right),
+                tint = LocalTextStyle.current.color,
+                contentDescription = "Next move"
+            )
         }
         Spacer(Modifier.size(4.dp))
         Button(
             onClick = onVizClicked,
         ) {
-            Text("Viz")
+            Icon(
+                painter = painterResource(id = R.drawable.ic_layers),
+                tint = LocalTextStyle.current.color,
+                contentDescription = "Visualisation"
+            )
         }
         Spacer(Modifier.size(4.dp))
         Button(
             onClick = onFlipBoard,
         ) {
-            Text("Flip")
+            Icon(
+                painter = painterResource(id = R.drawable.ic_loop),
+                tint = LocalTextStyle.current.color,
+                contentDescription = "Flip board"
+            )
         }
         Spacer(Modifier.size(4.dp))
         Button(
             onClick = onGameClicked,
         ) {
-            Text("Game")
+            Icon(
+                painter = painterResource(id = R.drawable.ic_menu),
+                tint = LocalTextStyle.current.color,
+                contentDescription = "Menu"
+            )
         }
     }
 }
