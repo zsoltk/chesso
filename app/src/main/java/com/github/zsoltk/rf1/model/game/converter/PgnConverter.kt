@@ -1,6 +1,5 @@
 package com.github.zsoltk.rf1.model.game.converter
 
-import android.annotation.SuppressLint
 import com.github.zsoltk.rf1.model.board.File
 import com.github.zsoltk.rf1.model.board.Position
 import com.github.zsoltk.rf1.model.game.controller.GameController
@@ -14,8 +13,20 @@ import com.github.zsoltk.rf1.model.move.QueenSideCastle
 
 object PgnConverter : Converter {
 
-    override fun preValidate(text: String): Boolean =
-        extractData(text).moves.isNotEmpty()
+    private const val MOVE_CASTLE_KINGSIDE = "O-O"
+
+    private const val MOVE_CASTLE_QUEENSIDE = "O-O-O"
+
+    private val MOVE_REGEX = "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[KBRQ])?[+#]?".toRegex()
+
+    override fun preValidate(text: String): Boolean {
+        val moves = extractData(text).moves
+
+        return moves.isNotEmpty() && moves.all { validateMoveText(it) }
+    }
+
+    private fun validateMoveText(s: String): Boolean =
+        (s == MOVE_CASTLE_KINGSIDE || s == MOVE_CASTLE_QUEENSIDE || MOVE_REGEX.matchEntire(s) != null)
 
     override fun import(text: String): GameState {
         val pgnImportDataHolder = extractData(text)
@@ -29,7 +40,7 @@ object PgnConverter : Converter {
             { gamePlayState = it }
         )
         pgnImportDataHolder.moves.forEach { moveText ->
-            parseMove(moveText, gamePlayState.gameState).let { move ->
+            createMove(moveText, gamePlayState.gameState).let { move ->
                 gameController.applyMove(move)
             }
 
@@ -63,25 +74,23 @@ object PgnConverter : Converter {
         )
     }
 
-    private fun parseMove(s: String, gameState: GameState): BoardMove {
+    private fun createMove(s: String, gameState: GameState): BoardMove {
         val state = gameState.currentSnapshotState
 
-        if (s == "O-O") {
+        if (s == MOVE_CASTLE_KINGSIDE) {
             return state.allLegalMoves
                 .find {
                     it.move is KingSideCastle && it.move.piece.set == gameState.toMove
                 } ?: error("Invalid state. Can't castle kingside for ${gameState.toMove}")
         }
-        if (s == "O-O-O") {
+        if (s == MOVE_CASTLE_QUEENSIDE) {
             return state.allLegalMoves
                 .find {
                     it.move is QueenSideCastle && it.move.piece.set == gameState.toMove
                 } ?: error("Invalid state. Can't castle queenside for ${gameState.toMove}")
         }
 
-        val pattern = "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[KBRQ])?[+#]?".toRegex()
-        val result = pattern.find(s) ?: error("Can't parse move: $s")
-
+        val result = MOVE_REGEX.find(s) ?: error("Can't parse move: $s")
         val piece = result.groupValues[1]
         val fromFileChar = result.groupValues[2]
         val fromFile = if (fromFileChar == "") null else File.valueOf(fromFileChar)
