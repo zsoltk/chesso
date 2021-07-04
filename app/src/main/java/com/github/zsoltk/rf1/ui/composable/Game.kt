@@ -115,6 +115,7 @@ fun Game(
 private fun Status(gameState: GameState) {
     val text = when (gameState.resolution) {
         Resolution.IN_PROGRESS -> "${gameState.toMove} to move"
+        Resolution.CHECKMATE -> "${gameState.toMove.opposite()} wins"
         else -> gameState.resolution.toString().replace("_", " ")
     }
 
