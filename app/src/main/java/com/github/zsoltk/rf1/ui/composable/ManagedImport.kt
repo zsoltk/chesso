@@ -34,8 +34,8 @@ fun ManagedImport(
                             Log.e("Chesso", result.msg)
                             Toast.makeText(
                                 context,
-                                genericError,
-                                Toast.LENGTH_SHORT
+                                genericError.replace("%s", result.msg),
+                                Toast.LENGTH_LONG
                             ).show()
                         }
                     }
