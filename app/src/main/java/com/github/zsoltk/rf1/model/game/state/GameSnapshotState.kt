@@ -90,7 +90,7 @@ data class GameSnapshotState(
         val threefoldRepetition = (boardStatesSoFar + tempNewGameState.boardState).hasThreefoldRepetition()
 
         val appliedMove = AppliedMove(
-            boardMove = boardMove,
+            boardMove = boardMove.applyAmbiguity(this),
             effect = when {
                 isCheckNoMate -> MoveEffect.CHECK
                 isCheckMate -> MoveEffect.CHECKMATE

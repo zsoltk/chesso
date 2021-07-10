@@ -32,7 +32,6 @@ import com.github.zsoltk.rf1.R
 import com.github.zsoltk.rf1.model.board.Position.*
 import com.github.zsoltk.rf1.model.dataviz.ActiveDatasetVisualisation
 import com.github.zsoltk.rf1.model.game.controller.GameController
-import com.github.zsoltk.rf1.model.game.preset.CheckMateInOneMovePreset
 import com.github.zsoltk.rf1.model.game.preset.Preset
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
@@ -43,7 +42,7 @@ import com.github.zsoltk.rf1.ui.Rf1Theme
 fun Game(
     state: GamePlayState = GamePlayState(),
     importGameText: String? = null,
-    preset: Preset? = CheckMateInOneMovePreset,
+    preset: Preset? = null,
 ) {
     var isFlipped by rememberSaveable { mutableStateOf(false) }
     val gamePlayState = rememberSaveable { mutableStateOf(state) }
