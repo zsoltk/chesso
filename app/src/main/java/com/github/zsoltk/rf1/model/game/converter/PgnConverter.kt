@@ -8,9 +8,12 @@ import com.github.zsoltk.rf1.model.game.state.GameMetaInfo
 import com.github.zsoltk.rf1.model.game.state.GamePlayState
 import com.github.zsoltk.rf1.model.game.state.GameState
 import com.github.zsoltk.rf1.model.move.BoardMove
+import com.github.zsoltk.rf1.model.move.BoardMove.Ambiguity.AMBIGUOUS_FILE
+import com.github.zsoltk.rf1.model.move.BoardMove.Ambiguity.AMBIGUOUS_RANK
 import com.github.zsoltk.rf1.model.move.KingSideCastle
 import com.github.zsoltk.rf1.model.move.Promotion
 import com.github.zsoltk.rf1.model.move.QueenSideCastle
+import java.util.EnumSet
 
 object PgnConverter : Converter {
 
@@ -43,8 +46,8 @@ object PgnConverter : Converter {
         )
 
         try {
-            pgnImportDataHolder.moves.forEach { moveText ->
-                createMove(moveText, gamePlayState.gameState).let { move ->
+            pgnImportDataHolder.moves.forEachIndexed { idx, moveText ->
+                createMove(idx / 2 + 1, moveText, gamePlayState.gameState).let { move ->
                     gameController.applyMove(move)
                 }
 
@@ -58,7 +61,8 @@ object PgnConverter : Converter {
 
     private fun extractData(text: String): PgnImportDataHolder {
         val target = text
-            .replace("[\n\r]".toRegex(), "")
+            .replace("\\s+".toRegex(), " ")
+            .replace("(1-0|0-1|1/2-1/2)\$".toRegex(), "")
             .replace("(1-0|0-1|1/2-1/2)\$".toRegex(), "")
             .trim()
 
@@ -81,23 +85,25 @@ object PgnConverter : Converter {
         )
     }
 
-    private fun createMove(s: String, gameState: GameState): BoardMove {
+    private fun createMove(move: Int, moveText: String, gameState: GameState): BoardMove {
         val state = gameState.currentSnapshotState
 
-        if (s == MOVE_CASTLE_KINGSIDE) {
+        if (moveText == MOVE_CASTLE_KINGSIDE) {
             return state.allLegalMoves
                 .find {
                     it.move is KingSideCastle && it.move.piece.set == gameState.toMove
-                } ?: error("Invalid state. Can't castle kingside for ${gameState.toMove}")
+                }
+                ?: error("Invalid state. Can't castle kingside for ${gameState.toMove} at move $move")
         }
-        if (s == MOVE_CASTLE_QUEENSIDE) {
+        if (moveText == MOVE_CASTLE_QUEENSIDE) {
             return state.allLegalMoves
                 .find {
                     it.move is QueenSideCastle && it.move.piece.set == gameState.toMove
-                } ?: error("Invalid state. Can't castle queenside for ${gameState.toMove}")
+                }
+                ?: error("Invalid state. Can't castle queenside for ${gameState.toMove} at move $move")
         }
 
-        val result = MOVE_REGEX.find(s) ?: error("Can't parse move: $s")
+        val result = MOVE_REGEX.find(moveText) ?: error("Can't parse move: $moveText at move $move")
         val piece = result.groupValues[1]
         val fromFileChar = result.groupValues[2]
         val fromFile = if (fromFileChar == "") null else File.valueOf(fromFileChar)
@@ -117,9 +123,11 @@ object PgnConverter : Converter {
                 (promotion == "" || (it.consequence is Promotion && it.consequence.piece.textSymbol == promotion[1].toString()))
         }
         when (filtered.size) {
-            0 -> error("Invalid state when parsing $s. No legal moves exist to $toPosition for ${gameState.toMove}")
+            0 -> error("Invalid state when parsing $moveText at move $move. " +
+                "No legal moves exist to $toPosition for ${gameState.toMove}")
             1 -> return filtered[0]
-            else -> error("Ambiguity when parsing $s. Too many moves exist to $toPosition for ${gameState.toMove}: $filtered")
+            else -> error("Ambiguity when parsing $moveText at move $move. " +
+                "Too many moves exist to $toPosition for ${gameState.toMove}: ${filtered.map { it.copy(ambiguity = EnumSet.of(AMBIGUOUS_FILE, AMBIGUOUS_RANK)) }}")
         }
     }
 
