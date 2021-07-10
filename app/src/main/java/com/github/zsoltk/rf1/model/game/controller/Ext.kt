@@ -4,12 +4,12 @@ import com.github.zsoltk.rf1.model.game.Resolution
 import com.github.zsoltk.rf1.model.game.state.GameMetaInfo
 import com.github.zsoltk.rf1.model.piece.Set
 
-fun GameMetaInfo.withResolution(resolution: Resolution, lastToMove: Set): GameMetaInfo =
+fun GameMetaInfo.withResolution(resolution: Resolution, lastMoveBy: Set): GameMetaInfo =
     when (resolution) {
         Resolution.IN_PROGRESS -> this
         Resolution.CHECKMATE -> {
-            val result = if (lastToMove == Set.BLACK) "1-0" else "0-1"
-            val winner = if (lastToMove == Set.BLACK) white else black
+            val result = if (lastMoveBy == Set.WHITE) "1-0" else "0-1"
+            val winner = if (lastMoveBy == Set.WHITE) white else black
             copy(
                 tags = tags
                     .plus(GameMetaInfo.KEY_RESULT to result)

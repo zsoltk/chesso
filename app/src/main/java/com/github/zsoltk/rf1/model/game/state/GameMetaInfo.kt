@@ -48,5 +48,17 @@ data class GameMetaInfo(
                     KEY_BLACK to "Player 2",
                 )
             )
+
+        @SuppressLint("SimpleDateFormat")
+        fun createforUnknown(): GameMetaInfo =
+            GameMetaInfo(
+                tags = mapOf(
+                    KEY_EVENT to "?",
+                    KEY_SITE to "?",
+                    KEY_DATE to "?",
+                    KEY_WHITE to "Player 1",
+                    KEY_BLACK to "Player 2",
+                )
+            )
     }
 }

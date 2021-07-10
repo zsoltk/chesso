@@ -75,8 +75,8 @@ object Reducer {
                         currentIndex = states.lastIndex,
                         lastActiveState = currentSnapshotState,
                         gameMetaInfo = gameState.gameMetaInfo.withResolution(
-                            resolution = gameState.resolution,
-                            lastToMove = gameState.states.last().toMove
+                            resolution = transition.toSnapshotState.resolution,
+                            lastMoveBy = transition.fromSnapshotState.toMove
                         )
                     )
                 )
