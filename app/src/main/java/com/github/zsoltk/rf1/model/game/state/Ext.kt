@@ -39,5 +39,5 @@ private fun Map<Position, Piece>.hasKnight(): Boolean =
 private fun Map<Position, Piece>.hasBishopsOnSameColor(): Boolean {
     val bishops = filter { it.value is Bishop }
 
-    return bishops.all { it.key.isLightSquare() } || bishops.all { it.key.isDarkSquare() }
+    return bishops.size > 1 && (bishops.all { it.key.isLightSquare() } || bishops.all { it.key.isDarkSquare() })
 }
