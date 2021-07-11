@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Rf1</string>
+    <string name="app_name">Chesso</string>
 
     <string name="viz_none">None</string>
     <string name="viz_active_pieces">Active pieces</string>
