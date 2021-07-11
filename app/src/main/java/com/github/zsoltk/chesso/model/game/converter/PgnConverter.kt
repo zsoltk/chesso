@@ -104,7 +104,7 @@ object PgnConverter : Converter {
         }
 
         val result = MOVE_REGEX.find(moveText) ?: error("Can't parse move: $moveText at move $move")
-        val piece = result.groupValues[1]
+        val pieceTextSymbol = result.groupValues[1]
         val fromFileChar = result.groupValues[2]
         val fromFile = if (fromFileChar == "") null else File.valueOf(fromFileChar)
         val fromRank = result.groupValues[3]
@@ -114,14 +114,17 @@ object PgnConverter : Converter {
         val toPosition = Position.from(toFile.ordinal + 1, toRank)
         val promotion = result.groupValues[6]
 
-        val filtered = state.allLegalMoves.filter {
-            it.piece.set == state.toMove &&
-                it.piece.textSymbol == piece &&
+        val filtered = state.board
+            .pieces(gameState.toMove)
+            .filter { (_, piece) -> piece.textSymbol == pieceTextSymbol }
+            .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
+            .filter {
                 it.to == toPosition &&
-                (fromFile == null || fromFile.ordinal + 1 == it.from.file) &&
-                (fromRank == "" || fromRank == it.from.rank.toString()) &&
-                (promotion == "" || (it.consequence is Promotion && it.consequence.piece.textSymbol == promotion[1].toString()))
-        }
+                    (fromFile == null || fromFile.ordinal + 1 == it.from.file) &&
+                    (fromRank == "" || fromRank == it.from.rank.toString()) &&
+                    (promotion == "" || (it.consequence is Promotion && it.consequence.piece.textSymbol == promotion[1].toString()))
+            }
+
         when (filtered.size) {
             0 -> error("Invalid state when parsing $moveText at move $move. " +
                 "No legal moves exist to $toPosition for ${gameState.toMove}")
