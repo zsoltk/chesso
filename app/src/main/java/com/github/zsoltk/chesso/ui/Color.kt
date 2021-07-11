@@ -17,3 +17,6 @@ val sizzling_red = Color(0xFFF05D5E)
 val imperial_red = Color(0xFFEF233C)
 val amaranth_red = Color(0xFFD90429)
 val atomic_tangerine = Color(0xFFF0965D)
+
+val square_light = Color.White
+val square_dark = Color(0xFFBCC0C0)
