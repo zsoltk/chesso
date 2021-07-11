@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val importGameText = when {
-            intent?.action == Intent.ACTION_SEND && "text/plain" == intent.type -> {
+            savedInstanceState == null && intent?.action == Intent.ACTION_SEND && "text/plain" == intent.type -> {
                 intent.getStringExtra(Intent.EXTRA_TEXT)
             }
             else -> null
