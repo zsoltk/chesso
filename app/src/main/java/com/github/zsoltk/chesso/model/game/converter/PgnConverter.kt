@@ -13,6 +13,7 @@ import com.github.zsoltk.chesso.model.move.BoardMove.Ambiguity.AMBIGUOUS_RANK
 import com.github.zsoltk.chesso.model.move.KingSideCastle
 import com.github.zsoltk.chesso.model.move.Promotion
 import com.github.zsoltk.chesso.model.move.QueenSideCastle
+import com.github.zsoltk.chesso.model.piece.King
 import java.util.EnumSet
 
 object PgnConverter : Converter {
@@ -87,19 +88,20 @@ object PgnConverter : Converter {
 
     private fun createMove(move: Int, moveText: String, gameState: GameState): BoardMove {
         val state = gameState.currentSnapshotState
+        val pieces = state.board.pieces(gameState.toMove)
 
         if (moveText == MOVE_CASTLE_KINGSIDE) {
-            return state.allLegalMoves
-                .find {
-                    it.move is KingSideCastle && it.move.piece.set == gameState.toMove
-                }
+            return pieces
+                .filter { (_, piece) -> piece.textSymbol == King.SYMBOL }
+                .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
+                .find { it.move is KingSideCastle }
                 ?: error("Invalid state. Can't castle kingside for ${gameState.toMove} at move $move")
         }
         if (moveText == MOVE_CASTLE_QUEENSIDE) {
-            return state.allLegalMoves
-                .find {
-                    it.move is QueenSideCastle && it.move.piece.set == gameState.toMove
-                }
+            return pieces
+                .filter { (_, piece) -> piece.textSymbol == King.SYMBOL }
+                .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
+                .find { it.move is QueenSideCastle }
                 ?: error("Invalid state. Can't castle queenside for ${gameState.toMove} at move $move")
         }
 
@@ -114,8 +116,7 @@ object PgnConverter : Converter {
         val toPosition = Position.from(toFile.ordinal + 1, toRank)
         val promotion = result.groupValues[6]
 
-        val filtered = state.board
-            .pieces(gameState.toMove)
+        val filtered = pieces
             .filter { (_, piece) -> piece.textSymbol == pieceTextSymbol }
             .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
             .filter {

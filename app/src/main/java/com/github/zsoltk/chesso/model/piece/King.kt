@@ -27,7 +27,7 @@ class King(override val set: Set) : Piece {
         BLACK -> "♚"
     }
 
-    override val textSymbol: String = "K"
+    override val textSymbol: String = SYMBOL
 
     override fun pseudoLegalMoves(gameSnapshotState: GameSnapshotState, checkCheck: Boolean): List<BoardMove> {
         val moves = targets
@@ -86,6 +86,7 @@ class King(override val set: Set) : Piece {
     }
 
     companion object {
+        const val SYMBOL = "K"
         val targets = listOf(
             -1 to -1,
             -1 to 0,
