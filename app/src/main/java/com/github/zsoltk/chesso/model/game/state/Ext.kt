@@ -47,8 +47,11 @@ private fun Map<Position, Piece>.hasBishopsOnSameColor(): Boolean {
 }
 
 fun BoardMove.applyAmbiguity(gameSnapshotState: GameSnapshotState): BoardMove =
-    gameSnapshotState.legalMovesTo(to)
-        .filter { it.piece.textSymbol == piece.textSymbol }
+    gameSnapshotState.board
+        .pieces(gameSnapshotState.toMove)
+        .filter { (_, piece) -> piece.textSymbol == this.piece.textSymbol }
+        .flatMap { (_, piece) -> piece.pseudoLegalMoves(gameSnapshotState, false) }
+        .filter { it.to == this.to }
         .let { similarPieces ->
             val ambiguity = EnumSet.noneOf(BoardMove.Ambiguity::class.java)
             when (similarPieces.size) {
