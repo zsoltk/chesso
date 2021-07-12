@@ -69,7 +69,7 @@ object Reducer {
                 states = states.subList(0, currentIndex + 1)
                 states.add(transition.toSnapshotState)
 
-                GamePlayState(
+                gamePlayState.copy(
                     gameState = gameState.copy(
                         states = states,
                         currentIndex = states.lastIndex,
@@ -78,7 +78,9 @@ object Reducer {
                             resolution = transition.toSnapshotState.resolution,
                             lastMoveBy = transition.fromSnapshotState.toMove
                         )
-                    )
+                    ),
+                    uiState = UiState(transition.toSnapshotState),
+                    promotionState = PromotionState.None
                 )
             }
             is Action.RequestPromotion -> {
