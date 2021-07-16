@@ -32,8 +32,8 @@ data class GameSnapshotState(
         get() = boardState.toMove
 
     val score: Int =
-        capturedPieces.sumBy {
-            it.value * if (it.set == WHITE) -1 else 1
+        board.pieces.values.sumOf {
+            it.value * if (it.set == WHITE) 1 else -1
         }
 
     val allLegalMoves by lazy {
