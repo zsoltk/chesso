@@ -52,16 +52,18 @@ fun BoardMove.applyAmbiguity(gameSnapshotState: GameSnapshotState): BoardMove =
         .filter { (_, piece) -> piece.textSymbol == this.piece.textSymbol }
         .flatMap { (_, piece) -> piece.pseudoLegalMoves(gameSnapshotState, false) }
         .filter { it.to == this.to }
-        .let { similarPieces ->
+        .map { it.from }
+        .distinct() // promotion moves have same `from`, but are different per target piece, we don't need all of those
+        .let { similarPiecePositions ->
             val ambiguity = EnumSet.noneOf(BoardMove.Ambiguity::class.java)
-            when (similarPieces.size) {
+            when (similarPiecePositions.size) {
                 1 -> this
                 else -> {
-                    val onSameFile = similarPieces.filter { it.from.file == from.file }
+                    val onSameFile = similarPiecePositions.filter { it.file == from.file }
                     if (onSameFile.size == 1) {
                         ambiguity.add(AMBIGUOUS_FILE)
                     } else {
-                        val onSameRank = similarPieces.filter { it.from.rank == from.rank }
+                        val onSameRank = similarPiecePositions.filter { it.rank == from.rank }
                         if (onSameRank.size == 1) {
                             ambiguity.add(AMBIGUOUS_RANK)
                         } else {
