@@ -12,4 +12,6 @@ data class BoardRenderProperties(
     val isFlipped: Boolean,
     val squareSize: Dp,
     val onClick: (Position) -> Unit,
-)
+) {
+    val cache: MutableMap<Any, Any> = mutableMapOf()
+}

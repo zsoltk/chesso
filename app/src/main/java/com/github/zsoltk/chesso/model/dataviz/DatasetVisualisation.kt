@@ -12,6 +12,6 @@ interface DatasetVisualisation : Parcelable {
 
     val maxValue: Int
 
-    fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint?
+    fun dataPointAt(position: Position, state: GameSnapshotState, cache: MutableMap<Any, Any>): Datapoint?
 }
 

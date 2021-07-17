@@ -26,7 +26,11 @@ object CheckmateCount : DatasetVisualisation {
 
     private val total: Int = Position.values().sumOf { valueAt(it) }
 
-    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint {
+    override fun dataPointAt(
+        position: Position,
+        state: GameSnapshotState,
+        cache: MutableMap<Any, Any>
+    ): Datapoint {
         val value = valueAt(position)
         return Datapoint(
             value = value,

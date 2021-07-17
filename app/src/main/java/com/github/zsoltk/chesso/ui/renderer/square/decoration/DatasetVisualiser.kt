@@ -24,7 +24,12 @@ object DatasetVisualiser : SquareDecoration {
     @Composable
     override fun render(properties: SquareRenderProperties) {
         ActiveDatasetVisualisation.current.let { viz ->
-            val datapoint = viz.dataPointAt(properties.position, properties.boardProperties.toState)
+            val datapoint = viz.dataPointAt(
+                properties.position,
+                properties.boardProperties.toState,
+                properties.boardProperties.cache
+            )
+
             val percentage = datapoint?.value?.let {
                 (1.0f * datapoint.value - viz.minValue) / (viz.maxValue - viz.minValue)
             }?.coerceIn(0f, 1f)

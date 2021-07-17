@@ -16,6 +16,10 @@ object None : DatasetVisualisation {
 
     override val maxValue: Int = Int.MAX_VALUE
 
-    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint? =
+    override fun dataPointAt(
+        position: Position,
+        state: GameSnapshotState,
+        cache: MutableMap<Any, Any>
+    ): Datapoint? =
         null
 }

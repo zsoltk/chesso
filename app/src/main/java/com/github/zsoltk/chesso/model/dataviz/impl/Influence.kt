@@ -28,7 +28,11 @@ object Influence : DatasetVisualisation {
 
     private val blueScale = Color.Transparent to Color.Blue.copy(alpha = 0.5f)
 
-    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint? {
+    override fun dataPointAt(
+        position: Position,
+        state: GameSnapshotState,
+        cache: MutableMap<Any, Any>
+    ): Datapoint? {
         val square = state.board[position]
         val legalMovesTo = state.legalMovesTo(position)
         if (legalMovesTo.isEmpty() && square.isNotEmpty) {

@@ -22,7 +22,11 @@ object BlockedPieces : DatasetVisualisation {
 
     override val maxValue: Int = 31
 
-    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint? =
+    override fun dataPointAt(
+        position: Position,
+        state: GameSnapshotState,
+        cache: MutableMap<Any, Any>
+    ): Datapoint? =
         valueAt(position, state)?.let { value ->
             Datapoint(
                 value = value,

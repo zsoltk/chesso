@@ -23,7 +23,11 @@ object KnightsMoveCount : DatasetVisualisation {
 
     override val maxValue: Int = 8
 
-    override fun dataPointAt(position: Position, state: GameSnapshotState): Datapoint {
+    override fun dataPointAt(
+        position: Position,
+        state: GameSnapshotState,
+        cache: MutableMap<Any, Any>
+    ): Datapoint {
         val value = valueAt(position)
         return Datapoint(
             value = value,
