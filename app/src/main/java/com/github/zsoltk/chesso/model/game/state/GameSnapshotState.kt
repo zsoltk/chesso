@@ -36,7 +36,7 @@ data class GameSnapshotState(
             it.value * if (it.set == WHITE) 1 else -1
         }
 
-    val allLegalMoves by lazy {
+    private val allLegalMoves by lazy {
         board.pieces.flatMap { (_, piece) ->
             piece
                 .pseudoLegalMoves(this, false)
@@ -65,7 +65,11 @@ data class GameSnapshotState(
         allLegalMoves.filter { it.to == position }
 
     fun legalMovesFrom(position: Position): List<BoardMove> =
-        allLegalMoves.filter { it.from == position }
+        board[position]
+            .piece
+            ?.pseudoLegalMoves(this, false)
+            ?.applyCheckConstraints()
+            ?: emptyList()
 
     private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
         filter { move ->
@@ -123,7 +127,7 @@ data class GameSnapshotState(
         )
     }
 
-    private fun derivePseudoGameState(boardMove: BoardMove): GameSnapshotState = copy(
+    fun derivePseudoGameState(boardMove: BoardMove): GameSnapshotState = copy(
         boardState = boardState.deriveBoardState(boardMove),
         move = null,
         lastMove = AppliedMove(
