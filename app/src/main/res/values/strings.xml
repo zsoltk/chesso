@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Chesso</string>
+    <string name="app_name" translatable="false">Chesso</string>
 
-    <string name="viz_none">None</string>
+    <string name="viz_none" translatable="false">None</string>
     <string name="viz_active_pieces">Active pieces</string>
     <string name="viz_blocked_pieces">Blocked pieces</string>
     <string name="viz_influence_simplified">Influence (simplified)</string>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chesso</string>
+    <string name="viz_none">None</string>
+    <string name="viz_active_pieces">Piezas Activas</string>
+    <string name="viz_blocked_pieces">Piezas Bloqueadas</string>
+    <string name="viz_influence_simplified">Influencia (simplificada)</string>
+    <string name="viz_black_kings_escape_squares">Casillas de escape del Rey Negro</string>
+    <string name="viz_white_kings_escape_squares">Casillas de escape del Rey Blanco</string>
+    <string name="viz_knight_move_count">Máximo número de movimientos del Caballo</string>
+    <string name="viz_checkmate_count">Jaquemates por casilla</string>
+    <string name="action_previous_move">Movimiento anterior</string>
+    <string name="action_next_move">Movimiento siguiente</string>
+    <string name="action_pick_active_visualisation">Seleccionar visualización activa</string>
+    <string name="action_flip">Girar el tablero</string>
+    <string name="action_game_menu">Menú de juego</string>
+    <string name="game_new">Nuevo</string>
+    <string name="game_import">Importar</string>
+    <string name="game_export">Exportar</string>
+    <string name="resolution_white_to_move">Turno de BLANCAS</string>
+    <string name="resolution_black_to_move">Turno de NEGRAS</string>
+    <string name="resolution_stalemate">REY AHOGADO</string>
+    <string name="resolution_white_wins">BLANCAS ganan</string>
+    <string name="resolution_black_wins">NEGRAS ganan</string>
+    <string name="resolution_draw_by_repetition">EMPATE POR REPETICIÓN</string>
+    <string name="resolution_insufficient_material">MATERIAL INSUFICIENTE</string>
+    <string name="import_validation_error_generic">Error al importar el juego: %s</string>
+</resources>
