@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.zsoltk.chesso.model.board.Position
 import com.github.zsoltk.chesso.model.game.controller.GameController
-import com.github.zsoltk.chesso.ui.ChessoTheme
-import com.github.zsoltk.chesso.ui.composable.Preset
+import com.github.zsoltk.chesso.ui.base.ChessoTheme
+import com.github.zsoltk.chesso.ui.app.Preset
 
 object CheckMateInOneMovePreset : Preset {
 

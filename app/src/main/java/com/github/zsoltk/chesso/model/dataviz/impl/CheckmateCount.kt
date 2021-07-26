@@ -6,8 +6,8 @@ import com.github.zsoltk.chesso.model.board.Position.*
 import com.github.zsoltk.chesso.model.dataviz.Datapoint
 import com.github.zsoltk.chesso.model.dataviz.DatasetVisualisation
 import com.github.zsoltk.chesso.model.game.state.GameSnapshotState
-import com.github.zsoltk.chesso.ui.amaranth_red
-import com.github.zsoltk.chesso.ui.silver_sand
+import com.github.zsoltk.chesso.ui.base.amaranth_red
+import com.github.zsoltk.chesso.ui.base.silver_sand
 import kotlinx.parcelize.Parcelize
 
 /**

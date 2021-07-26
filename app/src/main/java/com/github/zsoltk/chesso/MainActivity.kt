@@ -8,8 +8,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.github.zsoltk.chesso.ui.ChessoTheme
-import com.github.zsoltk.chesso.ui.composable.Game
+import com.github.zsoltk.chesso.ui.base.ChessoTheme
+import com.github.zsoltk.chesso.ui.chess.Game
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

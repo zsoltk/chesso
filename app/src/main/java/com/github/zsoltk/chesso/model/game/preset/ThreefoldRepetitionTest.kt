@@ -11,8 +11,8 @@ import com.github.zsoltk.chesso.model.piece.King
 import com.github.zsoltk.chesso.model.piece.Queen
 import com.github.zsoltk.chesso.model.piece.Rook
 import com.github.zsoltk.chesso.model.piece.Set
-import com.github.zsoltk.chesso.ui.ChessoTheme
-import com.github.zsoltk.chesso.ui.composable.Preset
+import com.github.zsoltk.chesso.ui.base.ChessoTheme
+import com.github.zsoltk.chesso.ui.app.Preset
 
 object ThreefoldRepetitionPreset : Preset {
 

@@ -12,8 +12,8 @@ import com.github.zsoltk.chesso.model.piece.Knight
 import com.github.zsoltk.chesso.model.piece.Pawn
 import com.github.zsoltk.chesso.model.piece.Set.BLACK
 import com.github.zsoltk.chesso.model.piece.Set.WHITE
-import com.github.zsoltk.chesso.ui.ChessoTheme
-import com.github.zsoltk.chesso.ui.composable.Preset
+import com.github.zsoltk.chesso.ui.base.ChessoTheme
+import com.github.zsoltk.chesso.ui.app.Preset
 
 object PromotionPreset : Preset {
 
