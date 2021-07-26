@@ -69,7 +69,7 @@ fun Game(
             Moves(gamePlayState.value.gameState, onClickMove = { gameController.goToMove(it) })
             CapturedPieces(
                 gameState = gamePlayState.value.gameState,
-                capturedBy = Set.BLACK,
+                capturedBy = if (isFlipped) Set.WHITE else Set.BLACK,
                 arrangement = Arrangement.Start,
                 scoreAlignment = Alignment.End,
             )
@@ -80,7 +80,7 @@ fun Game(
             )
             CapturedPieces(
                 gameState = gamePlayState.value.gameState,
-                capturedBy = Set.WHITE,
+                capturedBy = if (isFlipped) Set.BLACK else Set.WHITE,
                 arrangement = Arrangement.End,
                 scoreAlignment = Alignment.Start
             )
