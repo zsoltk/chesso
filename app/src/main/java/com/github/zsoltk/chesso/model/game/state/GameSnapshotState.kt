@@ -71,7 +71,11 @@ data class GameSnapshotState(
             ?.applyCheckConstraints()
             ?: emptyList()
 
-    private fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
+    @JvmName("applyCheckConstraints1")
+    fun applyCheckConstraints(moves: List<BoardMove>): List<BoardMove> =
+        moves.applyCheckConstraints()
+
+    fun List<BoardMove>.applyCheckConstraints(): List<BoardMove> =
         filter { move ->
             // Any move made should result in no check (clear current if any, and not cause a new one)
             val newGameState = derivePseudoGameState(move)

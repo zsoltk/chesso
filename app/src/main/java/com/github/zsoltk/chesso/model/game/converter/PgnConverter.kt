@@ -120,7 +120,7 @@ object PgnConverter : Converter {
         val toPosition = Position.from(toFile.ordinal + 1, toRank)
         val promotion = result.groupValues[6]
 
-        val filtered = pieces
+        var filtered = pieces
             .filter { (_, piece) -> piece.textSymbol == pieceTextSymbol }
             .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
             .filter {
@@ -129,6 +129,12 @@ object PgnConverter : Converter {
                     (fromRank == "" || fromRank == it.from.rank.toString()) &&
                     (promotion == "" || (it.consequence is Promotion && it.consequence.piece.textSymbol == promotion[1].toString()))
             }
+
+        // To save on performance, only check checks if we have ambiguity
+        if (filtered.size > 1) {
+            // If we can filter some moves that aren't actually legal, that might remove the remaining ambiguity
+            filtered = gameState.currentSnapshotState.applyCheckConstraints(filtered)
+        }
 
         when (filtered.size) {
             0 -> error("Invalid state when parsing $moveText at move $move. " +
