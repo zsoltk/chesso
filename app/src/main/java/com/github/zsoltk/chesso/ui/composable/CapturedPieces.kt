@@ -3,7 +3,6 @@ package com.github.zsoltk.chesso.ui.composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +29,6 @@ import com.github.zsoltk.chesso.model.piece.Set
 import com.github.zsoltk.chesso.model.piece.Set.BLACK
 import com.github.zsoltk.chesso.model.piece.Set.WHITE
 import com.github.zsoltk.chesso.ui.ChessoTheme
-import com.github.zsoltk.chesso.ui.renderer.board.decoration.Piece
 import kotlin.math.absoluteValue
 
 @Composable
@@ -69,7 +67,7 @@ fun CapturedPieces(
                 if (scoreAlignment == Alignment.Start && displayScore) {
                     Score(score = score)
                 }
-                CapturedPieceListText(
+                CapturedPieceList(
                     capturedPieces = capturedPieces,
                 )
                 if (scoreAlignment == Alignment.End && displayScore) {
@@ -80,9 +78,8 @@ fun CapturedPieces(
     }
 }
 
-@Deprecated("Use CapturedPieceListIcons instead")
 @Composable
-private fun CapturedPieceListText(
+private fun CapturedPieceList(
     capturedPieces: List<Piece>
 ) {
     val stringBuilder = StringBuilder()
@@ -95,25 +92,6 @@ private fun CapturedPieceListText(
         color = MaterialTheme.colors.onBackground,
         fontSize = 20.sp
     )
-}
-
-/**
- * TODO pack horizontally
- */
-@Composable
-private fun CapturedPieceListIcons(
-    capturedPieces: List<Piece>
-) {
-    BoxWithConstraints {
-        Row {
-            capturedPieces.forEach { piece ->
-                Piece(
-                    piece = piece,
-                    squareSize = this@BoxWithConstraints.maxHeight,
-                )
-            }
-        }
-    }
 }
 
 @Composable
