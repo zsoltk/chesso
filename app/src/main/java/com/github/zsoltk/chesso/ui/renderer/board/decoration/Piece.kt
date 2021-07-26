@@ -9,8 +9,10 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.chesso.model.piece.Bishop
 import com.github.zsoltk.chesso.model.piece.Pawn
@@ -38,12 +40,8 @@ fun Piece(
                 Text(
                     text = piece.symbol,
                     color = Color.Black,
-                    fontSize = when (piece) {
-                        // TODO should accommodate non-board rendering
-                        is Pawn -> 36.sp
-                        is Bishop -> 41.sp
-                        is Rook -> 41.sp
-                        else -> 40.sp
+                    fontSize = with(LocalDensity.current) {
+                        (squareSize / 5 * 4).toSp()
                     }
                 )
             }
