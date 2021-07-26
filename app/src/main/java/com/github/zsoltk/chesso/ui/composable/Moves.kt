@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.zsoltk.chesso.model.move.AppliedMove
-import com.github.zsoltk.chesso.model.game.state.GameState
 import com.github.zsoltk.chesso.model.game.controller.GameController
 import com.github.zsoltk.chesso.model.board.Position.*
 import com.github.zsoltk.chesso.model.game.state.GamePlayState
@@ -33,8 +32,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Moves(
-    gameState: GameState,
-    onClickMove: (Int) -> Unit,
+    moves: List<AppliedMove>,
+    selectedItemIndex: Int,
+    onMoveSelected: (Int) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -53,8 +53,6 @@ fun Moves(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val moves = gameState.moves()
-            val selectedItemIndex = gameState.currentIndex - 1
             moves.forEachIndexed { index, move ->
                 val isSelected = index == selectedItemIndex
 
@@ -66,7 +64,7 @@ fun Moves(
                 }
 
                 item("$index$isSelected") {
-                    Move(move, isSelected) { onClickMove(index) }
+                    Move(move, isSelected) { onMoveSelected(index) }
                 }
 
                 if (index % 2 == 1) {
@@ -138,8 +136,8 @@ fun MovesPreview() {
         }
 
         Moves(
-            gameState = gamePlayState.gameState,
-            onClickMove = {}
-        )
+            moves = gamePlayState.gameState.moves(),
+            selectedItemIndex = gamePlayState.gameState.currentIndex - 1
+        ) {}
     }
 }

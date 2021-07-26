@@ -66,7 +66,12 @@ fun Game(
                 .background(MaterialTheme.colors.background)
         ) {
             Status(gamePlayState.value.gameState)
-            Moves(gamePlayState.value.gameState, onClickMove = { gameController.goToMove(it) })
+            Moves(
+                moves = gamePlayState.value.gameState.moves(),
+                selectedItemIndex = gamePlayState.value.gameState.currentIndex - 1
+            ) {
+                gameController.goToMove(it)
+            }
             CapturedPieces(
                 gameState = gamePlayState.value.gameState,
                 capturedBy = if (isFlipped) Set.WHITE else Set.BLACK,
