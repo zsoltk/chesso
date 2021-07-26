@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.sp
 import com.github.zsoltk.chesso.model.dataviz.ActiveDatasetVisualisation
 import com.github.zsoltk.chesso.ui.renderer.square.SquareDecoration
@@ -34,19 +35,12 @@ object DatasetVisualiser : SquareDecoration {
                 (1.0f * datapoint.value - viz.minValue) / (viz.maxValue - viz.minValue)
             }?.coerceIn(0f, 1f)
 
-            val intermediateColor = percentage?.let {
-                val colorMin = datapoint.colorScale.first
-                val colorMax = datapoint.colorScale.second
-                Color(
-                    red = colorMin.red + percentage * (colorMax.red - colorMin.red),
-                    green = colorMin.green + percentage * (colorMax.green - colorMin.green),
-                    blue = colorMin.blue + percentage * (colorMax.blue - colorMin.blue),
-                    alpha = colorMin.alpha + percentage * (colorMax.alpha - colorMin.alpha),
-                )
+            val interpolatedColor = percentage?.let {
+                lerp(datapoint.colorScale.first, datapoint.colorScale.second, percentage)
             }
 
             val color by animateColorAsState(
-                targetValue = intermediateColor ?: Color.Transparent,
+                targetValue = interpolatedColor ?: Color.Transparent,
                 animationSpec = tween(1500)
             )
 
