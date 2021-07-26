@@ -1,4 +1,4 @@
-package com.github.zsoltk.chesso.ui.chess.board.decoration
+package com.github.zsoltk.chesso.ui.chess.pieces
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing

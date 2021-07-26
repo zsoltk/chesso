@@ -14,7 +14,7 @@ import com.github.zsoltk.chesso.ui.chess.square.SquareRenderProperties
 import com.github.zsoltk.chesso.ui.chess.board.BoardDecoration
 import java.util.UUID
 
-class DecorateSquares(
+class DecoratedSquares(
     private val decorations: List<SquareDecoration>,
 ) : BoardDecoration {
 

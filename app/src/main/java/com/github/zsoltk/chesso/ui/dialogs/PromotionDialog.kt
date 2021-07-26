@@ -18,7 +18,7 @@ import com.github.zsoltk.chesso.model.piece.Queen
 import com.github.zsoltk.chesso.model.piece.Rook
 import com.github.zsoltk.chesso.model.piece.Set
 import com.github.zsoltk.chesso.model.piece.Set.WHITE
-import com.github.zsoltk.chesso.ui.chess.board.decoration.Piece
+import com.github.zsoltk.chesso.ui.chess.pieces.Piece
 
 @Composable
 fun PromotionDialog(
