@@ -30,7 +30,7 @@ object BlockedPieces : DatasetVisualisation {
         valueAt(position, state)?.let { value ->
             Datapoint(
                 value = value,
-                label = value.toString(),
+                label = null,
                 colorScale = when (value) {
                     0 -> Color.Red.copy(alpha = 0.35f) to Color.Unspecified
                     else -> Color.Unspecified to Color.Unspecified
