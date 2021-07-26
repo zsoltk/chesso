@@ -56,7 +56,7 @@ fun Moves(
             val moves = gameState.moves()
             val selectedItemIndex = gameState.currentIndex - 1
             moves.forEachIndexed { index, move ->
-                val selected = index == selectedItemIndex
+                val isSelected = index == selectedItemIndex
 
                 if (index % 2 == 0) {
                     item {
@@ -65,14 +65,8 @@ fun Moves(
                     }
                 }
 
-                item("$index$selected") {
-                    if (selected) {
-                        Pill(move.effect != null) {
-                            Move(move) { onClickMove(index) }
-                        }
-                    } else {
-                        Move(move) { onClickMove(index) }
-                    }
+                item("$index$isSelected") {
+                    Move(move, isSelected) { onClickMove(index) }
                 }
 
                 if (index % 2 == 1) {
@@ -101,34 +95,26 @@ private fun StepNumber(stepNumber: Int) {
 }
 
 @Composable
-private fun Pill(
-    isHighlighted: Boolean,
-    content: @Composable () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .background(
-                color = if (isHighlighted) atomic_tangerine else silver_sand,
-                shape = RoundedCornerShape(6.dp)
-            )
-    ) {
-        content()
-    }
-}
-
-@Composable
 private fun Move(
     move: AppliedMove,
-    onClick: () -> Unit,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     Text(
         text = move.toString(),
         color = MaterialTheme.colors.onSecondary,
-        modifier = Modifier
+        modifier = (if (isSelected) modifier.pill(move.effect != null) else modifier)
             .padding(start = 3.dp, end = 3.dp)
             .clickable(onClick = onClick)
     )
 }
+
+private fun Modifier.pill(isHighlighted: Boolean) =
+    background(
+        color = if (isHighlighted) atomic_tangerine else silver_sand,
+        shape = RoundedCornerShape(6.dp)
+    )
 
 @Preview
 @Composable
