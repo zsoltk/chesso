@@ -18,9 +18,11 @@ import java.util.EnumSet
 
 object PgnConverter : Converter {
 
-    private const val MOVE_CASTLE_KINGSIDE = "O-O"
+    private val MOVE_CASTLE_KINGSIDE =
+        "O-O[+#]?".toRegex()
 
-    private const val MOVE_CASTLE_QUEENSIDE = "O-O-O"
+    private val MOVE_CASTLE_QUEENSIDE =
+        "O-O-O[+#]?".toRegex()
 
     private val MOVE_REGEX =
         "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[KBRQ])?[+#]?".toRegex()
@@ -32,7 +34,9 @@ object PgnConverter : Converter {
     }
 
     private fun validateMoveText(s: String): Boolean =
-        (s == MOVE_CASTLE_KINGSIDE || s == MOVE_CASTLE_QUEENSIDE || MOVE_REGEX.matchEntire(s) != null)
+        MOVE_CASTLE_KINGSIDE.matchEntire(s) != null ||
+            MOVE_CASTLE_QUEENSIDE.matchEntire(s) != null ||
+            MOVE_REGEX.matchEntire(s) != null
 
     override fun import(text: String): ImportResult {
         val pgnImportDataHolder = extractData(text)
@@ -90,14 +94,14 @@ object PgnConverter : Converter {
         val state = gameState.currentSnapshotState
         val pieces = state.board.pieces(gameState.toMove)
 
-        if (moveText == MOVE_CASTLE_KINGSIDE) {
+        if (MOVE_CASTLE_KINGSIDE.matchEntire(moveText) != null) {
             return pieces
                 .filter { (_, piece) -> piece.textSymbol == King.SYMBOL }
                 .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
                 .find { it.move is KingSideCastle }
                 ?: error("Invalid state. Can't castle kingside for ${gameState.toMove} at move $move")
         }
-        if (moveText == MOVE_CASTLE_QUEENSIDE) {
+        if (MOVE_CASTLE_QUEENSIDE.matchEntire(moveText) != null) {
             return pieces
                 .filter { (_, piece) -> piece.textSymbol == King.SYMBOL }
                 .flatMap { (_, piece) -> piece.pseudoLegalMoves(state, false) }
