@@ -47,10 +47,14 @@ object Influence : DatasetVisualisation {
             .map { if (it.piece.set == Set.WHITE) 1 else -1 }
             .sum()
 
-        return if (sum != 0) Datapoint(
+        return Datapoint(
             value = sum,
             label = sum.toString(),
-            colorScale = if (sum > 0) blueScale else redScale,
-        ) else null
+            colorScale = when {
+                sum > 0 -> blueScale
+                sum < 0 -> redScale
+                else -> Color.Transparent to Color.Transparent
+            }
+        )
     }
 }
