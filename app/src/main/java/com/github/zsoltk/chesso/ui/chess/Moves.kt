@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,11 +74,11 @@ fun Moves(
                     }
                 }
             }
+        }
 
+        LaunchedEffect(moves, selectedItemIndex) {
             if (moves.isNotEmpty()) {
-                coroutineScope.launch {
-                    listState.animateScrollToItem(selectedItemIndex * 2)
-                }
+                listState.animateScrollToItem(selectedItemIndex * 2)
             }
         }
     }
