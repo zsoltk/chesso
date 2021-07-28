@@ -15,11 +15,7 @@ import com.github.zsoltk.chesso.model.dataviz.ActiveDatasetVisualisation
 import com.github.zsoltk.chesso.ui.chess.square.SquareDecoration
 import com.github.zsoltk.chesso.ui.chess.square.SquareRenderProperties
 
-/**
- * Based on the post of /u/atlas_scrubbed in /r/chess on Reddit:
- *
- * https://www.reddit.com/r/chess/comments/kp7qwe/i_looked_at_a_million_games_played_on_lichess_and
- */
+
 object DatasetVisualiser : SquareDecoration {
 
     @Composable
