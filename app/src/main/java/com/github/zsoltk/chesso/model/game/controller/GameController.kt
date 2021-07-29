@@ -1,7 +1,6 @@
 package com.github.zsoltk.chesso.model.game.controller
 
 import com.github.zsoltk.chesso.model.board.Square
-import com.github.zsoltk.chesso.model.game.state.BoardState
 import com.github.zsoltk.chesso.model.game.state.GameSnapshotState
 import com.github.zsoltk.chesso.model.move.targetPositions
 import com.github.zsoltk.chesso.model.board.Position
@@ -34,11 +33,8 @@ class GameController(
     private val gameSnapshotState: GameSnapshotState
         get() = gamePlayState.gameState.currentSnapshotState
 
-    private val boardState: BoardState
-        get() = gameSnapshotState.boardState
-
     val toMove: Set
-        get() = boardState.toMove
+        get() = gameSnapshotState.toMove
 
     fun reset(
         gameSnapshotState: GameSnapshotState = GameSnapshotState(),
@@ -55,10 +51,10 @@ class GameController(
     }
 
     fun square(position: Position): Square =
-        boardState.board[position]
+        gameSnapshotState.board[position]
 
     private fun Position.hasOwnPiece() =
-        square(this).hasPiece(boardState.toMove)
+        square(this).hasPiece(gameSnapshotState.toMove)
 
     fun onClick(position: Position) {
         if (gameSnapshotState.resolution != Resolution.IN_PROGRESS) return

@@ -62,7 +62,7 @@ object Reducer {
                 val currentIndex = gameState.currentIndex
                 val transition = currentSnapshotState.calculateAppliedMove(
                     boardMove = action.boardMove,
-                    boardStatesSoFar = states.subList(0, currentIndex + 1).map { it.boardState }
+                    statesSoFar = states.subList(0, currentIndex + 1)
                 )
 
                 states[currentIndex] = transition.fromSnapshotState

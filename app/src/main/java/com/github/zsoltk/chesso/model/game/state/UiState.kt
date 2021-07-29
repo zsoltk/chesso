@@ -30,7 +30,7 @@ data class UiState(
     @IgnoredOnParcel
     private val ownPiecePositions: List<Position> =
         gameSnapshotState.board.pieces
-            .filter { (_, piece) -> piece.set == gameSnapshotState.boardState.toMove }
+            .filter { (_, piece) -> piece.set == gameSnapshotState.toMove }
             .map { it.key }
 
     @IgnoredOnParcel

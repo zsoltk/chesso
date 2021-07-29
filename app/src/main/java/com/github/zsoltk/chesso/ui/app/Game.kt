@@ -1,4 +1,4 @@
-package com.github.zsoltk.chesso.ui.chess
+package com.github.zsoltk.chesso.ui.app
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,10 @@ import com.github.zsoltk.chesso.model.game.state.GamePlayState
 import com.github.zsoltk.chesso.model.game.state.GameState
 import com.github.zsoltk.chesso.model.piece.Set
 import com.github.zsoltk.chesso.ui.base.ChessoTheme
-import com.github.zsoltk.chesso.ui.app.ManagedImport
+import com.github.zsoltk.chesso.ui.chess.Board
+import com.github.zsoltk.chesso.ui.chess.CapturedPieces
+import com.github.zsoltk.chesso.ui.chess.Moves
+import com.github.zsoltk.chesso.ui.chess.resolutionText
 
 @Composable
 fun Game(

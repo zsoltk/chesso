@@ -23,7 +23,7 @@ data class GameState(
         get() = states[currentIndex]
 
     val toMove: Set
-        get() = currentSnapshotState.boardState.toMove
+        get() = currentSnapshotState.toMove
 
     val resolution: Resolution
         get() = currentSnapshotState.resolution

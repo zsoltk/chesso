@@ -1,4 +1,4 @@
-package com.github.zsoltk.chesso.ui.chess
+package com.github.zsoltk.chesso.ui.app
 
 import android.content.Intent
 import android.os.Bundle

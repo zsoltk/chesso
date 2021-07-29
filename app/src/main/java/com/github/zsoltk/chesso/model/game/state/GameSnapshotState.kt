@@ -17,19 +17,14 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class GameSnapshotState(
-    val boardState: BoardState = BoardState(),
+    val board: Board = Board(),
+    val toMove: Set = Set.WHITE,
     val resolution: Resolution = Resolution.IN_PROGRESS,
     val move: AppliedMove? = null,
     val lastMove: AppliedMove? = null,
-    val castlingInfo: CastlingInfo = CastlingInfo.from(boardState.board),
+    val castlingInfo: CastlingInfo = CastlingInfo.from(board),
     val capturedPieces: List<Piece> = emptyList()
 ) : Parcelable {
-
-    val board: Board
-        get() = boardState.board
-
-    val toMove: Set
-        get() = boardState.toMove
 
     val score: Int =
         board.pieces.values.sumOf {
@@ -43,6 +38,13 @@ data class GameSnapshotState(
                 .applyCheckConstraints()
         }
     }
+
+    fun toRepetitionRelevantState(): RepetitionRelevantState =
+        RepetitionRelevantState(
+            board = board,
+            toMove = toMove,
+            castlingInfo = castlingInfo
+        )
 
     fun hasCheck(): Boolean =
         hasCheckFor(toMove)
@@ -83,19 +85,19 @@ data class GameSnapshotState(
         }
 
 
-    fun calculateAppliedMove(boardMove: BoardMove, boardStatesSoFar: List<BoardState>): GameStateTransition {
+    fun calculateAppliedMove(boardMove: BoardMove, statesSoFar: List<GameSnapshotState>): GameStateTransition {
         val tempNewGameState = derivePseudoGameState(boardMove)
-        val nextToMove = boardState.toMove.opposite()
-
-        val validMoves = tempNewGameState.board.pieces(nextToMove).filter { (position, _) ->
-            tempNewGameState.legalMovesFrom(position).isNotEmpty()
+        val validMoves = with(tempNewGameState) {
+             board.pieces(toMove).filter { (position, _) ->
+                tempNewGameState.legalMovesFrom(position).isNotEmpty()
+            }
         }
         val isCheck = tempNewGameState.hasCheck()
         val isCheckNoMate = validMoves.isNotEmpty() && isCheck
         val isCheckMate = validMoves.isEmpty() && isCheck
         val isStaleMate = validMoves.isEmpty() && !isCheck
         val insufficientMaterial = tempNewGameState.board.pieces.hasInsufficientMaterial()
-        val threefoldRepetition = (boardStatesSoFar + tempNewGameState.boardState).hasThreefoldRepetition()
+        val threefoldRepetition = (statesSoFar + tempNewGameState).hasThreefoldRepetition()
 
         val appliedMove = AppliedMove(
             boardMove = boardMove.applyAmbiguity(this),
@@ -114,8 +116,7 @@ data class GameSnapshotState(
             fromSnapshotState = this.copy(
                 move = appliedMove
             ),
-            toSnapshotState = copy(
-                boardState = tempNewGameState.boardState,
+            toSnapshotState = tempNewGameState.copy(
                 resolution = when {
                     isCheckMate -> Resolution.CHECKMATE
                     isStaleMate -> Resolution.STALEMATE
@@ -131,12 +132,20 @@ data class GameSnapshotState(
         )
     }
 
-    fun derivePseudoGameState(boardMove: BoardMove): GameSnapshotState = copy(
-        boardState = boardState.deriveBoardState(boardMove),
-        move = null,
-        lastMove = AppliedMove(
-            boardMove = boardMove,
-            effect = null
+    fun derivePseudoGameState(boardMove: BoardMove): GameSnapshotState {
+        val updatedBoard = board
+            .apply(boardMove.preMove)
+            .apply(boardMove.move)
+            .apply(boardMove.consequence)
+
+        return copy(
+            board = updatedBoard,
+            toMove = toMove.opposite(),
+            move = null,
+            lastMove = AppliedMove(
+                boardMove = boardMove,
+                effect = null
+            )
         )
-    )
+    }
 }

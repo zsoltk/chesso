@@ -13,8 +13,8 @@ import com.github.zsoltk.chesso.model.piece.Piece
 import com.github.zsoltk.chesso.model.piece.Set
 import java.util.EnumSet
 
-fun List<BoardState>.hasThreefoldRepetition(): Boolean =
-    map { it.hashCode() }
+fun List<GameSnapshotState>.hasThreefoldRepetition(): Boolean =
+    map { it.toRepetitionRelevantState().hashCode() }
         .groupBy { it }
         .map { it.value.size }
         .any { it > 2 }

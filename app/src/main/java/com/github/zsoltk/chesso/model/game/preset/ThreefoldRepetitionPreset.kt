@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.github.zsoltk.chesso.model.board.Board
 import com.github.zsoltk.chesso.model.board.Position.*
 import com.github.zsoltk.chesso.model.game.controller.GameController
-import com.github.zsoltk.chesso.model.game.state.BoardState
 import com.github.zsoltk.chesso.model.game.state.GameSnapshotState
 import com.github.zsoltk.chesso.model.piece.King
 import com.github.zsoltk.chesso.model.piece.Queen
@@ -26,11 +25,12 @@ object ThreefoldRepetitionPreset : Preset {
                     g2 to King(Set.WHITE),
                 )
             )
-            val boardState = BoardState(
-                board = board,
-                toMove = Set.WHITE
+            reset(
+                GameSnapshotState(
+                    board = board,
+                    toMove = Set.WHITE
+                )
             )
-            reset(GameSnapshotState(boardState))
         }
     }
 }
