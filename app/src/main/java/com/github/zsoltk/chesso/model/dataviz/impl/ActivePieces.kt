@@ -30,7 +30,7 @@ object ActivePieces : DatasetVisualisation {
         valueAt(position, state)?.let { value ->
             Datapoint(
                 value = value,
-                label = value.toString(),
+                label = null,
                 colorScale = Color.Green.copy(alpha = 0.025f) to Color.Green.copy(alpha = 0.85f)
             )
         }
