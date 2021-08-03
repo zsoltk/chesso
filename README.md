@@ -1,6 +1,8 @@
+![](https://imgur.com/lv9R29h.png)
+
 # Chesso
 
-Chesso is an animated, Jetpack Compose-based app aimed beginners and intermediate players for studying purposes.
+Chesso is an animated, Jetpack Compose-based chess app aimed at beginners and intermediate players for studying purposes.
 
 Its distinctive key feature is the ability to show visualisation layers on top of the board.
 
