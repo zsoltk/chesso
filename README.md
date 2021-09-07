@@ -19,6 +19,11 @@ You can import a game from a [PGN](https://en.wikipedia.org/wiki/Portable_Game_N
 - Either by directly sharing a game from another chess app via a system dialog
 - Or copy-pasting a PGN text into the Import dialog
 
+## Articles
+
+- [Checkmate on Compose I.](https://medium.com/bumble-tech/checkmate-on-compose-part-1-5a435419c51f)
+- [Checkmate on Compose II.](https://medium.com/bumble-tech/checkmate-on-compose-part-ii-c799945e3c51)
+
 
 ## Fair play
 
