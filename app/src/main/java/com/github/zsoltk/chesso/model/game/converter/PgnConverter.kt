@@ -25,7 +25,7 @@ object PgnConverter : Converter {
         "O-O-O[+#]?".toRegex()
 
     private val MOVE_REGEX =
-        "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[KBRQ])?[+#]?".toRegex()
+        "([NBRQK])?([abcdefgh])?([1-8])?x?([abcdefgh])([1-8])(=[NBRQ])?[+#]?".toRegex()
 
     override fun preValidate(text: String): Boolean {
         val moves = extractData(text).moves
